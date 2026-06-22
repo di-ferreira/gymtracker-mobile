@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Botões — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <style>
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--gt-surface);
+      border-right: 1px solid var(--gt-border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: var(--gt-space-6) 0;
+      z-index: 100;
+    }
+    .sidebar-brand {
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-brand h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--gt-fg);
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-2);
+    }
+    .sidebar-brand .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      display: inline-block;
+    }
+    .sidebar-brand p {
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+    .sidebar-section {
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gt-fg-muted);
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-2);
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-3);
+      padding: var(--gt-space-2) var(--gt-space-6);
+      font-size: 14px;
+      color: var(--gt-fg-secondary);
+      text-decoration: none;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      border-left: 2px solid transparent;
+    }
+    .sidebar-nav a:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-2);
+    }
+    .sidebar-nav a.active {
+      color: var(--gt-primary);
+      background: rgba(255, 122, 26, 0.06);
+      border-left-color: var(--gt-primary);
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-width: 0;
+    }
+    .content-area {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: var(--gt-space-10) var(--gt-space-8);
+    }
+    .component-group {
+      margin-bottom: var(--gt-space-10);
+    }
+    .component-group-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gt-fg);
+      margin-bottom: var(--gt-space-2);
+    }
+    .component-group-desc {
+      font-size: 14px;
+      color: var(--gt-fg-tertiary);
+      margin-bottom: var(--gt-space-4);
+    }
+
+    .gt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--gt-font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      white-space: nowrap;
+      user-select: none;
+      border: none;
+      outline: none;
+      gap: var(--gt-space-2);
+    }
+    .gt-btn:focus-visible {
+      outline: 2px solid var(--gt-primary);
+      outline-offset: 2px;
+    }
+
+    .gt-btn-primary {
+      background: #FF7A1A;
+      color: #0A0A0A;
+    }
+    .gt-btn-primary:hover {
+      background: #FF9249;
+    }
+    .gt-btn-primary:active {
+      background: #E06510;
+      transform: scale(0.97);
+    }
+
+    .gt-btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #FFFFFF;
+    }
+    .gt-btn-secondary:hover {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.04);
+    }
+    .gt-btn-secondary:active {
+      border-color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.08);
+      transform: scale(0.97);
+    }
+
+    .gt-btn-ghost {
+      background: transparent;
+      border: none;
+      color: #B8B8B8;
+    }
+    .gt-btn-ghost:hover {
+      color: #FFFFFF;
+      background: rgba(255,255,255,0.06);
+    }
+    .gt-btn-ghost:active {
+      color: #FFFFFF;
+      background: rgba(255,255,255,0.1);
+      transform: scale(0.97);
+    }
+
+    .gt-btn-danger {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: #EF4444;
+    }
+    .gt-btn-danger:hover {
+      background: rgba(239,68,68,0.18);
+      border-color: rgba(239,68,68,0.35);
+    }
+    .gt-btn-danger:active {
+      background: rgba(239,68,68,0.24);
+      border-color: rgba(239,68,68,0.45);
+      transform: scale(0.97);
+    }
+
+    .gt-btn-sm {
+      height: 32px;
+      padding: 0 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      gap: 4px;
+    }
+    .gt-btn-md {
+      height: 40px;
+      padding: 0 16px;
+      font-size: 14px;
+      border-radius: 8px;
+      gap: 6px;
+    }
+    .gt-btn-lg {
+      height: 48px;
+      padding: 0 24px;
+      font-size: 16px;
+      border-radius: 8px;
+      gap: 8px;
+    }
+
+    .gt-btn:disabled,
+    .gt-btn-disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .gt-btn-loading {
+      position: relative;
+      color: transparent !important;
+      pointer-events: none;
+    }
+    .gt-btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: gt-spin 0.6s linear infinite;
+    }
+    .gt-btn-primary.gt-btn-loading::after {
+      border-top-color: #0A0A0A;
+    }
+    .gt-btn-secondary.gt-btn-loading::after,
+    .gt-btn-ghost.gt-btn-loading::after {
+      border-top-color: #FFFFFF;
+    }
+    .gt-btn-danger.gt-btn-loading::after {
+      border-top-color: #EF4444;
+    }
+
+    @keyframes gt-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .variant-row {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-4);
+      padding: var(--gt-space-4) var(--gt-space-5);
+      border-radius: var(--gt-radius-md);
+      transition: background var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .variant-row:hover {
+      background: var(--gt-surface);
+    }
+    .variant-label {
+      min-width: 100px;
+    }
+    .variant-label .name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gt-fg);
+    }
+    .variant-label .desc {
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+      margin-top: 2px;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-6);
+      padding: var(--gt-space-4) var(--gt-space-5);
+      border-radius: var(--gt-radius-md);
+      transition: background var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .size-row:hover {
+      background: var(--gt-surface);
+    }
+    .size-label {
+      min-width: 60px;
+    }
+    .size-label .name {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      color: var(--gt-fg);
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--gt-space-4);
+    }
+    .state-card {
+      background: var(--gt-surface);
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-lg);
+      padding: var(--gt-space-5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--gt-space-3);
+    }
+    .state-card-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gt-fg-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .spec-table th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--gt-fg);
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border-strong);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .spec-table td {
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border);
+      color: var(--gt-fg-secondary);
+    }
+    .spec-table td:first-child {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      color: var(--gt-fg);
+    }
+    .spec-table td code {
+      font-family: var(--gt-font-mono);
+      font-size: 12px;
+      background: var(--gt-surface-3);
+      padding: 2px 6px;
+      border-radius: var(--gt-radius-xs);
+      color: var(--gt-fg-secondary);
+    }
+    .spec-table tr:hover td {
+      background: var(--gt-surface);
+    }
+
+    .rules-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .rules-table th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--gt-fg);
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border-strong);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .rules-table td {
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border);
+      color: var(--gt-fg-secondary);
+    }
+    .rules-table tr:hover td {
+      background: var(--gt-surface);
+    }
+
+    .code-block {
+      background: var(--gt-surface);
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-lg);
+      padding: var(--gt-space-5);
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-block pre {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--gt-fg-secondary);
+      margin: 0;
+      white-space: pre;
+    }
+    .code-block .copy-btn {
+      position: absolute;
+      top: var(--gt-space-3);
+      right: var(--gt-space-3);
+      background: var(--gt-surface-3);
+      border: 1px solid var(--gt-border);
+      color: var(--gt-fg-tertiary);
+      padding: 4px 10px;
+      border-radius: var(--gt-radius-sm);
+      font-size: 12px;
+      font-family: var(--gt-font-mono);
+      cursor: pointer;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .code-block .copy-btn:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-4);
+    }
+
+    .mobile-toc-btn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: var(--gt-elevation-3);
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+      .mobile-toc-btn { display: grid; place-items: center; }
+      .content-area { padding: var(--gt-space-6) var(--gt-space-4); }
+      .state-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .state-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Visão Geral</a>
+          <a href="colors.html">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html">Elevação</a>
+          <a href="radius.html">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html" class="active">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="content-area">
+
+        <p class="section-description" style="color: var(--gt-fg-tertiary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--gt-space-2);">Componentes</p>
+        <h1 class="section-title">Botões</h1>
+        <p class="section-description">Os botões são o principal elemento de interação do GymTracker. Quatro variantes, três tamanhos e estados interativos garantem consistência entre mobile e web.</p>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Variantes</h2>
+          <p class="component-group-desc">Cada variante comunica um nível de ênfase diferente. Use Primary para a ação principal, Secondary para ações complementares, Ghost para baixa prioridade e Danger para ações destrutivas.</p>
+
+          <div class="component-preview">
+            <div class="variant-row">
+              <div class="variant-label">
+                <div class="name">Primary</div>
+                <div class="desc">Ação principal</div>
+              </div>
+              <button class="gt-btn gt-btn-primary gt-btn-md">Salvar treino</button>
+            </div>
+            <div class="variant-row">
+              <div class="variant-label">
+                <div class="name">Secondary</div>
+                <div class="desc">Ação complementar</div>
+              </div>
+              <button class="gt-btn gt-btn-secondary gt-btn-md">Cancelar</button>
+            </div>
+            <div class="variant-row">
+              <div class="variant-label">
+                <div class="name">Ghost</div>
+                <div class="desc">Baixa prioridade</div>
+              </div>
+              <button class="gt-btn gt-btn-ghost gt-btn-md">Saiba mais</button>
+            </div>
+            <div class="variant-row">
+              <div class="variant-label">
+                <div class="name">Danger</div>
+                <div class="desc">Ação destrutiva</div>
+              </div>
+              <button class="gt-btn gt-btn-danger gt-btn-md">Excluir conta</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Tamanhos</h2>
+          <p class="component-group-desc">Três tamanhos cobrem todos os contextos de uso. <code>md</code> é o padrão, <code>sm</code> para espaços compactos e <code>lg</code> para CTAs de destaque.</p>
+
+          <div class="component-preview">
+            <div class="size-row">
+              <div class="size-label"><div class="name">sm</div></div>
+              <button class="gt-btn gt-btn-primary gt-btn-sm">Pequeno</button>
+              <button class="gt-btn gt-btn-secondary gt-btn-sm">Pequeno</button>
+              <button class="gt-btn gt-btn-ghost gt-btn-sm">Pequeno</button>
+              <button class="gt-btn gt-btn-danger gt-btn-sm">Pequeno</button>
+            </div>
+            <div class="size-row">
+              <div class="size-label"><div class="name">md</div></div>
+              <button class="gt-btn gt-btn-primary gt-btn-md">Médio</button>
+              <button class="gt-btn gt-btn-secondary gt-btn-md">Médio</button>
+              <button class="gt-btn gt-btn-ghost gt-btn-md">Médio</button>
+              <button class="gt-btn gt-btn-danger gt-btn-md">Médio</button>
+            </div>
+            <div class="size-row">
+              <div class="size-label"><div class="name">lg</div></div>
+              <button class="gt-btn gt-btn-primary gt-btn-lg">Grande</button>
+              <button class="gt-btn gt-btn-secondary gt-btn-lg">Grande</button>
+              <button class="gt-btn gt-btn-ghost gt-btn-lg">Grande</button>
+              <button class="gt-btn gt-btn-danger gt-btn-lg">Grande</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Estados</h2>
+          <p class="component-group-desc">Estados interativos comunicam feedback ao usuário. Hover e active respondem ao cursor; disabled impede interação; loading indica processamento.</p>
+
+          <div class="component-preview">
+            <div class="state-grid">
+              <div class="state-card">
+                <span class="state-card-label">Default</span>
+                <button class="gt-btn gt-btn-primary gt-btn-md">Botão</button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Hover</span>
+                <button class="gt-btn gt-btn-primary gt-btn-md" style="background: #FF9249;">Botão</button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Active</span>
+                <button class="gt-btn gt-btn-primary gt-btn-md" style="background: #E06510; transform: scale(0.97);">Botão</button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Disabled</span>
+                <button class="gt-btn gt-btn-primary gt-btn-md" disabled>Botão</button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Loading</span>
+                <button class="gt-btn gt-btn-primary gt-btn-md gt-btn-loading">Botão</button>
+              </div>
+            </div>
+
+            <div style="margin-top: var(--gt-space-6);">
+              <div class="state-grid">
+                <div class="state-card">
+                  <span class="state-card-label">Default</span>
+                  <button class="gt-btn gt-btn-secondary gt-btn-md">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Hover</span>
+                  <button class="gt-btn gt-btn-secondary gt-btn-md" style="border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04);">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Active</span>
+                  <button class="gt-btn gt-btn-secondary gt-btn-md" style="border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); transform: scale(0.97);">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Disabled</span>
+                  <button class="gt-btn gt-btn-secondary gt-btn-md" disabled>Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Loading</span>
+                  <button class="gt-btn gt-btn-secondary gt-btn-md gt-btn-loading">Botão</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: var(--gt-space-6);">
+              <div class="state-grid">
+                <div class="state-card">
+                  <span class="state-card-label">Default</span>
+                  <button class="gt-btn gt-btn-ghost gt-btn-md">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Hover</span>
+                  <button class="gt-btn gt-btn-ghost gt-btn-md" style="color: #FFFFFF; background: rgba(255,255,255,0.06);">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Active</span>
+                  <button class="gt-btn gt-btn-ghost gt-btn-md" style="color: #FFFFFF; background: rgba(255,255,255,0.1); transform: scale(0.97);">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Disabled</span>
+                  <button class="gt-btn gt-btn-ghost gt-btn-md" disabled>Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Loading</span>
+                  <button class="gt-btn gt-btn-ghost gt-btn-md gt-btn-loading">Botão</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: var(--gt-space-6);">
+              <div class="state-grid">
+                <div class="state-card">
+                  <span class="state-card-label">Default</span>
+                  <button class="gt-btn gt-btn-danger gt-btn-md">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Hover</span>
+                  <button class="gt-btn gt-btn-danger gt-btn-md" style="background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.35);">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Active</span>
+                  <button class="gt-btn gt-btn-danger gt-btn-md" style="background: rgba(239,68,68,0.24); border-color: rgba(239,68,68,0.45); transform: scale(0.97);">Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Disabled</span>
+                  <button class="gt-btn gt-btn-danger gt-btn-md" disabled>Botão</button>
+                </div>
+                <div class="state-card">
+                  <span class="state-card-label">Loading</span>
+                  <button class="gt-btn gt-btn-danger gt-btn-md gt-btn-loading">Botão</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Especificações</h2>
+          <p class="component-group-desc">Valores de design tokens para cada tamanho de botão. Use estes valores para implementar o componente em qualquer plataforma.</p>
+
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Propriedade</th>
+                <th>sm</th>
+                <th>md</th>
+                <th>lg</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>height</td>
+                <td>32px</td>
+                <td>40px</td>
+                <td>48px</td>
+              </tr>
+              <tr>
+                <td>padding</td>
+                <td>0 12px</td>
+                <td>0 16px</td>
+                <td>0 24px</td>
+              </tr>
+              <tr>
+                <td>font-size</td>
+                <td>13px</td>
+                <td>14px</td>
+                <td>16px</td>
+              </tr>
+              <tr>
+                <td>font-weight</td>
+                <td>600</td>
+                <td>600</td>
+                <td>600</td>
+              </tr>
+              <tr>
+                <td>border-radius</td>
+                <td>6px</td>
+                <td>8px</td>
+                <td>8px</td>
+              </tr>
+              <tr>
+                <td>gap (ícone + texto)</td>
+                <td>4px</td>
+                <td>6px</td>
+                <td>8px</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Mobile vs Web</h2>
+          <p class="component-group-desc">Regras específicas por plataforma para garantir a melhor experiência em cada contexto de uso.</p>
+
+          <div class="callout">
+            <p><strong>Atenção:</strong> Botões devem seguir as diretrizes de acessibilidade de cada plataforma. No mobile, o alvo mínimo de toque é obrigatório; na web, o foco por teclado é essencial.</p>
+          </div>
+
+          <div class="do-dont-grid" style="margin-top: var(--gt-space-4);">
+            <div class="do-box">
+              <h4>Mobile (React Native)</h4>
+              <p>Alvo de toque mínimo de <strong>44 × 44px</strong> — mesmo para botões <code>sm</code> (32px de altura visual), a área de toque deve ter pelo menos 44px de altura com padding adicional.</p>
+              <p style="margin-top: 8px;">Use <code>hitSlop</code> no React Native para expandir a área de toque sem alterar o layout visual.</p>
+            </div>
+            <div class="do-box" style="border-color: var(--gt-info); background: var(--gt-info-surface);">
+              <h4 style="color: var(--gt-info);">Web (Next.js)</h4>
+              <p>Foco visível por teclado: anel de <strong>2px solid #FF7A1A</strong> com <strong>2px de offset</strong>. Sempre use <code>:focus-visible</code> para não mostrar anel em cliques de mouse.</p>
+              <p style="margin-top: 8px;">Suporte a <kbd class="kbd">Tab</kbd> e <kbd class="kbd">Enter</kbd>/<kbd class="kbd">Space</kbd> nativamente via elemento <code><button></code>.</p>
+            </div>
+          </div>
+
+          <table class="spec-table" style="margin-top: var(--gt-space-4);">
+            <thead>
+              <tr>
+                <th>Regra</th>
+                <th>Mobile</th>
+                <th>Web</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alvo mínimo</td>
+                <td>44 × 44px (hitSlop)</td>
+                <td>44 × 44px (tamanho real)</td>
+              </tr>
+              <tr>
+                <td>Foco</td>
+                <td>—</td>
+                <td>Anel 2px #FF7A1A, offset 2px</td>
+              </tr>
+              <tr>
+                <td>Cursor</td>
+                <td>—</td>
+                <td>pointer no hover</td>
+              </tr>
+              <tr>
+                <td>Feedback tátil</td>
+                <td>Haptic feedback leve</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Largura máxima</td>
+                <td>100% do container</td>
+                <td>max-content (inline)</td>
+              </tr>
+              <tr>
+                <td>Full-width</td>
+                <td>Sim, em telas pequenas</td>
+                <td>Apenas em modais e CTAs hero</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Regras de Uso</h2>
+          <p class="component-group-desc">Princípios para manter consistência e clareza na utilização de botões.</p>
+
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th>Regra</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Um Primary por seção</td>
+                <td>No máximo <strong>1 botão Primary</strong> por seção ou tela. O Primary deve ser a ação mais importante e evidente.</td>
+              </tr>
+              <tr>
+                <td>Ghost para baixa prioridade</td>
+                <td>Use Ghost apenas para ações terciárias (ex: "Saiba mais", "Fechar"). Nunca use Ghost como ação principal.</td>
+              </tr>
+              <tr>
+                <td>Danger requer confirmação</td>
+                <td>Ações destrutivas (excluir, remover) devem usar Danger e exigir confirmação em modal antes de executar.</td>
+              </tr>
+              <tr>
+                <td>Botões com ícone</td>
+                <td>Ícone à esquerda do texto, nunca à direita. Use o gap do token correspondente ao tamanho. Ícones devem ter 16px (sm), 18px (md) ou 20px (lg).</td>
+              </tr>
+              <tr>
+                <td>Botão ícone-only</td>
+                <td>Permitido apenas para ações universalmente reconhecidas (fechar, voltar, buscar). Use o mesmo tamanho do botão e borda circular.<code>aria-label</code> obrigatório.</td>
+              </tr>
+              <tr>
+                <td>Nunca misture variantes</td>
+                <td>Não crie botões estilizados fora das 4 variantes. Não use Primary com borda ou Danger sem fundo semântico.</td>
+              </tr>
+              <tr>
+                <td>Texto conciso</td>
+                <td>Máximo de 3 palavras no rótulo. Use verbos de ação: "Salvar", "Excluir", "Cancelar". Nunca use texto genérico como "OK" ou "Clique aqui".</td>
+              </tr>
+              <tr>
+                <td>Loading bloqueia interação</td>
+                <td>No estado loading, o botão deve desabilitar nova interação (pointer-events: none) e ocultar o texto, exibindo apenas o spinner.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Tokens CSS</h2>
+          <p class="component-group-desc">Custom properties para implementar os botões. Copie e use no projeto.</p>
+
+          <div class="code-block">
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').textContent)">Copiar</button>
+            <pre><code>/* ── Botões ── */
+
+/* Variantes */
+--gt-btn-primary-bg: #FF7A1A;
+--gt-btn-primary-hover: #FF9249;
+--gt-btn-primary-active: #E06510;
+--gt-btn-primary-fg: #0A0A0A;
+
+--gt-btn-secondary-bg: transparent;
+--gt-btn-secondary-border: rgba(255, 255, 255, 0.15);
+--gt-btn-secondary-hover-border: rgba(255, 255, 255, 0.3);
+--gt-btn-secondary-active-border: rgba(255, 255, 255, 0.4);
+--gt-btn-secondary-fg: #FFFFFF;
+
+--gt-btn-ghost-bg: transparent;
+--gt-btn-ghost-fg: #B8B8B8;
+--gt-btn-ghost-hover-fg: #FFFFFF;
+
+--gt-btn-danger-bg: rgba(239, 68, 68, 0.12);
+--gt-btn-danger-border: rgba(239, 68, 68, 0.2);
+--gt-btn-danger-hover-bg: rgba(239, 68, 68, 0.18);
+--gt-btn-danger-hover-border: rgba(239, 68, 68, 0.35);
+--gt-btn-danger-active-bg: rgba(239, 68, 68, 0.24);
+--gt-btn-danger-active-border: rgba(239, 68, 68, 0.45);
+--gt-btn-danger-fg: #EF4444;
+
+/* Tamanhos */
+--gt-btn-sm-height: 32px;
+--gt-btn-sm-padding: 0 12px;
+--gt-btn-sm-font: 13px;
+--gt-btn-sm-radius: 6px;
+--gt-btn-sm-gap: 4px;
+
+--gt-btn-md-height: 40px;
+--gt-btn-md-padding: 0 16px;
+--gt-btn-md-font: 14px;
+--gt-btn-md-radius: 8px;
+--gt-btn-md-gap: 6px;
+
+--gt-btn-lg-height: 48px;
+--gt-btn-lg-padding: 0 24px;
+--gt-btn-lg-font: 16px;
+--gt-btn-lg-radius: 8px;
+--gt-btn-lg-gap: 8px;
+
+/* Estados */
+--gt-btn-font-weight: 600;
+--gt-btn-disabled-opacity: 0.4;
+--gt-btn-focus-ring: 2px solid #FF7A1A;
+--gt-btn-focus-offset: 2px;
+--gt-btn-active-scale: 0.97;
+--gt-btn-transition: all 100ms cubic-bezier(0.25, 0.1, 0.25, 1);
+
+/* Mobile */
+--gt-btn-touch-target: 44px;
+--gt-btn-spinner-size: 16px;
+--gt-btn-spinner-duration: 600ms;</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabelas — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .layout{display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar-width);background:var(--gt-surface);border-right:1px solid var(--gt-border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;padding:var(--gt-space-6) 0;z-index:100}
+    .sidebar-brand{padding:0 var(--gt-space-6);margin-bottom:var(--gt-space-6)}
+    .sidebar-brand h1{font-size:18px;font-weight:700;letter-spacing:-0.01em;color:var(--gt-fg);display:flex;align-items:center;gap:var(--gt-space-2)}
+    .sidebar-brand .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--gt-primary);display:inline-block}
+    .sidebar-brand p{font-size:12px;color:var(--gt-fg-tertiary);margin-top:4px;letter-spacing:0.02em}
+    .sidebar-section{margin-bottom:var(--gt-space-6)}
+    .sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gt-fg-muted);padding:0 var(--gt-space-6);margin-bottom:var(--gt-space-2)}
+    .sidebar-nav a{display:flex;align-items:center;gap:var(--gt-space-3);padding:var(--gt-space-2) var(--gt-space-6);font-size:14px;color:var(--gt-fg-secondary);text-decoration:none;transition:all var(--gt-duration-fast) var(--gt-ease-standard);border-left:2px solid transparent}
+    .sidebar-nav a:hover{color:var(--gt-fg);background:var(--gt-surface-2)}
+    .sidebar-nav a.active{color:var(--gt-primary);background:rgba(255,122,26,0.06);border-left-color:var(--gt-primary)}
+    .main-content{margin-left:var(--sidebar-width);flex:1;min-width:0}
+    .content-area{max-width:960px;margin:0 auto;padding:var(--gt-space-10) var(--gt-space-8)}
+    .doc-section{margin-bottom:48px}
+    .section-title{font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px}
+    .section-desc{color:#888;font-size:15px;margin-bottom:24px;line-height:1.6}
+    .token-table{width:100%;border-collapse:collapse;font-size:14px}
+    .token-table th{text-align:left;padding:10px 14px;border-bottom:2px solid rgba(255,255,255,0.12);color:#FF7A1A;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+    .token-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8}
+    .token-table tr:hover td{background:rgba(255,122,26,0.04)}
+    .token-table code{font-family:'JetBrains Mono',monospace;font-size:13px;color:#FF7A1A;background:rgba(255,122,26,0.08);padding:2px 6px;border-radius:4px}
+    .spec-table{width:100%;border-collapse:collapse;font-size:14px}
+    .spec-table th{text-align:left;font-weight:600;color:var(--gt-fg);padding:var(--gt-space-3) var(--gt-space-4);border-bottom:1px solid var(--gt-border-strong);font-size:13px;text-transform:uppercase;letter-spacing:0.06em}
+    .spec-table td{padding:var(--gt-space-3) var(--gt-space-4);border-bottom:1px solid var(--gt-border);color:var(--gt-fg-secondary)}
+    .spec-table td:first-child{font-family:var(--gt-font-mono);font-size:13px;color:var(--gt-fg)}
+    .spec-table tr:hover td{background:var(--gt-surface)}
+    .rules-list{list-style:none;padding:0}
+    .rules-list li{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8;line-height:1.6;padding-left:20px;position:relative}
+    .rules-list li::before{content:'';position:absolute;left:0;top:18px;width:6px;height:6px;border-radius:50%;background:#FF7A1A}
+    .code-block{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#C8C8C8;overflow-x:auto;position:relative}
+    .code-block .copy-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#A0A0A0;padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+    .code-block .copy-btn:hover{background:rgba(255,122,26,0.15);color:#FF7A1A}
+    .code-block .prop{color:#FF7A1A}
+    .code-block .val{color:#7EC8E3}
+    .platform-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--gt-radius-full,9999px);font-size:11px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase}
+    .platform-badge--web{background:var(--gt-info,#3B82F6);color:#FFFFFF}
+    .platform-badge--mobile{background:var(--gt-primary,#FF7A1A);color:#0A0A0A}
+
+    .gt-table-wrap{border:1px solid rgba(255,255,255,0.08);border-radius:var(--gt-radius-md,8px);overflow:hidden;margin:var(--gt-space-4) 0}
+    .gt-table{width:100%;border-collapse:collapse;font-size:14px}
+    .gt-table thead th{background:var(--gt-surface,#151515);color:var(--gt-fg-muted,#555555);text-transform:uppercase;font-size:13px;letter-spacing:0.06em;font-weight:600;padding:0 16px;height:48px;text-align:left;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,0.08);user-select:none;position:relative}
+    .gt-table thead th.sortable{cursor:pointer;transition:color 100ms ease}
+    .gt-table thead th.sortable:hover{color:var(--gt-fg-secondary,#B8B8B8)}
+    .gt-table thead th .sort-arrow{display:inline-block;margin-left:6px;font-size:10px;color:var(--gt-fg-tertiary,#888);opacity:0;transition:opacity 100ms ease,transform 200ms ease}
+    .gt-table thead th.sortable:hover .sort-arrow,.gt-table thead th.sort-asc .sort-arrow,.gt-table thead th.sort-desc .sort-arrow{opacity:1}
+    .gt-table thead th.sort-desc .sort-arrow{transform:rotate(180deg)}
+    .gt-table thead th.sort-asc,.gt-table thead th.sort-desc{color:var(--gt-primary,#FF7A1A)}
+    .gt-table tbody td{padding:0 16px;height:48px;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--gt-fg-secondary,#B8B8B8);transition:background 100ms ease}
+    .gt-table tbody tr:hover td{background:var(--gt-surface-2,#1D1D1D)}
+    .gt-table tbody tr:last-child td{border-bottom:none}
+    .gt-table .num{font-family:var(--gt-font-mono,'JetBrains Mono',monospace);font-variant-numeric:tabular-nums}
+
+    .gt-table--compact tbody td{padding:0 12px;height:36px;font-size:13px}
+    .gt-table--compact thead th{padding:0 12px;height:36px;font-size:12px}
+
+    .gt-table--selectable .gt-checkbox{appearance:none;width:18px;height:18px;border:1.5px solid var(--gt-border-strong,rgba(255,255,255,0.15));border-radius:4px;background:transparent;cursor:pointer;transition:all 100ms ease;position:relative;flex-shrink:0}
+    .gt-table--selectable .gt-checkbox:checked{background:var(--gt-primary,#FF7A1A);border-color:var(--gt-primary,#FF7A1A)}
+    .gt-table--selectable .gt-checkbox:checked::after{content:'';position:absolute;left:5px;top:2px;width:5px;height:9px;border:solid #0A0A0A;border-width:0 2px 2px 0;transform:rotate(45deg)}
+    .gt-table--selectable .gt-checkbox:focus-visible{outline:2px solid var(--gt-primary,#FF7A1A);outline-offset:2px}
+    .gt-table--selectable tbody tr.selected td{background:rgba(255,122,26,0.06);border-left:2px solid var(--gt-primary,#FF7A1A);padding-left:14px}
+    .gt-table--selectable tbody tr.selected td:first-child{padding-left:14px}
+
+    .gt-table .status-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:var(--gt-radius-full,9999px);font-size:12px;font-weight:500;letter-spacing:0.02em}
+    .status-chip--concluido{background:var(--gt-success-surface,rgba(34,197,94,0.12));color:var(--gt-success,#22C55E)}
+    .status-chip--pendente{background:var(--gt-warning-surface,rgba(245,158,11,0.12));color:var(--gt-warning,#F59E0B)}
+    .status-chip .chip-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+    .bulk-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(255,122,26,0.06);border-bottom:1px solid rgba(255,122,26,0.15);font-size:13px;color:var(--gt-primary,#FF7A1A);font-weight:500}
+    .bulk-bar .bulk-count{font-family:var(--gt-font-mono,'JetBrains Mono',monospace)}
+    .bulk-bar .bulk-actions{margin-left:auto;display:flex;gap:8px}
+    .bulk-bar .bulk-btn{padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(255,122,26,0.2);background:rgba(255,122,26,0.12);color:var(--gt-primary,#FF7A1A);transition:all 100ms ease}
+    .bulk-bar .bulk-btn:hover{background:rgba(255,122,26,0.18);border-color:rgba(255,122,26,0.35)}
+    .bulk-bar .bulk-btn.danger{border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.12);color:var(--gt-error,#EF4444)}
+    .bulk-bar .bulk-btn.danger:hover{background:rgba(239,68,68,0.18);border-color:rgba(239,68,68,0.35)}
+
+    .gt-table .empty-row td{text-align:center;color:var(--gt-fg-tertiary,#888);padding:40px 16px;font-size:14px}
+
+    .gt-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid rgba(255,255,255,0.08);font-size:13px;color:var(--gt-fg-tertiary,#888)}
+    .gt-pagination .page-info{font-family:var(--gt-font-mono,'JetBrains Mono',monospace);font-size:12px}
+    .gt-pagination .page-btns{display:flex;gap:4px}
+    .gt-pagination .page-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:var(--gt-fg-secondary,#B8B8B8);font-size:13px;cursor:pointer;transition:all 100ms ease;font-family:var(--gt-font-mono,'JetBrains Mono',monospace)}
+    .gt-pagination .page-btn:hover{background:var(--gt-surface-2,#1D1D1D);border-color:rgba(255,255,255,0.15)}
+    .gt-pagination .page-btn.active{background:var(--gt-primary,#FF7A1A);color:#0A0A0A;border-color:var(--gt-primary,#FF7A1A);font-weight:600}
+    .gt-pagination .page-btn:disabled{opacity:0.3;cursor:not-allowed}
+
+    .do-dont-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gt-space-4);margin:var(--gt-space-4) 0}
+    .do-box,.dont-box{padding:var(--gt-space-4);border-radius:var(--gt-radius-md);border:1px solid var(--gt-border)}
+    .do-box{border-color:var(--gt-success);background:var(--gt-success-surface)}
+    .dont-box{border-color:var(--gt-error);background:var(--gt-error-surface)}
+    .do-box h4,.dont-box h4{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--gt-space-2)}
+    .do-box h4{color:var(--gt-success)}
+    .dont-box h4{color:var(--gt-error)}
+    .do-box p,.dont-box p{font-size:14px;color:var(--gt-fg-secondary)}
+
+    .mobile-toc-btn{display:none;position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--gt-primary);color:var(--gt-bg);border:none;font-size:20px;cursor:pointer;z-index:200;box-shadow:var(--gt-elevation-3)}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0}.content-area{padding:var(--gt-space-6) var(--gt-space-4)}.do-dont-grid{grid-template-columns:1fr}.gt-table-wrap{overflow-x:auto}}
+    @media(max-width:768px){.mobile-toc-btn{display:grid;place-items:center}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1><span class="brand-dot"></span> GymTracker</h1><p>Design System v1.0</p></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Fundamentos</div><nav class="sidebar-nav"><a href="index.html">Visão Geral</a><a href="colors.html">Cores</a><a href="typography.html">Tipografia</a><a href="spacing.html">Espaçamento</a><a href="elevation.html">Elevação</a><a href="radius.html">Raio de Borda</a><a href="iconography.html">Iconografia</a><a href="motion.html">Movimento</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Componentes</div><nav class="sidebar-nav"><a href="components-buttons.html">Botões</a><a href="components-inputs.html">Inputs</a><a href="components-selects.html">Seletores</a><a href="components-cards.html">Cards</a><a href="components-chips.html">Chips</a><a href="components-tabs.html">Tabs</a><a href="components-navigation.html">Navegação</a><a href="components-bottom-nav.html">Navegação Inferior</a><a href="components-tables.html" class="active">Tabelas</a><a href="components-modals.html">Modais</a><a href="components-drawers.html">Drawers</a><a href="components-tooltips.html">Tooltips</a><a href="components-toasts.html">Toasts</a><a href="components-empty-states.html">Estados Vazios</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Diretrizes</div><nav class="sidebar-nav"><a href="accessibility.html">Acessibilidade</a><a href="reanimated.html">Reanimated</a></nav></div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <p style="color:var(--gt-fg-tertiary);font-size:13px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--gt-space-2);">Componentes <span class="platform-badge platform-badge--web" style="margin-left:6px">Web</span></p>
+          <h1 class="section-title" style="font-size:32px;font-weight:700;letter-spacing:-0.02em;margin-bottom:var(--gt-space-2);">Tabelas</h1>
+          <p class="section-desc" style="max-width:65ch;">Tabelas de dados para o dashboard web. Exibem logs de treino, listas de membros e bancos de exercícios com suporte a ordenação, seleção e paginação.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Data Table</h2>
+          <p class="section-desc">Tabela padrão com cabeçalho, linhas e ordenação por coluna. Usada para logs de treino, listas de membros e banco de exercícios.</p>
+          <div class="gt-table-wrap">
+            <table class="gt-table" data-sort-table>
+              <thead>
+                <tr>
+                  <th class="sortable" data-key="exercicio">Exercício <span class="sort-arrow">▲</span></th>
+                  <th class="sortable num" data-key="series">Séries <span class="sort-arrow">▲</span></th>
+                  <th class="sortable num" data-key="reps">Reps <span class="sort-arrow">▲</span></th>
+                  <th class="sortable num" data-key="carga">Carga (kg) <span class="sort-arrow">▲</span></th>
+                  <th>Último</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Supino Reto</td>
+                  <td class="num">4</td>
+                  <td class="num">10</td>
+                  <td class="num">80</td>
+                  <td>Hoje</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td>Agachamento</td>
+                  <td class="num">5</td>
+                  <td class="num">5</td>
+                  <td class="num">120</td>
+                  <td>Ontem</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td>Terra</td>
+                  <td class="num">4</td>
+                  <td class="num">6</td>
+                  <td class="num">140</td>
+                  <td>2 dias</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td>Remada Curvada</td>
+                  <td class="num">4</td>
+                  <td class="num">8</td>
+                  <td class="num">70</td>
+                  <td>3 dias</td>
+                  <td><span class="status-chip status-chip--pendente"><span class="chip-dot"></span>Pendente</span></td>
+                </tr>
+                <tr>
+                  <td>Desenvolvimento</td>
+                  <td class="num">3</td>
+                  <td class="num">10</td>
+                  <td class="num">50</td>
+                  <td>—</td>
+                  <td><span class="status-chip status-chip--pendente"><span class="chip-dot"></span>Pendente</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="gt-pagination">
+              <span class="page-info">1–5 de 24 exercícios</span>
+              <div class="page-btns">
+                <button class="page-btn" disabled>‹</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn">›</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Compact Table</h2>
+          <p class="section-desc">Tabela densa com padding reduzido para visualizações com muitos dados. Ideal para painéis de métricas e relatórios.</p>
+          <div class="gt-table-wrap">
+            <table class="gt-table gt-table--compact">
+              <thead>
+                <tr>
+                  <th>Exercício</th>
+                  <th class="num">Séries</th>
+                  <th class="num">Reps</th>
+                  <th class="num">Carga (kg)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Supino Reto</td>
+                  <td class="num">4</td>
+                  <td class="num">10</td>
+                  <td class="num">80</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td>Agachamento</td>
+                  <td class="num">5</td>
+                  <td class="num">5</td>
+                  <td class="num">120</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td>Terra</td>
+                  <td class="num">4</td>
+                  <td class="num">6</td>
+                  <td class="num">140</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td>Remada Curvada</td>
+                  <td class="num">4</td>
+                  <td class="num">8</td>
+                  <td class="num">70</td>
+                  <td><span class="status-chip status-chip--pendente"><span class="chip-dot"></span>Pendente</span></td>
+                </tr>
+                <tr>
+                  <td>Desenvolvimento</td>
+                  <td class="num">3</td>
+                  <td class="num">10</td>
+                  <td class="num">50</td>
+                  <td><span class="status-chip status-chip--pendente"><span class="chip-dot"></span>Pendente</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Selectable Table</h2>
+          <p class="section-desc">Tabela com checkbox para seleção de linhas e barra de ações em lote. Usada para gerenciar múltiplos registros simultaneamente.</p>
+          <div class="gt-table-wrap" id="selectable-table-demo">
+            <div class="bulk-bar" id="bulk-bar" style="display:none">
+              <span><span class="bulk-count" id="bulk-count">0</span> selecionados</span>
+              <div class="bulk-actions">
+                <button class="bulk-btn">Marcar concluído</button>
+                <button class="bulk-btn danger">Excluir</button>
+              </div>
+            </div>
+            <table class="gt-table gt-table--selectable" id="selectable-table">
+              <thead>
+                <tr>
+                  <th style="width:40px"><input type="checkbox" class="gt-checkbox" id="select-all" aria-label="Selecionar todos"></th>
+                  <th>Exercício</th>
+                  <th class="num">Séries</th>
+                  <th class="num">Reps</th>
+                  <th class="num">Carga (kg)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" class="gt-checkbox row-check" aria-label="Selecionar Supino Reto"></td>
+                  <td>Supino Reto</td>
+                  <td class="num">4</td>
+                  <td class="num">10</td>
+                  <td class="num">80</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="gt-checkbox row-check" aria-label="Selecionar Agachamento"></td>
+                  <td>Agachamento</td>
+                  <td class="num">5</td>
+                  <td class="num">5</td>
+                  <td class="num">120</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="gt-checkbox row-check" aria-label="Selecionar Terra"></td>
+                  <td>Terra</td>
+                  <td class="num">4</td>
+                  <td class="num">6</td>
+                  <td class="num">140</td>
+                  <td><span class="status-chip status-chip--concluido"><span class="chip-dot"></span>Concluído</span></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="gt-checkbox row-check" aria-label="Selecionar Remada Curvada"></td>
+                  <td>Remada Curvada</td>
+                  <td class="num">4</td>
+                  <td class="num">8</td>
+                  <td class="num">70</td>
+                  <td><span class="status-chip status-chip--pendente"><span class="chip-dot"></span>Pendente</span></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="gt-checkbox row-check" aria-label="Selecionar Desenvolvimento"></td>
+                  <td>Desenvolvimento</td>
+                  <td class="num">3</td>
+                  <td class="num">10</td>
+                  <td class="num">50</td>
+                  <td><span class="status-chip status-chip--pendente"><span class="chip-dot"></span>Pendente</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Estado Vazio</h2>
+          <p class="section-desc">Quando não há dados, exiba uma mensagem centralizada na área da tabela.</p>
+          <div class="gt-table-wrap">
+            <table class="gt-table">
+              <thead>
+                <tr>
+                  <th>Exercício</th>
+                  <th class="num">Séries</th>
+                  <th class="num">Reps</th>
+                  <th class="num">Carga (kg)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="empty-row">
+                  <td colspan="5">Nenhum exercício registrado neste treino. Adicione exercícios para começar.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Especificações</h2>
+          <p class="section-desc">Tokens de design para implementação do componente de tabela.</p>
+          <table class="token-table">
+            <thead>
+              <tr><th>Propriedade</th><th>Token / Valor</th><th>Descrição</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Header bg</td><td><code>--gt-surface</code></td><td>Fundo do cabeçalho (#151515)</td></tr>
+              <tr><td>Header text</td><td><code>--gt-fg-muted</code></td><td>Texto do header em #555555</td></tr>
+              <tr><td>Header font-size</td><td>—</td><td>13px, uppercase, letter-spacing 0.06em</td></tr>
+              <tr><td>Row height (default)</td><td>—</td><td>48px</td></tr>
+              <tr><td>Row height (compact)</td><td>—</td><td>36px</td></tr>
+              <tr><td>Row border-bottom</td><td><code>--gt-border</code></td><td>1px solid rgba(255,255,255,0.08)</td></tr>
+              <tr><td>Row hover bg</td><td><code>--gt-surface-2</code></td><td>#1D1D1D</td></tr>
+              <tr><td>Selected row bg</td><td>—</td><td>rgba(255,122,26,0.06)</td></tr>
+              <tr><td>Selected row border-left</td><td><code>--gt-primary</code></td><td>2px solid #FF7A1A</td></tr>
+              <tr><td>Sortable arrow</td><td>—</td><td>▲ 10px, opacity 0→1 no hover</td></tr>
+              <tr><td>Checkbox size</td><td>—</td><td>18×18px, border 1.5px --gt-border-strong</td></tr>
+              <tr><td>Checkbox checked bg</td><td><code>--gt-primary</code></td><td>#FF7A1A</td></tr>
+              <tr><td>Empty state alignment</td><td>—</td><td>Centro, padding 40px 16px</td></tr>
+              <tr><td>Page info font</td><td><code>--gt-font-mono</code></td><td>12px JetBrains Mono</td></tr>
+              <tr><td>Numeric columns</td><td>—</td><td>font-variant-numeric: tabular-nums, --gt-font-mono</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">API do Componente</h2>
+          <p class="section-desc">Propriedades do componente <code><DataTable></code> no dashboard Next.js.</p>
+          <table class="token-table">
+            <thead>
+              <tr><th>Prop</th><th>Tipo</th><th>Padrão</th><th>Descrição</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>columns</code></td><td><code>Column[]</code></td><td>—</td><td>Definição das colunas (key, label, sortable, numeric)</td></tr>
+              <tr><td><code>data</code></td><td><code>T[]</code></td><td>—</td><td>Array de objetos com os dados da tabela</td></tr>
+              <tr><td><code>variant</code></td><td><code>'default' | 'compact'</code></td><td><code>'default'</code></td><td>Variante de densidade da tabela</td></tr>
+              <tr><td><code>selectable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Ativa checkboxes e barra de ações em lote</td></tr>
+              <tr><td><code>onSelectionChange</code></td><td><code>(ids: string[]) => void</code></td><td>—</td><td>Callback quando a seleção muda</td></tr>
+              <tr><td><code>onSort</code></td><td><code>(key: string, dir: 'asc' | 'desc') => void</code></td><td>—</td><td>Callback quando coluna é ordenada</td></tr>
+              <tr><td><code>emptyMessage</code></td><td><code>string</code></td><td>—</td><td>Mensagem exibida quando não há dados</td></tr>
+              <tr><td><code>pagination</code></td><td><code>{ page, total, pageSize }</code></td><td>—</td><td>Configuração de paginação</td></tr>
+              <tr><td><code>onPageChange</code></td><td><code>(page: number) => void</code></td><td>—</td><td>Callback de mudança de página</td></tr>
+              <tr><td><code>loading</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Exibe skeleton loading nas linhas</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras de Uso</h2>
+          <ul class="rules-list">
+            <li>Sempre use <code>font-variant-numeric: tabular-nums</code> em colunas numéricas para alinhamento vertical consistente</li>
+            <li>Header com texto uppercase e <code>letter-spacing: 0.06em</code> — nunca use title case</li>
+            <li>Tabelas compactas apenas em visualizações com 6+ colunas ou painéis de métricas densas</li>
+            <li>A barra de ações em lote só aparece quando há pelo menos 1 linha selecionada</li>
+            <li>O checkbox "selecionar todos" marca apenas as linhas da página atual, não todas as páginas</li>
+            <li>Estado vazio deve sempre exibir mensagem com call-to-action, nunca uma tabela vazia sem contexto</li>
+            <li>Colunas ordenáveis devem mostrar indicador visual (seta) no hover e na coluna ativa</li>
+            <li>Paginação obrigatória para tabelas com mais de 25 linhas — use scroll interno apenas em tabelas compactas</li>
+            <li>Nunca use zebra striping (alternância de fundo) — o hover é suficiente para guiar o olhar</li>
+            <li>Em mobile, tabelas devem ter scroll horizontal com a primeira coluna fixa (sticky)</li>
+            <li>Chips de status usam cores semânticas: <code>--gt-success</code> para Concluído, <code>--gt-warning</code> para Pendente</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Faça e Não Faça</h2>
+          <div class="do-dont-grid">
+            <div class="do-box">
+              <h4>Faça</h4>
+              <p>Use <code>tabular-nums</code> em colunas numéricas para alinhar dígitos verticalmente.</p>
+              <p style="margin-top:8px">Use chips de status com cores semânticas para comunicar o estado de cada linha.</p>
+              <p style="margin-top:8px">Use paginação para conjuntos grandes de dados (> 25 linhas).</p>
+            </div>
+            <div class="dont-box">
+              <h4>Não Faça</h4>
+              <p>Não use zebra striping (fundo alternado) — dificulta a leitura e polui visualmente.</p>
+              <p style="margin-top:8px">Não ordene colunas sem indicador visual — o usuário precisa saber qual coluna está ativa.</p>
+              <p style="margin-top:8px">Não exiba mais de 50 linhas sem paginação em tabelas default.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="comment">/* Table Header */</span>
+  <span class="prop">--gt-table-header-bg</span>: <span class="val">var(--gt-surface)</span>;             <span class="comment">/* #151515 */</span>
+  <span class="prop">--gt-table-header-fg</span>: <span class="val">var(--gt-fg-muted)</span>;            <span class="comment">/* #555555 */</span>
+  <span class="prop">--gt-table-header-font</span>: <span class="val">13px</span>;
+  <span class="prop">--gt-table-header-transform</span>: <span class="val">uppercase</span>;
+  <span class="prop">--gt-table-header-spacing</span>: <span class="val">0.06em</span>;
+
+  <span class="comment">/* Table Rows */</span>
+  <span class="prop">--gt-table-row-height</span>: <span class="val">48px</span>;
+  <span class="prop">--gt-table-row-height-compact</span>: <span class="val">36px</span>;
+  <span class="prop">--gt-table-row-border</span>: <span class="val">1px solid var(--gt-border)</span>;  <span class="comment">/* rgba(255,255,255,0.08) */</span>
+  <span class="prop">--gt-table-row-hover-bg</span>: <span class="val">var(--gt-surface-2)</span>;         <span class="comment">/* #1D1D1D */</span>
+
+  <span class="comment">/* Selected Row */</span>
+  <span class="prop">--gt-table-selected-bg</span>: <span class="val">rgba(255, 122, 26, 0.06)</span>;
+  <span class="prop">--gt-table-selected-border</span>: <span class="val">2px solid var(--gt-primary)</span>; <span class="comment">/* #FF7A1A */</span>
+
+  <span class="comment">/* Checkbox */</span>
+  <span class="prop">--gt-table-checkbox-size</span>: <span class="val">18px</span>;
+  <span class="prop">--gt-table-checkbox-border</span>: <span class="val">1.5px solid var(--gt-border-strong)</span>;
+  <span class="prop">--gt-table-checkbox-checked-bg</span>: <span class="val">var(--gt-primary)</span>;  <span class="comment">/* #FF7A1A */</span>
+
+  <span class="comment">/* Sortable */</span>
+  <span class="prop">--gt-table-sort-arrow</span>: <span class="val">▲</span>;
+  <span class="prop">--gt-table-sort-active-fg</span>: <span class="val">var(--gt-primary)</span>;      <span class="comment">/* #FF7A1A */</span>
+
+  <span class="comment">/* Pagination */</span>
+  <span class="prop">--gt-table-page-btn-size</span>: <span class="val">32px</span>;
+  <span class="prop">--gt-table-page-btn-radius</span>: <span class="val">6px</span>;
+  <span class="prop">--gt-table-page-btn-active-bg</span>: <span class="val">var(--gt-primary)</span>; <span class="comment">/* #FF7A1A */</span>
+
+  <span class="comment">/* Numeric Cols */</span>
+  <span class="prop">--gt-table-num-font</span>: <span class="val">var(--gt-font-mono)</span>;            <span class="comment">/* JetBrains Mono */</span>
+  <span class="prop">--gt-table-num-variant</span>: <span class="val">tabular-nums</span>;
+
+  <span class="comment">/* Status Chips */</span>
+  <span class="prop">--gt-table-chip-concluido-bg</span>: <span class="val">var(--gt-success-surface)</span>; <span class="comment">/* rgba(34,197,94,0.12) */</span>
+  <span class="prop">--gt-table-chip-concluido-fg</span>: <span class="val">var(--gt-success)</span>;   <span class="comment">/* #22C55E */</span>
+  <span class="prop">--gt-table-chip-pendente-bg</span>: <span class="val">var(--gt-warning-surface)</span>;  <span class="comment">/* rgba(245,158,11,0.12) */</span>
+  <span class="prop">--gt-table-chip-pendente-fg</span>: <span class="val">var(--gt-warning)</span>;  <span class="comment">/* #F59E0B */</span>
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <button class="mobile-toc-btn" aria-label="Menu">&#9776;</button>
+  <script src="js/docs.js"></script>
+  <script>
+    function copyCode(btn) {
+      const pre = btn.parentElement.querySelector('pre');
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        btn.textContent = 'Copiado!';
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+      });
+    }
+
+    document.querySelectorAll('[data-sort-table]').forEach(function(table) {
+      var headers = table.querySelectorAll('th.sortable');
+      headers.forEach(function(th) {
+        th.addEventListener('click', function() {
+          var key = th.getAttribute('data-key');
+          var isAsc = th.classList.contains('sort-asc');
+          headers.forEach(function(h) { h.classList.remove('sort-asc', 'sort-desc'); });
+          th.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+          var tbody = table.querySelector('tbody');
+          var rows = Array.from(tbody.querySelectorAll('tr:not(.empty-row)'));
+          var colIndex = Array.from(th.parentElement.children).indexOf(th);
+          rows.sort(function(a, b) {
+            var aVal = a.children[colIndex].textContent.trim();
+            var bVal = b.children[colIndex].textContent.trim();
+            var aNum = parseFloat(aVal);
+            var bNum = parseFloat(bVal);
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+              return isAsc ? bNum - aNum : aNum - bNum;
+            }
+            return isAsc ? bVal.localeCompare(aVal, 'pt-BR') : aVal.localeCompare(bVal, 'pt-BR');
+          });
+          rows.forEach(function(row) { tbody.appendChild(row); });
+        });
+      });
+    });
+
+    (function() {
+      var table = document.getElementById('selectable-table');
+      var bulkBar = document.getElementById('bulk-bar');
+      var bulkCount = document.getElementById('bulk-count');
+      var selectAll = document.getElementById('select-all');
+      var checkboxes = table.querySelectorAll('.row-check');
+      if (!table || !selectAll) return;
+
+      function updateBulkBar() {
+        var checked = table.querySelectorAll('.row-check:checked').length;
+        bulkBar.style.display = checked > 0 ? 'flex' : 'none';
+        bulkCount.textContent = checked;
+        selectAll.checked = checked === checkboxes.length;
+        checkboxes.forEach(function(cb) {
+          cb.closest('tr').classList.toggle('selected', cb.checked);
+        });
+      }
+
+      selectAll.addEventListener('change', function() {
+        checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+        updateBulkBar();
+      });
+
+      checkboxes.forEach(function(cb) {
+        cb.addEventListener('change', updateBulkBar);
+      });
+    })();
+  </script>
+</body>
+</html>

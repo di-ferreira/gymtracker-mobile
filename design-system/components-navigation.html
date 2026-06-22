@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Navegação — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <style>
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: var(--sidebar-width); background: var(--gt-surface); border-right: 1px solid var(--gt-border); position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; padding: var(--gt-space-6) 0; z-index: 100; }
+    .sidebar-brand { padding: 0 var(--gt-space-6); margin-bottom: var(--gt-space-6); }
+    .sidebar-brand h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--gt-fg); display: flex; align-items: center; gap: var(--gt-space-2); }
+    .sidebar-brand .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gt-primary); display: inline-block; }
+    .sidebar-brand p { font-size: 12px; color: var(--gt-fg-tertiary); margin-top: 4px; letter-spacing: 0.02em; }
+    .sidebar-section { margin-bottom: var(--gt-space-6); }
+    .sidebar-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gt-fg-muted); padding: 0 var(--gt-space-6); margin-bottom: var(--gt-space-2); }
+    .sidebar-nav a { display: flex; align-items: center; gap: var(--gt-space-3); padding: var(--gt-space-2) var(--gt-space-6); font-size: 14px; color: var(--gt-fg-secondary); text-decoration: none; transition: all var(--gt-duration-fast) var(--gt-ease-standard); border-left: 2px solid transparent; }
+    .sidebar-nav a:hover { color: var(--gt-fg); background: var(--gt-surface-2); }
+    .sidebar-nav a.active { color: var(--gt-primary); background: rgba(255, 122, 26, 0.06); border-left-color: var(--gt-primary); }
+    .main-content { margin-left: var(--sidebar-width); flex: 1; min-width: 0; }
+    .content-area { max-width: 960px; margin: 0 auto; padding: var(--gt-space-10) var(--gt-space-8); }
+
+    .component-group { margin-bottom: var(--gt-space-10); }
+    .component-group-title { font-size: 20px; font-weight: 600; color: var(--gt-fg); margin-bottom: var(--gt-space-2); }
+    .component-group-desc { font-size: 14px; color: var(--gt-fg-tertiary); margin-bottom: var(--gt-space-4); }
+
+    .component-preview { background: var(--gt-surface); border: 1px solid var(--gt-border); border-radius: var(--gt-radius-lg); padding: var(--gt-space-6); margin: var(--gt-space-4) 0; }
+
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .spec-table th { text-align: left; font-weight: 600; color: var(--gt-fg); padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border-strong); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .spec-table td { padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border); color: var(--gt-fg-secondary); }
+    .spec-table td:first-child { font-family: var(--gt-font-mono); font-size: 13px; color: var(--gt-fg); }
+    .spec-table td code { font-family: var(--gt-font-mono); font-size: 12px; background: var(--gt-surface-3); padding: 2px 6px; border-radius: var(--gt-radius-xs); color: var(--gt-fg-secondary); }
+    .spec-table tr:hover td { background: var(--gt-surface); }
+
+    .rules-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .rules-table th { text-align: left; font-weight: 600; color: var(--gt-fg); padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border-strong); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .rules-table td { padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border); color: var(--gt-fg-secondary); }
+    .rules-table tr:hover td { background: var(--gt-surface); }
+
+    .code-block { background: var(--gt-surface); border: 1px solid var(--gt-border); border-radius: var(--gt-radius-lg); padding: var(--gt-space-5); overflow-x: auto; position: relative; }
+    .code-block pre { font-family: var(--gt-font-mono); font-size: 13px; line-height: 1.6; color: var(--gt-fg-secondary); margin: 0; white-space: pre; }
+    .code-block .copy-btn { position: absolute; top: var(--gt-space-3); right: var(--gt-space-3); background: var(--gt-surface-3); border: 1px solid var(--gt-border); color: var(--gt-fg-tertiary); padding: 4px 10px; border-radius: var(--gt-radius-sm); font-size: 12px; font-family: var(--gt-font-mono); cursor: pointer; transition: all var(--gt-duration-fast) var(--gt-ease-standard); }
+    .code-block .copy-btn:hover { color: var(--gt-fg); background: var(--gt-surface-4); }
+
+    .demo-topbar { height: 64px; background: var(--gt-surface); border-bottom: 1px solid var(--gt-border); display: flex; align-items: center; padding: 0 24px; gap: 16px; border-radius: var(--gt-radius-lg) var(--gt-radius-lg) 0 0; }
+    .demo-topbar .logo { font-size: 16px; font-weight: 700; color: var(--gt-fg); display: flex; align-items: center; gap: 8px; }
+    .demo-topbar .logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gt-primary); }
+    .demo-topbar .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gt-fg-tertiary); }
+    .demo-topbar .breadcrumb .sep { opacity: 0.4; }
+    .demo-topbar .breadcrumb .current { color: var(--gt-fg); }
+    .demo-topbar .spacer { flex: 1; }
+    .demo-topbar .search-wrap { position: relative; }
+    .demo-topbar .search-wrap input { height: 32px; width: 220px; background: var(--gt-surface-2); border: 1px solid var(--gt-border); border-radius: var(--gt-radius-sm); padding: 0 12px 0 32px; font-size: 13px; color: var(--gt-fg); outline: none; font-family: var(--gt-font-body); }
+    .demo-topbar .search-wrap input::placeholder { color: var(--gt-fg-muted); }
+    .demo-topbar .search-wrap input:focus { border-color: var(--gt-primary); box-shadow: 0 0 0 2px rgba(255,122,26,0.15); }
+    .demo-topbar .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--gt-fg-muted); }
+    .demo-topbar .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--gt-surface-3); border: 1px solid var(--gt-border); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--gt-fg-secondary); cursor: pointer; transition: border-color var(--gt-duration-fast) var(--gt-ease-standard); }
+    .demo-topbar .avatar:hover { border-color: var(--gt-primary); }
+
+    .demo-layout { display: flex; border: 1px solid var(--gt-border); border-top: none; border-radius: 0 0 var(--gt-radius-lg) var(--gt-radius-lg); overflow: hidden; height: 360px; }
+    .demo-sidenav { background: var(--gt-surface); border-right: 1px solid var(--gt-border); transition: width var(--gt-duration-normal) var(--gt-ease-standard); overflow: hidden; display: flex; flex-direction: column; }
+    .demo-sidenav.expanded { width: 260px; }
+    .demo-sidenav.collapsed { width: 72px; }
+    .demo-sidenav-item { display: flex; align-items: center; gap: 12px; padding: 0 16px; height: 40px; font-size: 14px; color: var(--gt-fg-secondary); cursor: pointer; white-space: nowrap; border-left: 2px solid transparent; transition: all var(--gt-duration-fast) var(--gt-ease-standard); }
+    .demo-sidenav-item:hover { color: var(--gt-fg); background: var(--gt-surface-2); }
+    .demo-sidenav-item.active { color: var(--gt-primary); background: rgba(255,122,26,0.06); border-left-color: var(--gt-primary); }
+    .demo-sidenav-item svg { flex-shrink: 0; }
+    .demo-sidenav-item span { transition: opacity var(--gt-duration-fast) var(--gt-ease-standard); }
+    .demo-sidenav.collapsed .demo-sidenav-item span { opacity: 0; }
+    .demo-sidenav-toggle { margin-top: auto; padding: 12px; border-top: 1px solid var(--gt-border); display: flex; justify-content: center; }
+    .demo-sidenav-toggle button { background: var(--gt-surface-2); border: 1px solid var(--gt-border); color: var(--gt-fg-tertiary); width: 32px; height: 32px; border-radius: var(--gt-radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--gt-duration-fast) var(--gt-ease-standard); }
+    .demo-sidenav-toggle button:hover { color: var(--gt-fg); border-color: var(--gt-border-strong); }
+    .demo-main { flex: 1; padding: 24px; background: var(--gt-bg); }
+    .demo-main .placeholder-block { height: 16px; background: var(--gt-surface-2); border-radius: 4px; margin-bottom: 12px; }
+    .demo-main .placeholder-block.title { width: 40%; height: 20px; }
+    .demo-main .placeholder-block.long { width: 80%; }
+    .demo-main .placeholder-block.medium { width: 55%; }
+    .demo-main .placeholder-card { background: var(--gt-surface); border: 1px solid var(--gt-border); border-radius: var(--gt-radius-md); height: 80px; margin-top: 16px; }
+
+    .demo-breadcrumbs { display: flex; align-items: center; gap: 6px; padding: var(--gt-space-3) var(--gt-space-5); background: var(--gt-surface); border: 1px solid var(--gt-border); border-radius: var(--gt-radius-md); }
+    .demo-breadcrumbs .crumb { font-size: 14px; color: var(--gt-fg-tertiary); cursor: pointer; transition: color var(--gt-duration-fast) var(--gt-ease-standard); }
+    .demo-breadcrumbs .crumb:hover { color: var(--gt-primary); }
+    .demo-breadcrumbs .crumb.current { color: var(--gt-fg); cursor: default; font-weight: 500; }
+    .demo-breadcrumbs .crumb:hover.current { color: var(--gt-fg); }
+    .demo-breadcrumbs .sep { font-size: 12px; color: var(--gt-fg-muted); }
+
+    .mobile-toc-btn { display: none; position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px; border-radius: 50%; background: var(--gt-primary); color: var(--gt-bg); border: none; font-size: 20px; cursor: pointer; z-index: 200; box-shadow: var(--gt-elevation-3); }
+    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; } .mobile-toc-btn { display: grid; place-items: center; } .content-area { padding: var(--gt-space-6) var(--gt-space-4); } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Visão Geral</a>
+          <a href="colors.html">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html">Elevação</a>
+          <a href="radius.html">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html" class="active">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="content-area">
+
+        <p style="color: var(--gt-fg-tertiary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--gt-space-2);">Componentes <span class="badge badge-web" style="margin-left: 6px;">Web</span></p>
+        <h1 class="section-title">Navegação</h1>
+        <p class="section-description">Componentes de navegação do dashboard web: barra superior, navegação lateral e breadcrumbs. Projetados para fornecer orientação espacial e acesso rápido a todas as seções do painel.</p>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Barra Superior (Top Bar)</h2>
+          <p class="component-group-desc">Cabeçalho fixo do dashboard com logo, breadcrumb, campo de busca e avatar do usuário. Fornece contexto da página atual e acesso global a ações.</p>
+
+          <div class="component-preview">
+            <div class="demo-topbar">
+              <div class="logo"><span class="dot"></span> GymTracker</div>
+              <div class="breadcrumb">
+                <span class="crumb">Dashboard</span>
+                <span class="sep">›</span>
+                <span class="crumb">Treinos</span>
+                <span class="sep">›</span>
+                <span class="crumb current">Semana Atual</span>
+              </div>
+              <div class="spacer"></div>
+              <div class="search-wrap">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="Buscar...">
+              </div>
+              <div class="avatar">JP</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Navegação Lateral (Side Nav)</h2>
+          <p class="component-group-desc">Menu lateral com ícones e rótulos. Suporta estado recolhido (72px, apenas ícones) e expandido (260px, ícones + rótulos). O item ativo recebe borda esquerda primária e fundo tingido.</p>
+
+          <div class="component-preview">
+            <div class="demo-topbar" style="border-radius: var(--gt-radius-lg) var(--gt-radius-lg) 0 0;">
+              <div class="logo"><span class="dot"></span> GymTracker</div>
+              <div class="spacer"></div>
+              <div class="search-wrap">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="Buscar...">
+              </div>
+              <div class="avatar">JP</div>
+            </div>
+            <div class="demo-layout">
+              <div class="demo-sidenav expanded" id="demoSidenav">
+                <div style="padding: 16px 16px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gt-fg-muted); white-space: nowrap;">Menu</div>
+                <div class="demo-sidenav-item active">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/></svg>
+                  <span>Dashboard</span>
+                </div>
+                <div class="demo-sidenav-item">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  <span>Treinos</span>
+                </div>
+                <div class="demo-sidenav-item">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3h14v14H3z" stroke="currentColor" stroke-width="1.5" rx="2"/><path d="M3 7h14M7 7v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  <span>Exercícios</span>
+                </div>
+                <div class="demo-sidenav-item">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span>Histórico</span>
+                </div>
+                <div class="demo-sidenav-item">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 16V8l6-4 6 4v8a2 2 0 01-2 2H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                  <span>Perfil</span>
+                </div>
+                <div class="demo-sidenav-item">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v3M10 13h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  <span>Configurações</span>
+                </div>
+                <div class="demo-sidenav-toggle">
+                  <button onclick="toggleSidenav()" title="Recolher/Expandir menu">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" id="toggleIcon"><path d="M3 8h10M6 5L3 8l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="demo-main">
+                <div class="placeholder-block title"></div>
+                <div class="placeholder-block long"></div>
+                <div class="placeholder-block medium"></div>
+                <div class="placeholder-card"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Breadcrumbs</h2>
+          <p class="component-group-desc">Navegação por caminho para páginas internas do dashboard. Páginas ancestrais em <code>--gt-fg-tertiary</code>, página atual em <code>--gt-fg</code> com peso 500. Separador chevron.</p>
+
+          <div class="component-preview">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div class="demo-breadcrumbs">
+                <span class="crumb">Dashboard</span>
+                <span class="sep">›</span>
+                <span class="crumb">Treinos</span>
+                <span class="sep">›</span>
+                <span class="crumb current">Semana Atual</span>
+              </div>
+              <div class="demo-breadcrumbs">
+                <span class="crumb">Dashboard</span>
+                <span class="sep">›</span>
+                <span class="crumb">Exercícios</span>
+                <span class="sep">›</span>
+                <span class="crumb">Peito</span>
+                <span class="sep">›</span>
+                <span class="crumb current">Supino Reto</span>
+              </div>
+              <div class="demo-breadcrumbs">
+                <span class="crumb">Dashboard</span>
+                <span class="sep">›</span>
+                <span class="crumb current">Configurações</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Especificações</h2>
+          <p class="component-group-desc">Tokens de design para implementação dos componentes de navegação.</p>
+
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Propriedade</th>
+                <th>Top Bar</th>
+                <th>Side Nav (Expandido)</th>
+                <th>Side Nav (Recolhido)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>height / width</td>
+                <td>64px</td>
+                <td>260px</td>
+                <td>72px</td>
+              </tr>
+              <tr>
+                <td>background</td>
+                <td><code>--gt-surface</code></td>
+                <td><code>--gt-surface</code></td>
+                <td><code>--gt-surface</code></td>
+              </tr>
+              <tr>
+                <td>border</td>
+                <td>bottom 1px <code>--gt-border</code></td>
+                <td>right 1px <code>--gt-border</code></td>
+                <td>right 1px <code>--gt-border</code></td>
+              </tr>
+              <tr>
+                <td>padding</td>
+                <td>0 24px</td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>item height</td>
+                <td>—</td>
+                <td>40px</td>
+                <td>40px</td>
+              </tr>
+              <tr>
+                <td>item padding</td>
+                <td>—</td>
+                <td>0 16px</td>
+                <td>0 16px (centro)</td>
+              </tr>
+              <tr>
+                <td>active border</td>
+                <td>—</td>
+                <td>2px left <code>--gt-primary</code></td>
+                <td>2px left <code>--gt-primary</code></td>
+              </tr>
+              <tr>
+                <td>active bg</td>
+                <td>—</td>
+                <td>rgba(255,122,26,0.06)</td>
+                <td>rgba(255,122,26,0.06)</td>
+              </tr>
+              <tr>
+                <td>hover bg</td>
+                <td>—</td>
+                <td><code>--gt-surface-2</code></td>
+                <td><code>--gt-surface-2</code></td>
+              </tr>
+              <tr>
+                <td>search height</td>
+                <td>32px</td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>avatar size</td>
+                <td>32px (círculo)</td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">API do Componente</h2>
+          <p class="component-group-desc">Propriedades disponíveis para os componentes React de navegação.</p>
+
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Prop</th>
+                <th>Tipo</th>
+                <th>Padrão</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>collapsed</td>
+                <td><code>boolean</code></td>
+                <td><code>false</code></td>
+                <td>Recolhe a sidebar para 72px (apenas ícones)</td>
+              </tr>
+              <tr>
+                <td>onToggle</td>
+                <td><code>() => void</code></td>
+                <td>—</td>
+                <td>Callback para alternar entre recolhido/expandido</td>
+              </tr>
+              <tr>
+                <td>activeKey</td>
+                <td><code>string</code></td>
+                <td>—</td>
+                <td>Chave do item de navegação ativo</td>
+              </tr>
+              <tr>
+                <td>items</td>
+                <td><code>NavItem[]</code></td>
+                <td><code>[]</code></td>
+                <td>Lista de itens da navegação lateral</td>
+              </tr>
+              <tr>
+                <td>searchPlaceholder</td>
+                <td><code>string</code></td>
+                <td>"Buscar..."</td>
+                <td>Placeholder do campo de busca na top bar</td>
+              </tr>
+              <tr>
+                <td>userAvatar</td>
+                <td><code>string</code></td>
+                <td>—</td>
+                <td>URL da imagem do avatar do usuário</td>
+              </tr>
+              <tr>
+                <td>breadcrumbs</td>
+                <td><code>Crumb[]</code></td>
+                <td><code>[]</code></td>
+                <td>Itens do breadcrumb (label + href). Último item = página atual</td>
+              </tr>
+              <tr>
+                <td>onSearch</td>
+                <td><code>(q: string) => void</code></td>
+                <td>—</td>
+                <td>Callback executado ao submeter busca</td>
+              </tr>
+              <tr>
+                <td>onNavigate</td>
+                <td><code>(key: string) => void</code></td>
+                <td>—</td>
+                <td>Callback ao clicar em item de navegação</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Responsividade</h2>
+          <p class="component-group-desc">Comportamento da navegação em diferentes tamanhos de tela.</p>
+
+          <div class="callout">
+            <p><strong>Atenção:</strong> Em telas menores que 768px, a barra superior simplifica (breadcrumb e search movem-se para dentro do conteúdo) e a navegação lateral torna-se um drawer acessível por botão de menu.</p>
+          </div>
+
+          <table class="spec-table" style="margin-top: var(--gt-space-4);">
+            <thead>
+              <tr>
+                <th>Breakpoint</th>
+                <th>Top Bar</th>
+                <th>Side Nav</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&ge; 1024px</td>
+                <td>Completa: logo + breadcrumb + search + avatar</td>
+                <td>Expandida por padrão (260px)</td>
+              </tr>
+              <tr>
+                <td>768px – 1023px</td>
+                <td>Completa: logo + breadcrumb + search + avatar</td>
+                <td>Recolhida por padrão (72px), expandível ao passar o mouse</td>
+              </tr>
+              <tr>
+                <td>< 768px</td>
+                <td>Simplificada: logo + ícone menu + avatar</td>
+                <td>Oculta, abre como drawer com overlay escuro</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Regras de Uso</h2>
+          <p class="component-group-desc">Diretrizes para manter a navegação consistente e acessível.</p>
+
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th>Regra</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sidebar persistente</td>
+                <td>A navegação lateral deve estar sempre visível em telas &ge; 768px. Nunca oculte a sidebar sem ação explícita do usuário.</td>
+              </tr>
+              <tr>
+                <td>Um item ativo</td>
+                <td>Apenas <strong>um item</strong> pode estar ativo por vez. O item ativo recebe borda esquerda primária de 2px e fundo tingido com <code>rgba(255,122,26,0.06)</code>.</td>
+              </tr>
+              <tr>
+                <td>Avatar com iniciais</td>
+                <td>Se não houver imagem de perfil, use as iniciais do nome em círculo de 32px com fundo <code>--gt-surface-3</code> e borda <code>--gt-border</code>.</td>
+              </tr>
+              <tr>
+                <td>Breadcrumb obrigatório</td>
+                <td>Toda página interna do dashboard deve exibir breadcrumb. Páginas raiz (Dashboard) podem exibir apenas o rótulo atual.</td>
+              </tr>
+              <tr>
+                <td>Separador de breadcrumb</td>
+                <td>Use chevron (›) como separador, nunca barra (/). O separador usa cor <code>--gt-fg-muted</code>.</td>
+              </tr>
+              <tr>
+                <td>Busca global</td>
+                <td>O campo de busca na top bar busca em todo o sistema (exercícios, treinos, histórico). Use <code>100ms</code> de debounce.</td>
+              </tr>
+              <tr>
+                <td>Drawer no mobile</td>
+                <td>Em telas < 768px, a sidebar abre como drawer com overlay escuro (<code>rgba(0,0,0,0.5)</code>) e animação <code>200ms ease-decelerate</code> pela esquerda.</td>
+              </tr>
+              <tr>
+                <td>Navegação por teclado</td>
+                <td>Itens da sidebar devem ser focáveis com Tab. Enter/Space ativam o item. A top bar deve suportar Tab para busca e avatar.</td>
+              </tr>
+              <tr>
+                <td>Transição de collapse</td>
+                <td>A transição entre expandido e recolhido usa <code>200ms ease-standard</code>. Rótulos ocultam com <code>opacity 0</code> — nunca use <code>display: none</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Código de Exemplo</h2>
+          <p class="component-group-desc">Implementação React dos componentes de navegação para o dashboard Next.js.</p>
+
+          <div class="code-block">
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').textContent)">Copiar</button>
+            <pre><code>import { useState } from 'react';
+
+interface NavItem {
+  key: string;
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+}
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+function TopBar({
+  breadcrumbs = [],
+  searchPlaceholder = 'Buscar...',
+  userInitials = 'JP',
+  onSearch,
+}: {
+  breadcrumbs?: Crumb[];
+  searchPlaceholder?: string;
+  userInitials?: string;
+  onSearch?: (q: string) => void;
+}) {
+  return (
+    <header className="h-16 flex items-center px-6 bg-[var(--gt-surface)] border-b border-[var(--gt-border)]">
+      <div className="flex items-center gap-2 font-bold">
+        <span className="w-2 h-2 rounded-full bg-[var(--gt-primary)]" />
+        GymTracker
+      </div>
+      <nav className="ml-4 flex items-center gap-1.5 text-sm text-[var(--gt-fg-tertiary)]">
+        {breadcrumbs.map((crumb, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <span className="opacity-40">›</span>}
+            {crumb.href ? (
+              <a href={crumb.href} className="hover:text-[var(--gt-primary)]">
+                {crumb.label}
+              </a>
+            ) : (
+              <span className="text-[var(--gt-fg)] font-medium">{crumb.label}</span>
+            )}
+          </React.Fragment>
+        ))}
+      </nav>
+      <div className="flex-1" />
+      <input
+        type="text"
+        placeholder={searchPlaceholder}
+        className="h-8 w-56 bg-[var(--gt-surface-2)] border border-[var(--gt-border)]
+          rounded-md px-3 pl-8 text-sm outline-none
+          focus:border-[var(--gt-primary)] focus:ring-2 focus:ring-[rgba(255,122,26,0.15)]"
+        onChange={(e) => onSearch?.(e.target.value)}
+      />
+      <div className="ml-4 w-8 h-8 rounded-full bg-[var(--gt-surface-3)]
+        border border-[var(--gt-border)] flex items-center justify-center
+        text-xs font-semibold text-[var(--gt-fg-secondary)]">
+        {userInitials}
+      </div>
+    </header>
+  );
+}
+
+function SideNav({
+  items,
+  activeKey,
+  collapsed = false,
+  onToggle,
+  onNavigate,
+}: {
+  items: NavItem[];
+  activeKey: string;
+  collapsed?: boolean;
+  onToggle: () => void;
+  onNavigate: (key: string) => void;
+}) {
+  return (
+    <aside
+      className="flex flex-col border-r border-[var(--gt-border)] bg-[var(--gt-surface)]
+        transition-[width] duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+      style={{ width: collapsed ? 72 : 260 }}
+    >
+      {items.map((item) => (
+        <button
+          key={item.key}
+          onClick={() => onNavigate(item.key)}
+          className={`flex items-center gap-3 h-10 px-4 text-sm
+            border-l-2 transition-all duration-100
+            ${item.key === activeKey
+              ? 'text-[var(--gt-primary)] bg-[rgba(255,122,26,0.06)] border-l-[var(--gt-primary)]'
+              : 'text-[var(--gt-fg-secondary)] border-l-transparent hover:text-[var(--gt-fg)] hover:bg-[var(--gt-surface-2)]'
+            }`}
+        >
+          {item.icon}
+          <span className={`transition-opacity ${collapsed ? 'opacity-0' : 'opacity-100'}`}>
+            {item.label}
+          </span>
+        </button>
+      ))}
+      <div className="mt-auto p-3 border-t border-[var(--gt-border)] flex justify-center">
+        <button
+          onClick={onToggle}
+          className="w-8 h-8 rounded-md bg-[var(--gt-surface-2)] border border-[var(--gt-border)]
+            text-[var(--gt-fg-tertiary)] flex items-center justify-center
+            hover:text-[var(--gt-fg)] hover:border-[var(--gt-border-strong)]"
+          aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
+        >
+          <ChevronIcon direction={collapsed ? 'right' : 'left'} />
+        </button>
+      </div>
+    </aside>
+  );
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <button class="mobile-toc-btn" aria-label="Menu">&#9776;</button>
+  <script src="js/docs.js"></script>
+  <script>
+    function toggleSidenav() {
+      const nav = document.getElementById('demoSidenav');
+      const icon = document.getElementById('toggleIcon');
+      if (nav.classList.contains('expanded')) {
+        nav.classList.remove('expanded');
+        nav.classList.add('collapsed');
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        nav.classList.remove('collapsed');
+        nav.classList.add('expanded');
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  </script>
+</body>
+</html>

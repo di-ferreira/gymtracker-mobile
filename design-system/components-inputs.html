@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inputs — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { width:var(--sidebar-width); background:var(--gt-surface); border-right:1px solid var(--gt-border); position:fixed; top:0; left:0; bottom:0; overflow-y:auto; padding:var(--gt-space-6) 0; z-index:100; }
+    .sidebar-brand { padding:0 var(--gt-space-6); margin-bottom:var(--gt-space-6); }
+    .sidebar-brand h1 { font-size:18px; font-weight:700; letter-spacing:-0.01em; color:var(--gt-fg); display:flex; align-items:center; gap:var(--gt-space-2); }
+    .sidebar-brand .brand-dot { width:10px; height:10px; border-radius:50%; background:var(--gt-primary); display:inline-block; }
+    .sidebar-brand p { font-size:12px; color:var(--gt-fg-tertiary); margin-top:4px; letter-spacing:0.02em; }
+    .sidebar-section { margin-bottom:var(--gt-space-6); }
+    .sidebar-section-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--gt-fg-muted); padding:0 var(--gt-space-6); margin-bottom:var(--gt-space-2); }
+    .sidebar-nav a { display:flex; align-items:center; gap:var(--gt-space-3); padding:var(--gt-space-2) var(--gt-space-6); font-size:14px; color:var(--gt-fg-secondary); text-decoration:none; transition:all var(--gt-duration-fast) var(--gt-ease-standard); border-left:2px solid transparent; }
+    .sidebar-nav a:hover { color:var(--gt-fg); background:var(--gt-surface-2); }
+    .sidebar-nav a.active { color:var(--gt-primary); background:rgba(255,122,26,0.06); border-left-color:var(--gt-primary); }
+    .main-content { margin-left:var(--sidebar-width); flex:1; min-width:0; }
+    .content-area { max-width:960px; margin:0 auto; padding:var(--gt-space-10) var(--gt-space-8); }
+
+    .doc-section { margin-bottom:48px; }
+    .section-title { font-size:24px; font-weight:700; color:#FFFFFF; margin-bottom:8px; }
+    .section-desc { color:#888; font-size:15px; margin-bottom:24px; line-height:1.6; }
+
+    .token-table { width:100%; border-collapse:collapse; font-size:14px; }
+    .token-table th { text-align:left; padding:10px 14px; border-bottom:2px solid rgba(255,255,255,0.12); color:#FF7A1A; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; }
+    .token-table td { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.06); color:#C8C8C8; }
+    .token-table tr:hover td { background:rgba(255,122,26,0.04); }
+    .token-table code { font-family:'JetBrains Mono',monospace; font-size:13px; color:#FF7A1A; background:rgba(255,122,26,0.08); padding:2px 6px; border-radius:4px; }
+
+    .rules-list { list-style:none; padding:0; }
+    .rules-list li { padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); color:#C8C8C8; line-height:1.6; padding-left:20px; position:relative; }
+    .rules-list li::before { content:''; position:absolute; left:0; top:18px; width:6px; height:6px; border-radius:50%; background:#FF7A1A; }
+
+    .preview-box { background:#0A0A0A; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:24px; margin-bottom:16px; }
+    .preview-row { display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start; }
+    .preview-item { display:flex; flex-direction:column; gap:8px; }
+    .preview-label { font-family:'JetBrains Mono',monospace; font-size:11px; color:#FF7A1A; letter-spacing:0.04em; text-transform:uppercase; }
+
+    .gt-input { font-family:'Inter',sans-serif; font-size:14px; background:#151515; border:1px solid rgba(255,255,255,0.08); color:#FFFFFF; border-radius:8px; padding:0 12px; outline:none; transition:border-color 100ms cubic-bezier(0.25,0.1,0.25,1), box-shadow 100ms cubic-bezier(0.25,0.1,0.25,1); }
+    .gt-input::placeholder { color:#555555; }
+    .gt-input:focus { border-color:#FF7A1A; box-shadow:0 0 0 2px rgba(255,122,26,0.2); }
+    .gt-input--sm { height:32px; font-size:13px; }
+    .gt-input--md { height:40px; font-size:14px; }
+    .gt-input--lg { height:48px; font-size:16px; }
+    .gt-input--error { border-color:#EF4444; box-shadow:0 0 0 2px rgba(239,68,68,0.2); }
+    .gt-input--error:focus { border-color:#EF4444; box-shadow:0 0 0 2px rgba(239,68,68,0.2); }
+    .gt-input:disabled { opacity:0.5; background:#0A0A0A; cursor:not-allowed; }
+    .gt-input[readonly] { background:#0A0A0A; color:#888888; border-color:rgba(255,255,255,0.06); }
+
+    .input-wrapper { position:relative; display:inline-flex; align-items:center; }
+    .input-wrapper .input-icon-left { position:absolute; left:12px; color:#555555; font-size:16px; pointer-events:none; }
+    .input-wrapper .input-icon-right { position:absolute; right:12px; color:#555555; font-size:16px; pointer-events:none; }
+    .input-wrapper .gt-input.has-icon-left { padding-left:36px; }
+    .input-wrapper .gt-input.has-icon-right { padding-right:36px; }
+
+    .input-label { display:block; font-size:13px; font-weight:500; color:#B8B8B8; margin-bottom:6px; }
+    .input-helper { font-size:12px; color:#888888; margin-top:4px; }
+    .input-error-text { font-size:12px; color:#EF4444; margin-top:4px; }
+
+    .size-demo-row { display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+    .size-demo-item { display:flex; flex-direction:column; gap:8px; min-width:200px; }
+
+    .platform-badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px; }
+    .badge-mobile { background:rgba(255,122,26,0.12); color:#FF7A1A; }
+    .badge-web { background:rgba(126,200,227,0.12); color:#7EC8E3; }
+
+    .code-block { background:#111; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:20px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.7; color:#C8C8C8; overflow-x:auto; position:relative; }
+    .code-block .copy-btn { position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); color:#A0A0A0; padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif; }
+    .code-block .copy-btn:hover { background:rgba(255,122,26,0.15); color:#FF7A1A; }
+    .code-block .prop { color:#FF7A1A; }
+    .code-block .val { color:#7EC8E3; }
+
+    @media (max-width:768px) { .sidebar{display:none} .main-content{margin-left:0} .content-area{padding:var(--gt-space-6) var(--gt-space-4)} .preview-row{flex-direction:column} .size-demo-row{flex-direction:column} }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1><span class="brand-dot"></span> GymTracker</h1><p>Design System v1.0</p></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Fundamentos</div><nav class="sidebar-nav"><a href="index.html">Visão Geral</a><a href="colors.html">Cores</a><a href="typography.html">Tipografia</a><a href="spacing.html">Espaçamento</a><a href="elevation.html">Elevação</a><a href="radius.html">Raio de Borda</a><a href="iconography.html">Iconografia</a><a href="motion.html">Movimento</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Componentes</div><nav class="sidebar-nav"><a href="components-buttons.html">Botões</a><a href="components-inputs.html" class="active">Inputs</a><a href="components-selects.html">Seletores</a><a href="components-cards.html">Cards</a><a href="components-chips.html">Chips</a><a href="components-tabs.html">Tabs</a><a href="components-navigation.html">Navegação</a><a href="components-bottom-nav.html">Navegação Inferior</a><a href="components-tables.html">Tabelas</a><a href="components-modals.html">Modais</a><a href="components-drawers.html">Drawers</a><a href="components-tooltips.html">Tooltips</a><a href="components-toasts.html">Toasts</a><a href="components-empty-states.html">Estados Vazios</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Diretrizes</div><nav class="sidebar-nav"><a href="accessibility.html">Acessibilidade</a><a href="reanimated.html">Reanimated</a></nav></div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <p style="color:var(--gt-fg-tertiary);font-size:13px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--gt-space-2);">Componentes</p>
+          <h1 class="section-title" style="font-size:32px;font-weight:700;letter-spacing:-0.02em;">Inputs</h1>
+          <p class="section-desc">Campos de entrada de texto para formulários e buscas. Projetados para o tema escuro com contraste adequado e feedback visual claro em cada estado de interação.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Variantes</h2>
+          <p class="section-desc">Variações do componente input com diferentes configurações de label, texto auxiliar, erro e ícones.</p>
+
+          <div class="preview-box">
+            <div class="preview-row" style="flex-direction:column;gap:24px;">
+              <div class="preview-item">
+                <span class="preview-label">Default</span>
+                <input type="text" class="gt-input gt-input--md" placeholder="Digite aqui..." style="width:280px;">
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Com Label</span>
+                <div>
+                  <label class="input-label">Nome do exercício</label>
+                  <input type="text" class="gt-input gt-input--md" placeholder="Ex: Supino Reto" style="width:280px;">
+                </div>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Com Texto Auxiliar</span>
+                <div>
+                  <label class="input-label">Peso (kg)</label>
+                  <input type="text" class="gt-input gt-input--md" placeholder="60" style="width:280px;">
+                  <span class="input-helper">Use ponto para decimais. Ex: 60.5</span>
+                </div>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Com Erro</span>
+                <div>
+                  <label class="input-label">Carga máxima</label>
+                  <input type="text" class="gt-input gt-input--md gt-input--error" value="abc" style="width:280px;">
+                  <span class="input-error-text">Informe um valor numérico válido</span>
+                </div>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Com Ícone à Esquerda</span>
+                <div class="input-wrapper">
+                  <svg class="input-icon-left" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  <input type="text" class="gt-input gt-input--md has-icon-left" placeholder="Buscar exercício..." style="width:280px;">
+                </div>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Com Ícone à Direita</span>
+                <div class="input-wrapper">
+                  <input type="text" class="gt-input gt-input--md has-icon-right" placeholder="Data do treino" style="width:280px;">
+                  <svg class="input-icon-right" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="4" width="11" height="9.5" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 7H13.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 2V4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10.5 2V4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tamanhos</h2>
+          <p class="section-desc">Três tamanhos para diferentes contextos de uso. O tamanho md é o padrão.</p>
+          <table class="token-table">
+            <thead>
+              <tr><th>Tamanho</th><th>Token</th><th>Altura</th><th>Font-size</th><th>Uso</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>sm</td><td><code>--gt-input-sm</code></td><td>32px</td><td>13px</td><td>Campos compactos, tabelas, buscas inline</td></tr>
+              <tr><td>md</td><td><code>--gt-input-md</code></td><td>40px</td><td>14px</td><td>Formulários padrão, campos de texto</td></tr>
+              <tr><td>lg</td><td><code>--gt-input-lg</code></td><td>48px</td><td>16px</td><td>Campos de destaque, buscas principais</td></tr>
+            </tbody>
+          </table>
+          <div class="preview-box" style="margin-top:16px;">
+            <div class="size-demo-row">
+              <div class="size-demo-item">
+                <span class="preview-label">sm · 32px</span>
+                <input type="text" class="gt-input gt-input--sm" placeholder="Pequeno" style="width:180px;">
+              </div>
+              <div class="size-demo-item">
+                <span class="preview-label">md · 40px</span>
+                <input type="text" class="gt-input gt-input--md" placeholder="Médio" style="width:200px;">
+              </div>
+              <div class="size-demo-item">
+                <span class="preview-label">lg · 48px</span>
+                <input type="text" class="gt-input gt-input--lg" placeholder="Grande" style="width:220px;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Estados</h2>
+          <p class="section-desc">Cada estado visual comunica claramente a condição do campo ao usuário.</p>
+
+          <div class="preview-box">
+            <div class="preview-row" style="flex-direction:column;gap:20px;">
+              <div class="preview-item">
+                <span class="preview-label">Default</span>
+                <input type="text" class="gt-input gt-input--md" placeholder="Repouso" style="width:280px;">
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Focus</span>
+                <input type="text" class="gt-input gt-input--md" placeholder="Focado" value="Digitando..." style="width:280px;" autofocus>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Error</span>
+                <input type="text" class="gt-input gt-input--md gt-input--error" value="Entrada inválida" style="width:280px;">
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Disabled</span>
+                <input type="text" class="gt-input gt-input--md" placeholder="Desativado" style="width:280px;" disabled>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">Readonly</span>
+                <input type="text" class="gt-input gt-input--md" value="Apenas leitura" style="width:280px;" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Especificações</h2>
+          <p class="section-desc">Valores detalhados de padding, altura, font-size, border-radius e border-color por estado.</p>
+          <table class="token-table">
+            <thead>
+              <tr><th>Propriedade</th><th>Default</th><th>Focus</th><th>Error</th><th>Disabled</th><th>Readonly</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Padding</td><td>0 12px</td><td>0 12px</td><td>0 12px</td><td>0 12px</td><td>0 12px</td></tr>
+              <tr><td>Altura (md)</td><td>40px</td><td>40px</td><td>40px</td><td>40px</td><td>40px</td></tr>
+              <tr><td>Font-size (md)</td><td>14px</td><td>14px</td><td>14px</td><td>14px</td><td>14px</td></tr>
+              <tr><td>Border-radius</td><td>8px</td><td>8px</td><td>8px</td><td>8px</td><td>8px</td></tr>
+              <tr><td>Background</td><td>#151515</td><td>#151515</td><td>#151515</td><td>#0A0A0A</td><td>#0A0A0A</td></tr>
+              <tr><td>Border-color</td><td>rgba(255,255,255,0.08)</td><td>#FF7A1A</td><td>#EF4444</td><td>rgba(255,255,255,0.08)</td><td>rgba(255,255,255,0.06)</td></tr>
+              <tr><td>Box-shadow</td><td>none</td><td>0 0 0 2px rgba(255,122,26,0.2)</td><td>0 0 0 2px rgba(239,68,68,0.2)</td><td>none</td><td>none</td></tr>
+              <tr><td>Text color</td><td>#FFFFFF</td><td>#FFFFFF</td><td>#FFFFFF</td><td>#FFFFFF (opacity 0.5)</td><td>#888888</td></tr>
+              <tr><td>Placeholder color</td><td>#555555</td><td>#555555</td><td>#555555</td><td>#555555 (opacity 0.5)</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Mobile vs Web</h2>
+          <p class="section-desc">Regras específicas por plataforma para garantir a melhor experiência de input em cada contexto.</p>
+          <table class="token-table">
+            <thead>
+              <tr><th>Regra</th><th><span class="platform-badge badge-mobile">Mobile</span></th><th><span class="platform-badge badge-web">Web</span></th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Tamanho padrão</td><td>lg (48px) — alvo de toque mínimo</td><td>md (40px) — compacto para formulários</td></tr>
+              <tr><td>Tipo de teclado</td><td>keyboardType numérico para pesos/reps</td><td>type="number" ou inputmode="decimal"</td></tr>
+              <tr><td>Autocompletar</td><td>Sugestões nativas do sistema</td><td>autocomplete conforme o campo</td></tr>
+              <tr><td>Feedback de erro</td><td>Erro inline abaixo do campo</td><td>Erro inline + possível tooltip</td></tr>
+              <tr><td>Label</td><td>Sempre visível (nunca floating)</td><td>Sempre visível (nunca floating)</td></tr>
+              <tr><td>Scroll ao focar</td><td>Evitar que o teclado cubra o campo</td><td>Scroll suave ao campo</td></tr>
+              <tr><td>Validação</td><td>OnBlur ou on submit</td><td>OnBlur ou onChange</td></tr>
+              <tr><td>Ícones</td><td>Apenas à esquerda</td><td>Esquerda ou direita</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras de Uso</h2>
+          <p class="section-desc">Diretrizes obrigatórias para manter consistência e acessibilidade em toda a interface.</p>
+          <ul class="rules-list">
+            <li>Nunca use floating labels — label sempre visível acima do campo para evitar confusão de acessibilidade</li>
+            <li>Todo input obrigatório deve exibir indicador visual e mensagem de erro clara em pt-BR</li>
+            <li>Placeholder nunca substitui label — placeholder é texto temporário, label é permanente</li>
+            <li>Campos numéricos de treino (peso, reps, carga) devem usar teclado numérico no mobile e inputmode="decimal" no web</li>
+            <li>Inputs desabilitados usam opacity 0.5 — nunca remova o campo do DOM, pois isso quebra a navegação por tela</li>
+            <li>Campos readonly mantêm a estrutura visual mas reduzem a cor do texto para #888888 e fundo para #0A0A0A</li>
+            <li>Largura máxima de 480px para campos isolados — inputs full-width apenas em grids de formulários</li>
+            <li>Agrupe campos relacionados visualmente com labels e texto auxiliar — nunca empilhe inputs sem contexto</li>
+            <li>Estado de erro sempre inclui borda vermelha (#EF4444), box-shadow e mensagem de erro abaixo do campo</li>
+            <li>Transições de estado usam duration 100ms com ease-standard para feedback instantâneo sem sensação de lag</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="prop">--gt-input-bg</span>: <span class="val">#151515</span>;
+  <span class="prop">--gt-input-bg-disabled</span>: <span class="val">#0A0A0A</span>;
+  <span class="prop">--gt-input-bg-readonly</span>: <span class="val">#0A0A0A</span>;
+  <span class="prop">--gt-input-border</span>: <span class="val">1px solid rgba(255, 255, 255, 0.08)</span>;
+  <span class="prop">--gt-input-border-focus</span>: <span class="val">1px solid #FF7A1A</span>;
+  <span class="prop">--gt-input-border-error</span>: <span class="val">1px solid #EF4444</span>;
+  <span class="prop">--gt-input-border-readonly</span>: <span class="val">1px solid rgba(255, 255, 255, 0.06)</span>;
+  <span class="prop">--gt-input-shadow-focus</span>: <span class="val">0 0 0 2px rgba(255, 122, 26, 0.2)</span>;
+  <span class="prop">--gt-input-shadow-error</span>: <span class="val">0 0 0 2px rgba(239, 68, 68, 0.2)</span>;
+  <span class="prop">--gt-input-radius</span>: <span class="val">8px</span>;
+  <span class="prop">--gt-input-padding-x</span>: <span class="val">12px</span>;
+  <span class="prop">--gt-input-color</span>: <span class="val">#FFFFFF</span>;
+  <span class="prop">--gt-input-color-disabled</span>: <span class="val">rgba(255, 255, 255, 0.5)</span>;
+  <span class="prop">--gt-input-color-readonly</span>: <span class="val">#888888</span>;
+  <span class="prop">--gt-input-placeholder</span>: <span class="val">#555555</span>;
+
+  <span class="prop">--gt-input-sm-height</span>: <span class="val">32px</span>;
+  <span class="prop">--gt-input-sm-font</span>: <span class="val">13px</span>;
+  <span class="prop">--gt-input-md-height</span>: <span class="val">40px</span>;
+  <span class="prop">--gt-input-md-font</span>: <span class="val">14px</span>;
+  <span class="prop">--gt-input-lg-height</span>: <span class="val">48px</span>;
+  <span class="prop">--gt-input-lg-font</span>: <span class="val">16px</span>;
+
+  <span class="prop">--gt-input-label-color</span>: <span class="val">#B8B8B8</span>;
+  <span class="prop">--gt-input-label-size</span>: <span class="val">13px</span>;
+  <span class="prop">--gt-input-label-weight</span>: <span class="val">500</span>;
+  <span class="prop">--gt-input-helper-color</span>: <span class="val">#888888</span>;
+  <span class="prop">--gt-input-helper-size</span>: <span class="val">12px</span>;
+  <span class="prop">--gt-input-error-color</span>: <span class="val">#EF4444</span>;
+  <span class="prop">--gt-input-error-size</span>: <span class="val">12px</span>;
+  <span class="prop">--gt-input-icon-color</span>: <span class="val">#555555</span>;
+  <span class="prop">--gt-input-icon-offset</span>: <span class="val">12px</span>;
+
+  <span class="prop">--gt-input-transition</span>: <span class="val">border-color 100ms cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 100ms cubic-bezier(0.25, 0.1, 0.25, 1)</span>;
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+  <script>function copyCode(btn){const pre=btn.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>{btn.textContent='Copiar'},2000)})}</script>
+</body>
+</html>

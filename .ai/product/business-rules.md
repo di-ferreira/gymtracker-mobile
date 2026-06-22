@@ -32,27 +32,27 @@ Histórico deve permanecer disponível offline.
 
 BR006
 
-Exercícios favoritos devem permanecer offline.
+Exercícios favoritos ou exercicios do treino do usuario devem ser acessados online e offline.
 
 ---
 
 BR007
 
-Catálogo local deve ser atualizado apenas quando existir nova versão.
+Catálogo local deve ser atualizado apenas quando existir nova versão do treino do usuário.
 
 ---
 
 BR008
 
-Substituições são fornecidas pela API.
+Substituições de exercicios offline somente de exercicios existente no treino do usuario.
 
 ---
 
 BR009
 
-Sem login obrigatório.
+Login obrigatório somente no primeiro acesso ao app.
 
-Todos os dados pertencem ao dispositivo.
+O usuário será cadastrado na plataforma e após isso os dados ficarão disponivéis offline.
 
 ---
 

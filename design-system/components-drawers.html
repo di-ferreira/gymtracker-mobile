@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Drawers — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <style>
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--gt-surface);
+      border-right: 1px solid var(--gt-border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: var(--gt-space-6) 0;
+      z-index: 100;
+    }
+    .sidebar-brand {
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-brand h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--gt-fg);
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-2);
+    }
+    .sidebar-brand .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      display: inline-block;
+    }
+    .sidebar-brand p {
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+    .sidebar-section {
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gt-fg-muted);
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-2);
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-3);
+      padding: var(--gt-space-2) var(--gt-space-6);
+      font-size: 14px;
+      color: var(--gt-fg-secondary);
+      text-decoration: none;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      border-left: 2px solid transparent;
+    }
+    .sidebar-nav a:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-2);
+    }
+    .sidebar-nav a.active {
+      color: var(--gt-primary);
+      background: rgba(255, 122, 26, 0.06);
+      border-left-color: var(--gt-primary);
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-width: 0;
+    }
+    .content-area {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: var(--gt-space-10) var(--gt-space-8);
+    }
+    .component-group {
+      margin-bottom: var(--gt-space-10);
+    }
+    .component-group-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gt-fg);
+      margin-bottom: var(--gt-space-2);
+    }
+    .component-group-desc {
+      font-size: 14px;
+      color: var(--gt-fg-tertiary);
+      margin-bottom: var(--gt-space-4);
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .spec-table th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--gt-fg);
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border-strong);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .spec-table td {
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border);
+      color: var(--gt-fg-secondary);
+    }
+    .spec-table td:first-child {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      color: var(--gt-fg);
+    }
+    .spec-table td code {
+      font-family: var(--gt-font-mono);
+      font-size: 12px;
+      background: var(--gt-surface-3);
+      padding: 2px 6px;
+      border-radius: var(--gt-radius-xs);
+      color: var(--gt-fg-secondary);
+    }
+    .spec-table tr:hover td {
+      background: var(--gt-surface);
+    }
+
+    .rules-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .rules-table th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--gt-fg);
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border-strong);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .rules-table td {
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border);
+      color: var(--gt-fg-secondary);
+    }
+    .rules-table tr:hover td {
+      background: var(--gt-surface);
+    }
+
+    .code-block {
+      background: var(--gt-surface);
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-lg);
+      padding: var(--gt-space-5);
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-block pre {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--gt-fg-secondary);
+      margin: 0;
+      white-space: pre;
+    }
+    .code-block .copy-btn {
+      position: absolute;
+      top: var(--gt-space-3);
+      right: var(--gt-space-3);
+      background: var(--gt-surface-3);
+      border: 1px solid var(--gt-border);
+      color: var(--gt-fg-tertiary);
+      padding: 4px 10px;
+      border-radius: var(--gt-radius-sm);
+      font-size: 12px;
+      font-family: var(--gt-font-mono);
+      cursor: pointer;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .code-block .copy-btn:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-4);
+    }
+
+    .demo-trigger-row {
+      display: flex;
+      gap: var(--gt-space-3);
+      flex-wrap: wrap;
+    }
+    .demo-trigger-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--gt-font-body);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 0 16px;
+      height: 40px;
+      border-radius: var(--gt-radius-md);
+      cursor: pointer;
+      border: none;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .demo-trigger-btn:focus-visible {
+      outline: 2px solid var(--gt-primary);
+      outline-offset: 2px;
+    }
+    .demo-trigger-btn-primary {
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+    }
+    .demo-trigger-btn-primary:hover {
+      background: var(--gt-primary-hover);
+    }
+    .demo-trigger-btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--gt-fg);
+    }
+    .demo-trigger-btn-secondary:hover {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.04);
+    }
+    .demo-trigger-btn-ghost {
+      background: transparent;
+      color: var(--gt-fg-secondary);
+    }
+    .demo-trigger-btn-ghost:hover {
+      color: var(--gt-fg);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .gt-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 500;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 300ms var(--gt-ease-decelerate), visibility 300ms;
+    }
+    .gt-drawer-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .gt-drawer {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      background: var(--gt-surface);
+      z-index: 501;
+      display: flex;
+      flex-direction: column;
+      transition: transform 300ms var(--gt-ease-decelerate);
+    }
+
+    .gt-drawer-nav {
+      left: 0;
+      width: 280px;
+      border-right: 1px solid var(--gt-border);
+      transform: translateX(-100%);
+    }
+    .gt-drawer-nav.open {
+      transform: translateX(0);
+    }
+
+    .gt-drawer-filter {
+      right: 0;
+      width: 320px;
+      border-left: 1px solid var(--gt-border);
+      transform: translateX(100%);
+    }
+    .gt-drawer-filter.open {
+      transform: translateX(0);
+    }
+
+    .gt-drawer-mobile {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-height: 70vh;
+      border-top-left-radius: var(--gt-radius-xl);
+      border-top-right-radius: var(--gt-radius-xl);
+      border-top: 1px solid var(--gt-border);
+      transform: translateY(100%);
+    }
+    .gt-drawer-mobile.open {
+      transform: translateY(0);
+    }
+
+    .gt-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--gt-space-5) var(--gt-space-5) var(--gt-space-3);
+      flex-shrink: 0;
+    }
+    .gt-drawer-header h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gt-fg);
+    }
+    .gt-drawer-close {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-md);
+      color: var(--gt-fg-secondary);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .gt-drawer-close:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-2);
+    }
+
+    .gt-drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--gt-space-4) var(--gt-space-5);
+    }
+
+    .gt-drawer-footer {
+      padding: var(--gt-space-4) var(--gt-space-5);
+      border-top: 1px solid var(--gt-border);
+      display: flex;
+      gap: var(--gt-space-3);
+      flex-shrink: 0;
+    }
+
+    .drawer-user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-3);
+      padding: var(--gt-space-4) var(--gt-space-5);
+      border-bottom: 1px solid var(--gt-border);
+      flex-shrink: 0;
+    }
+    .drawer-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gt-primary), var(--gt-primary-hover));
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--gt-bg);
+    }
+    .drawer-user-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gt-fg);
+    }
+    .drawer-user-email {
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+    }
+
+    .drawer-nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .drawer-nav-list li a {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-3);
+      padding: var(--gt-space-3) var(--gt-space-5);
+      font-size: 14px;
+      color: var(--gt-fg-secondary);
+      text-decoration: none;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      border-radius: var(--gt-radius-md);
+      margin: 0 var(--gt-space-2);
+    }
+    .drawer-nav-list li a:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-2);
+    }
+    .drawer-nav-list li a.active {
+      color: var(--gt-primary);
+      background: rgba(255, 122, 26, 0.06);
+    }
+    .drawer-nav-list li a .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .drawer-filter-group {
+      margin-bottom: var(--gt-space-5);
+    }
+    .drawer-filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gt-fg-tertiary);
+      margin-bottom: var(--gt-space-2);
+    }
+    .drawer-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-2);
+      padding: var(--gt-space-2) 0;
+      font-size: 14px;
+      color: var(--gt-fg-secondary);
+      cursor: pointer;
+    }
+    .drawer-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1px solid var(--gt-border-strong);
+      background: transparent;
+      appearance: none;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .drawer-checkbox:checked {
+      background: var(--gt-primary);
+      border-color: var(--gt-primary);
+    }
+    .drawer-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      color: var(--gt-bg);
+      font-weight: 700;
+    }
+    .drawer-input {
+      width: 100%;
+      height: 36px;
+      padding: 0 var(--gt-space-3);
+      background: var(--gt-surface-2);
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-md);
+      color: var(--gt-fg);
+      font-family: var(--gt-font-body);
+      font-size: 13px;
+      outline: none;
+      transition: border-color var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .drawer-input:focus {
+      border-color: var(--gt-primary);
+    }
+    .drawer-select {
+      width: 100%;
+      height: 36px;
+      padding: 0 var(--gt-space-3);
+      background: var(--gt-surface-2);
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-md);
+      color: var(--gt-fg);
+      font-family: var(--gt-font-body);
+      font-size: 13px;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .drawer-select:focus {
+      border-color: var(--gt-primary);
+    }
+    .drawer-date-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gt-space-2);
+    }
+
+    .drawer-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--gt-font-body);
+      font-weight: 600;
+      font-size: 14px;
+      height: 36px;
+      padding: 0 var(--gt-space-4);
+      border-radius: var(--gt-radius-md);
+      cursor: pointer;
+      border: none;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .drawer-btn-primary {
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+      flex: 1;
+    }
+    .drawer-btn-primary:hover {
+      background: var(--gt-primary-hover);
+    }
+    .drawer-btn-secondary {
+      background: transparent;
+      border: 1px solid var(--gt-border-strong);
+      color: var(--gt-fg-secondary);
+    }
+    .drawer-btn-secondary:hover {
+      border-color: rgba(255,255,255,0.3);
+      color: var(--gt-fg);
+    }
+
+    .mobile-drawer-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--gt-border-strong);
+      margin: var(--gt-space-3) auto var(--gt-space-2);
+    }
+    .mobile-drawer-item {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-3);
+      padding: var(--gt-space-4) var(--gt-space-5);
+      font-size: 15px;
+      color: var(--gt-fg-secondary);
+      border-bottom: 1px solid var(--gt-border);
+      cursor: pointer;
+      transition: background var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .mobile-drawer-item:hover {
+      background: var(--gt-surface-2);
+    }
+    .mobile-drawer-item:last-child {
+      border-bottom: none;
+    }
+    .mobile-drawer-item .item-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .mobile-toc-btn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: var(--gt-elevation-3);
+    }
+
+    .drawer-variant-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--gt-space-4);
+      padding: var(--gt-space-4) var(--gt-space-5);
+      border-radius: var(--gt-radius-md);
+      transition: background var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .drawer-variant-row:hover {
+      background: var(--gt-surface);
+    }
+    .variant-label {
+      min-width: 140px;
+    }
+    .variant-label .name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gt-fg);
+    }
+    .variant-label .desc {
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+      margin-top: 2px;
+    }
+    .variant-label .platform {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: var(--gt-radius-full);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .platform-web {
+      background: var(--gt-info);
+      color: var(--gt-fg);
+    }
+    .platform-mobile {
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+      .mobile-toc-btn { display: grid; place-items: center; }
+      .content-area { padding: var(--gt-space-6) var(--gt-space-4); }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Visão Geral</a>
+          <a href="colors.html">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html">Elevação</a>
+          <a href="radius.html">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html" class="active">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="content-area">
+
+        <p class="section-description" style="color: var(--gt-fg-tertiary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--gt-space-2);">Componentes</p>
+        <h1 class="section-title">Drawers</h1>
+        <p class="section-description">Drawers são painéis laterais ou inferiores que emergem da borda da tela. Usados para navegação, filtros e ações contextuais sem abandonar a tela atual.</p>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Variantes</h2>
+          <p class="component-group-desc">Três tipos de drawer cobrem os contextos de navegação, filtragem e uso mobile. Cada um com largura, posição e comportamento específicos.</p>
+
+          <div class="component-preview">
+            <div class="drawer-variant-row">
+              <div class="variant-label">
+                <div class="name">Navigation Drawer</div>
+                <div class="desc">Painel esquerdo para navegação do dashboard</div>
+                <span class="platform platform-web">Web</span>
+              </div>
+              <button class="demo-trigger-btn demo-trigger-btn-primary" onclick="openDrawer('nav')">Abrir Navegação</button>
+            </div>
+            <div class="drawer-variant-row">
+              <div class="variant-label">
+                <div class="name">Filter Drawer</div>
+                <div class="desc">Painel direito para filtros de tabela/lista</div>
+                <span class="platform platform-web">Web</span>
+              </div>
+              <button class="demo-trigger-btn demo-trigger-btn-primary" onclick="openDrawer('filter')">Abrir Filtros</button>
+            </div>
+            <div class="drawer-variant-row">
+              <div class="variant-label">
+                <div class="name">Mobile Drawer</div>
+                <div class="desc">Bottom sheet para ações contextuais</div>
+                <span class="platform platform-mobile">Mobile</span>
+              </div>
+              <button class="demo-trigger-btn demo-trigger-btn-secondary" onclick="openDrawer('mobile')">Abrir Mobile</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Demonstração Interativa</h2>
+          <p class="component-group-desc">Clique nos botões abaixo para abrir cada tipo de drawer. Feche clicando no overlay, no botão X ou (no mobile) deslizando para baixo.</p>
+
+          <div class="component-preview">
+            <div class="demo-trigger-row">
+              <button class="demo-trigger-btn demo-trigger-btn-primary" onclick="openDrawer('nav')">Navegação</button>
+              <button class="demo-trigger-btn demo-trigger-btn-primary" onclick="openDrawer('filter')">Filtros</button>
+              <button class="demo-trigger-btn demo-trigger-btn-secondary" onclick="openDrawer('mobile')">Mobile</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Especificações</h2>
+          <p class="component-group-desc">Tokens de design para cada variante de drawer. Valores compartilhados e específicos por tipo.</p>
+
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Propriedade</th>
+                <th>Navigation</th>
+                <th>Filter</th>
+                <th>Mobile</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>width</td>
+                <td>280px</td>
+                <td>320px</td>
+                <td>100%</td>
+              </tr>
+              <tr>
+                <td>max-height</td>
+                <td>100vh</td>
+                <td>100vh</td>
+                <td>70vh</td>
+              </tr>
+              <tr>
+                <td>position</td>
+                <td>Esquerda</td>
+                <td>Direita</td>
+                <td>Inferior</td>
+              </tr>
+              <tr>
+                <td>background</td>
+                <td><code>--gt-surface</code></td>
+                <td><code>--gt-surface</code></td>
+                <td><code>--gt-surface</code></td>
+              </tr>
+              <tr>
+                <td>border</td>
+                <td>right 1px <code>--gt-border</code></td>
+                <td>left 1px <code>--gt-border</code></td>
+                <td>top 1px <code>--gt-border</code></td>
+              </tr>
+              <tr>
+                <td>overlay</td>
+                <td><code>rgba(0,0,0,0.5)</code></td>
+                <td><code>rgba(0,0,0,0.5)</code></td>
+                <td><code>rgba(0,0,0,0.5)</code></td>
+              </tr>
+              <tr>
+                <td>animation</td>
+                <td>slide-in 300ms <code>--gt-ease-decelerate</code></td>
+                <td>slide-in 300ms <code>--gt-ease-decelerate</code></td>
+                <td>slide-up 300ms <code>--gt-ease-decelerate</code></td>
+              </tr>
+              <tr>
+                <td>header title</td>
+                <td>20px / 600</td>
+                <td>20px / 600</td>
+                <td>20px / 600</td>
+              </tr>
+              <tr>
+                <td>close button</td>
+                <td>32×32px, <code>--gt-radius-md</code></td>
+                <td>32×32px, <code>--gt-radius-md</code></td>
+                <td>32×32px, <code>--gt-radius-md</code></td>
+              </tr>
+              <tr>
+                <td>plataforma</td>
+                <td>Web</td>
+                <td>Web</td>
+                <td>Mobile</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">API</h2>
+          <p class="component-group-desc">Propriedades do componente Drawer para implementação em React Native e Next.js.</p>
+
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Prop</th>
+                <th>Tipo</th>
+                <th>Padrão</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>type</td>
+                <td><code>'nav' | 'filter' | 'mobile'</code></td>
+                <td><code>'nav'</code></td>
+                <td>Tipo do drawer</td>
+              </tr>
+              <tr>
+                <td>open</td>
+                <td><code>boolean</code></td>
+                <td><code>false</code></td>
+                <td>Controla se o drawer está aberto</td>
+              </tr>
+              <tr>
+                <td>onClose</td>
+                <td><code>() => void</code></td>
+                <td>—</td>
+                <td>Callback ao fechar o drawer</td>
+              </tr>
+              <tr>
+                <td>title</td>
+                <td><code>string</code></td>
+                <td>—</td>
+                <td>Título exibido no header (20px semibold)</td>
+              </tr>
+              <tr>
+                <td>overlay</td>
+                <td><code>boolean</code></td>
+                <td><code>true</code></td>
+                <td>Exibe overlay escuro ao fundo</td>
+              </tr>
+              <tr>
+                <td>swipeToClose</td>
+                <td><code>boolean</code></td>
+                <td><code>false</code></td>
+                <td>Permite fechar deslizando para baixo (mobile)</td>
+              </tr>
+              <tr>
+                <td>width</td>
+                <td><code>number</code></td>
+                <td>280 / 320 / 100%</td>
+                <td>Largura customizada do drawer</td>
+              </tr>
+              <tr>
+                <td>maxHeight</td>
+                <td><code>number | string</code></td>
+                <td>'70vh' (mobile)</td>
+                <td>Altura máxima (apenas mobile)</td>
+              </tr>
+              <tr>
+                <td>children</td>
+                <td><code>ReactNode</code></td>
+                <td>—</td>
+                <td>Conteúdo interno do drawer</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Regras de Uso</h2>
+          <p class="component-group-desc">Princípios para manter consistência na utilização de drawers.</p>
+
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th>Regra</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sempre com overlay</td>
+                <td>Drawers devem ter overlay escuro <code>rgba(0,0,0,0.5)</code>. O clique no overlay fecha o drawer.</td>
+              </tr>
+              <tr>
+                <td>Um drawer por vez</td>
+                <td>Nunca empilhe drawers. Feche o atual antes de abrir outro.</td>
+              </tr>
+              <tr>
+                <td>Animação consistente</td>
+                <td>Sempre use slide-in de 300ms com <code>--gt-ease-decelerate</code>. Nunca use animações instantâneas ou muito lentas.</td>
+              </tr>
+              <tr>
+                <td>Header com fechamento</td>
+                <td>Todo drawer deve ter header com título (20px semibold) e botão de fechar (X). Nunca remova o botão de fechar.</td>
+              </tr>
+              <tr>
+                <td>Mobile: swipe down</td>
+                <td>No mobile drawer, permita fechar deslizando para baixo. Use um handle visual (barra) no topo como indicador.</td>
+              </tr>
+              <tr>
+                <td>Foco na acessibilidade</td>
+                <td>Ao abrir, mova o foco para o drawer. Ao fechar, retorne o foco para o elemento ativador. Use <code>aria-modal</code> e <code>role="dialog"</code>.</td>
+              </tr>
+              <tr>
+                <td>Navigation drawer: itens iguais à navegação</td>
+                <td>Os itens do navigation drawer devem ser idênticos ao componente de navegação (mesmos ícones, textos e estados ativos).</td>
+              </tr>
+              <tr>
+                <td>Filter drawer: botões Aplicar/Limpar</td>
+                <td>O filter drawer deve conter botões "Aplicar" (primário) e "Limpar" (secundário) no footer. Nunca omita o botão de reset.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Tokens CSS</h2>
+          <p class="component-group-desc">Custom properties para implementar drawers. Copie e use no projeto.</p>
+
+          <div class="code-block">
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').textContent)">Copiar</button>
+            <pre><code>/* ── Drawers ── */
+
+/* Tipos */
+--gt-drawer-nav-width: 280px;
+--gt-drawer-filter-width: 320px;
+--gt-drawer-mobile-width: 100%;
+--gt-drawer-mobile-max-height: 70vh;
+
+/* Superfície */
+--gt-drawer-bg: var(--gt-surface);
+--gt-drawer-border: 1px solid var(--gt-border);
+--gt-drawer-overlay: rgba(0, 0, 0, 0.5);
+
+/* Header */
+--gt-drawer-header-title: 20px;
+--gt-drawer-header-weight: 600;
+--gt-drawer-close-size: 32px;
+--gt-drawer-close-radius: var(--gt-radius-md);
+
+/* Animação */
+--gt-drawer-duration: 300ms;
+--gt-drawer-ease: cubic-bezier(0, 0, 0.2, 1);
+
+/* Filter drawer inputs */
+--gt-drawer-input-height: 36px;
+--gt-drawer-input-bg: var(--gt-surface-2);
+--gt-drawer-input-border: var(--gt-border);
+--gt-drawer-input-focus: var(--gt-primary);
+--gt-drawer-input-radius: var(--gt-radius-md);
+
+/* Footer buttons */
+--gt-drawer-footer-btn-height: 36px;
+--gt-drawer-footer-gap: var(--gt-space-3);</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Drawer -->
+  <div class="gt-drawer-overlay" id="overlay-nav" onclick="closeDrawer('nav')"></div>
+  <div class="gt-drawer gt-drawer-nav" id="drawer-nav" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+    <div class="drawer-user-info">
+      <div class="drawer-avatar">CP</div>
+      <div>
+        <div class="drawer-user-name">Carlos Pereira</div>
+        <div class="drawer-user-email">carlos@email.com</div>
+      </div>
+    </div>
+    <div class="gt-drawer-header">
+      <h3>Navegação</h3>
+      <button class="gt-drawer-close" onclick="closeDrawer('nav')" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="gt-drawer-body">
+      <ul class="drawer-nav-list">
+        <li><a href="#" class="active"><span class="nav-icon">&#9776;</span> Dashboard</a></li>
+        <li><a href="#"><span class="nav-icon">&#9899;</span> Treinos</a></li>
+        <li><a href="#"><span class="nav-icon">&#9997;</span> Exercícios</a></li>
+        <li><a href="#"><span class="nav-icon">&#9733;</span> Progresso</a></li>
+        <li><a href="#"><span class="nav-icon">&#9881;</span> Configurações</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Filter Drawer -->
+  <div class="gt-drawer-overlay" id="overlay-filter" onclick="closeDrawer('filter')"></div>
+  <div class="gt-drawer gt-drawer-filter" id="drawer-filter" role="dialog" aria-modal="true" aria-label="Filtros">
+    <div class="gt-drawer-header">
+      <h3>Filtros</h3>
+      <button class="gt-drawer-close" onclick="closeDrawer('filter')" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="gt-drawer-body">
+      <div class="drawer-filter-group">
+        <div class="drawer-filter-label">Grupo Muscular</div>
+        <label class="drawer-checkbox-row"><input type="checkbox" class="drawer-checkbox" checked /> Peito</label>
+        <label class="drawer-checkbox-row"><input type="checkbox" class="drawer-checkbox" /> Costas</label>
+        <label class="drawer-checkbox-row"><input type="checkbox" class="drawer-checkbox" checked /> Pernas</label>
+        <label class="drawer-checkbox-row"><input type="checkbox" class="drawer-checkbox" /> Ombros</label>
+        <label class="drawer-checkbox-row"><input type="checkbox" class="drawer-checkbox" /> Braços</label>
+      </div>
+      <div class="drawer-filter-group">
+        <div class="drawer-filter-label">Período</div>
+        <div class="drawer-date-row">
+          <input type="date" class="drawer-input" value="2026-01-01" />
+          <input type="date" class="drawer-input" value="2026-06-19" />
+        </div>
+      </div>
+      <div class="drawer-filter-group">
+        <div class="drawer-filter-label">Dificuldade</div>
+        <select class="drawer-select">
+          <option>Todas</option>
+          <option>Iniciante</option>
+          <option>Intermediário</option>
+          <option>Avançado</option>
+        </select>
+      </div>
+      <div class="drawer-filter-group">
+        <div class="drawer-filter-label">Ordenar por</div>
+        <select class="drawer-select">
+          <option>Data (recente)</option>
+          <option>Data (antiga)</option>
+          <option>Nome (A-Z)</option>
+          <option>Nome (Z-A)</option>
+        </select>
+      </div>
+    </div>
+    <div class="gt-drawer-footer">
+      <button class="drawer-btn drawer-btn-secondary" onclick="closeDrawer('filter')">Limpar</button>
+      <button class="drawer-btn drawer-btn-primary" onclick="closeDrawer('filter')">Aplicar</button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer -->
+  <div class="gt-drawer-overlay" id="overlay-mobile" onclick="closeDrawer('mobile')"></div>
+  <div class="gt-drawer gt-drawer-mobile" id="drawer-mobile" role="dialog" aria-modal="true" aria-label="Ações">
+    <div class="mobile-drawer-handle"></div>
+    <div class="gt-drawer-header">
+      <h3>Opções</h3>
+      <button class="gt-drawer-close" onclick="closeDrawer('mobile')" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="gt-drawer-body">
+      <div class="mobile-drawer-item"><span class="item-icon">&#9998;</span> Editar treino</div>
+      <div class="mobile-drawer-item"><span class="item-icon">&#128206;</span> Duplicar treino</div>
+      <div class="mobile-drawer-item"><span class="item-icon">&#128278;</span> Compartilhar</div>
+      <div class="mobile-drawer-item" style="color: var(--gt-error);"><span class="item-icon">&#128465;</span> Excluir treino</div>
+    </div>
+  </div>
+
+  <button class="mobile-toc-btn" aria-label="Menu">&#9776;</button>
+
+  <script>
+    function openDrawer(type) {
+      const overlay = document.getElementById('overlay-' + type);
+      const drawer = document.getElementById('drawer-' + type);
+      if (overlay) overlay.classList.add('open');
+      if (drawer) drawer.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer(type) {
+      const overlay = document.getElementById('overlay-' + type);
+      const drawer = document.getElementById('drawer-' + type);
+      if (overlay) overlay.classList.remove('open');
+      if (drawer) drawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        ['nav', 'filter', 'mobile'].forEach(function(type) {
+          closeDrawer(type);
+        });
+      }
+    });
+
+    let touchStartY = 0;
+    let touchCurrentY = 0;
+    const mobileDrawer = document.getElementById('drawer-mobile');
+    if (mobileDrawer) {
+      mobileDrawer.addEventListener('touchstart', function(e) {
+        touchStartY = e.touches[0].clientY;
+      });
+      mobileDrawer.addEventListener('touchmove', function(e) {
+        touchCurrentY = e.touches[0].clientY;
+      });
+      mobileDrawer.addEventListener('touchend', function() {
+        if (touchCurrentY - touchStartY > 60) {
+          closeDrawer('mobile');
+        }
+        touchStartY = 0;
+        touchCurrentY = 0;
+      });
+    }
+  </script>
+  <script src="js/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elevação — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .elevation-demo {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+      padding: 40px 24px 24px;
+      background: var(--gt-bg, #0A0A0A);
+      border-radius: 8px;
+      flex-wrap: wrap;
+    }
+    .elevation-card {
+      width: 140px;
+      min-height: 100px;
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      color: #E0E0E0;
+      font-size: 13px;
+      text-align: center;
+    }
+    .elevation-card .elevation-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #FF7A1A;
+    }
+    .elevation-0 { box-shadow: none; }
+    .elevation-1 { box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2); }
+    .elevation-2 { box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2); }
+    .elevation-3 { box-shadow: 0 4px 8px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.2); }
+    .elevation-4 { box-shadow: 0 8px 16px rgba(0,0,0,0.4), 0 16px 32px rgba(0,0,0,0.3); }
+
+    .token-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .token-table th {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 2px solid rgba(255,255,255,0.12);
+      color: #FF7A1A;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .token-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #C8C8C8;
+    }
+    .token-table tr:hover td {
+      background: rgba(255,122,26,0.04);
+    }
+    .token-table code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #FF7A1A;
+      background: rgba(255,122,26,0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .rules-list {
+      list-style: none;
+      padding: 0;
+    }
+    .rules-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #C8C8C8;
+      line-height: 1.6;
+      padding-left: 20px;
+      position: relative;
+    }
+    .rules-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 18px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FF7A1A;
+    }
+
+    .code-block {
+      background: #111111;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #C8C8C8;
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-block .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #A0A0A0;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .code-block .copy-btn:hover {
+      background: rgba(255,122,26,0.15);
+      color: #FF7A1A;
+    }
+    .code-block .prop { color: #FF7A1A; }
+    .code-block .val { color: #7EC8E3; }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    .section-desc {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .doc-section {
+      margin-bottom: 48px;
+    }
+
+    .platform-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-mobile {
+      background: rgba(255,122,26,0.12);
+      color: #FF7A1A;
+    }
+    .badge-web {
+      background: rgba(126,200,227,0.12);
+      color: #7EC8E3;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Visão Geral</a>
+          <a href="colors.html">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html" class="active">Elevação</a>
+          <a href="radius.html">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <h2 class="section-title">Camadas de Elevação</h2>
+          <p class="section-desc">O sistema de elevação define a hierarquia de profundidade visual na interface. Em temas escuros, sombras precisam de valores de alfa mais altos para serem percebidas.</p>
+          <table class="token-table">
+            <thead>
+              <tr>
+                <th>Token</th>
+                <th>Valor</th>
+                <th>Uso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--gt-elevation-0</code></td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:13px;">none</td>
+                <td>Superfícies planas, cards em repouso</td>
+              </tr>
+              <tr>
+                <td><code>--gt-elevation-1</code></td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:13px;">0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)</td>
+                <td>Cards elevados, estados de hover</td>
+              </tr>
+              <tr>
+                <td><code>--gt-elevation-2</code></td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:13px;">0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)</td>
+                <td>Dropdowns, popovers</td>
+              </tr>
+              <tr>
+                <td><code>--gt-elevation-3</code></td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:13px;">0 4px 8px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.2)</td>
+                <td>Modais, bottom sheets</td>
+              </tr>
+              <tr>
+                <td><code>--gt-elevation-4</code></td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:13px;">0 8px 16px rgba(0,0,0,0.4), 0 16px 32px rgba(0,0,0,0.3)</td>
+                <td>Diálogos, overlay de tela cheia</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Visualização</h2>
+          <p class="section-desc">Progressão visual das camadas de elevação sobre o fundo escuro. Cada card aplica seu respectivo nível de sombra.</p>
+          <div class="elevation-demo">
+            <div class="elevation-card elevation-0">
+              <span class="elevation-label">Elevation 0</span>
+              <span>none</span>
+            </div>
+            <div class="elevation-card elevation-1">
+              <span class="elevation-label">Elevation 1</span>
+              <span>Hover</span>
+            </div>
+            <div class="elevation-card elevation-2">
+              <span class="elevation-label">Elevation 2</span>
+              <span>Dropdown</span>
+            </div>
+            <div class="elevation-card elevation-3">
+              <span class="elevation-label">Elevation 3</span>
+              <span>Modal</span>
+            </div>
+            <div class="elevation-card elevation-4">
+              <span class="elevation-label">Elevation 4</span>
+              <span>Dialog</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras de Elevação</h2>
+          <p class="section-desc">Diretrizes específicas para temas escuros, onde sombras são menos perceptíveis e requerem tratamento diferente de temas claros.</p>
+          <ul class="rules-list">
+            <li>Fundos escuros tornam sombras menos visíveis — use valores de alfa mais altos (0.3–0.4 vs 0.1–0.2 em temas claros)</li>
+            <li>Combine sombras com borda sutil (<code>rgba(255,255,255,0.08)</code>) para definição de bordas</li>
+            <li>Elevação não deve criar confusão de profundidade — apenas um elemento por nível por view</li>
+            <li>Mobile: bottom sheets usam elevation-3, toasts usam elevation-2</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras Mobile vs Web</h2>
+          <p class="section-desc">Uso de elevação por plataforma e contexto de componente.</p>
+          <table class="token-table">
+            <thead>
+              <tr>
+                <th>Componente</th>
+                <th><span class="platform-badge badge-mobile">Mobile</span></th>
+                <th><span class="platform-badge badge-web">Web</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Card (repouso)</td>
+                <td>elevation-0</td>
+                <td>elevation-0</td>
+              </tr>
+              <tr>
+                <td>Card (hover/pressed)</td>
+                <td>elevation-0 + border highlight</td>
+                <td>elevation-1</td>
+              </tr>
+              <tr>
+                <td>Dropdown / Popover</td>
+                <td>elevation-2</td>
+                <td>elevation-2</td>
+              </tr>
+              <tr>
+                <td>Bottom Sheet</td>
+                <td>elevation-3</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Modal / Drawer</td>
+                <td>elevation-3</td>
+                <td>elevation-3</td>
+              </tr>
+              <tr>
+                <td>Toast</td>
+                <td>elevation-2</td>
+                <td>elevation-2</td>
+              </tr>
+              <tr>
+                <td>Dialog / Full-screen overlay</td>
+                <td>elevation-4</td>
+                <td>elevation-4</td>
+              </tr>
+              <tr>
+                <td>Bottom Navigation</td>
+                <td>elevation-2</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Navbar (web)</td>
+                <td>—</td>
+                <td>elevation-1</td>
+              </tr>
+              <tr>
+                <td>FAB</td>
+                <td>elevation-2</td>
+                <td>elevation-2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto. Inclui tokens de elevação e borda auxiliar para temas escuros.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="prop">--gt-elevation-0</span>: <span class="val">none</span>;
+  <span class="prop">--gt-elevation-1</span>: <span class="val">0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)</span>;
+  <span class="prop">--gt-elevation-2</span>: <span class="val">0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)</span>;
+  <span class="prop">--gt-elevation-3</span>: <span class="val">0 4px 8px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.2)</span>;
+  <span class="prop">--gt-elevation-4</span>: <span class="val">0 8px 16px rgba(0,0,0,0.4), 0 16px 32px rgba(0,0,0,0.3)</span>;
+
+  <span class="prop">--gt-elevation-border</span>: <span class="val">1px solid rgba(255,255,255,0.08)</span>;
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+  <script>
+    function copyCode(btn) {
+      const pre = btn.parentElement.querySelector('pre');
+      const text = pre.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copiado!';
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

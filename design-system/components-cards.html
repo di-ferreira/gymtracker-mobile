@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cards — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .layout{display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar-width);background:var(--gt-surface);border-right:1px solid var(--gt-border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;padding:var(--gt-space-6) 0;z-index:100}
+    .sidebar-brand{padding:0 var(--gt-space-6);margin-bottom:var(--gt-space-6)}
+    .sidebar-brand h1{font-size:18px;font-weight:700;letter-spacing:-0.01em;color:var(--gt-fg);display:flex;align-items:center;gap:var(--gt-space-2)}
+    .sidebar-brand .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--gt-primary);display:inline-block}
+    .sidebar-brand p{font-size:12px;color:var(--gt-fg-tertiary);margin-top:4px;letter-spacing:0.02em}
+    .sidebar-section{margin-bottom:var(--gt-space-6)}
+    .sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gt-fg-muted);padding:0 var(--gt-space-6);margin-bottom:var(--gt-space-2)}
+    .sidebar-nav a{display:flex;align-items:center;gap:var(--gt-space-3);padding:var(--gt-space-2) var(--gt-space-6);font-size:14px;color:var(--gt-fg-secondary);text-decoration:none;transition:all var(--gt-duration-fast) var(--gt-ease-standard);border-left:2px solid transparent}
+    .sidebar-nav a:hover{color:var(--gt-fg);background:var(--gt-surface-2)}
+    .sidebar-nav a.active{color:var(--gt-primary);background:rgba(255,122,26,0.06);border-left-color:var(--gt-primary)}
+    .main-content{margin-left:var(--sidebar-width);flex:1;min-width:0}
+    .content-area{max-width:960px;margin:0 auto;padding:var(--gt-space-10) var(--gt-space-8)}
+    .doc-section{margin-bottom:48px}
+    .section-title{font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px}
+    .section-desc{color:#888;font-size:15px;margin-bottom:24px;line-height:1.6}
+    .token-table{width:100%;border-collapse:collapse;font-size:14px}
+    .token-table th{text-align:left;padding:10px 14px;border-bottom:2px solid rgba(255,255,255,0.12);color:#FF7A1A;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+    .token-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8}
+    .token-table tr:hover td{background:rgba(255,122,26,0.04)}
+    .token-table code{font-family:'JetBrains Mono',monospace;font-size:13px;color:#FF7A1A;background:rgba(255,122,26,0.08);padding:2px 6px;border-radius:4px}
+    .rules-list{list-style:none;padding:0}
+    .rules-list li{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8;line-height:1.6;padding-left:20px;position:relative}
+    .rules-list li::before{content:'';position:absolute;left:0;top:18px;width:6px;height:6px;border-radius:50%;background:#FF7A1A}
+    .code-block{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#C8C8C8;overflow-x:auto;position:relative}
+    .code-block .copy-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#A0A0A0;padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+    .code-block .copy-btn:hover{background:rgba(255,122,26,0.15);color:#FF7A1A}
+    .code-block .prop{color:#FF7A1A}
+    .code-block .val{color:#7EC8E3}
+    .code-block .comment{color:#555}
+    .code-block .keyword{color:#C792EA}
+    .code-block .string{color:#C3E88D}
+    .code-block .tag{color:#FF7A1A}
+
+    .card-types-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .card-demo-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:#FF7A1A;margin-bottom:8px;letter-spacing:0.04em;text-transform:uppercase}
+    .card-demo-col{display:flex;flex-direction:column;gap:16px}
+
+    .gt-card{background:var(--gt-surface);border:1px solid rgba(255,255,255,0.08);border-radius:var(--gt-radius-lg,12px);padding:var(--gt-space-4,16px);transition:all var(--gt-duration-normal,200ms) var(--gt-ease-standard,0.25,0.1,0.25,1);position:relative;overflow:hidden}
+    .gt-card--elevated{box-shadow:var(--gt-elevation-1)}
+    .gt-card--outlined{box-shadow:none;border:1px solid rgba(255,255,255,0.08)}
+    .gt-card--filled{background:var(--gt-surface-2,#1D1D1D);box-shadow:none;border:1px solid rgba(255,255,255,0.05)}
+    .gt-card--interactive{cursor:pointer}
+    .gt-card--interactive:hover{border-color:rgba(255,122,26,0.25);box-shadow:var(--gt-elevation-2),0 0 0 1px rgba(255,122,26,0.08);transform:translateY(-1px)}
+    .gt-card--interactive:active{transform:scale(0.98);transition-duration:var(--gt-duration-fast,100ms)}
+    .gt-card--disabled{opacity:0.5;pointer-events:none}
+    .gt-card--sm{padding:var(--gt-space-3,12px)}
+    .gt-card--lg{padding:var(--gt-space-5,20px)}
+
+    .workout-card .wc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .workout-card .wc-title{font-size:15px;font-weight:600;color:var(--gt-fg,#FFFFFF)}
+    .workout-card .wc-meta{font-size:13px;color:var(--gt-fg-secondary,#B8B8B8);display:flex;align-items:center;gap:6px}
+    .workout-card .wc-stats{display:flex;gap:16px;margin-bottom:10px}
+    .workout-card .wc-stat{display:flex;flex-direction:column}
+    .workout-card .wc-stat-value{font-size:18px;font-weight:700;color:var(--gt-fg,#FFFFFF);letter-spacing:-0.01em}
+    .workout-card .wc-stat-label{font-size:11px;color:var(--gt-fg-tertiary,#888888);text-transform:uppercase;letter-spacing:0.06em}
+    .workout-card .wc-rest{display:flex;align-items:center;gap:6px;padding:8px 12px;background:rgba(255,122,26,0.08);border-radius:var(--gt-radius-sm,6px);font-size:13px;color:var(--gt-primary,#FF7A1A);font-weight:500}
+    .workout-card .wc-rest-icon{font-size:16px}
+    .workout-card .wc-action{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--gt-primary,#FF7A1A);font-weight:500;margin-top:12px;text-decoration:none;transition:color var(--gt-duration-fast) var(--gt-ease-standard)}
+    .workout-card .wc-action:hover{color:var(--gt-primary-hover,#FF9249)}
+
+    .progress-card .pc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+    .progress-card .pc-value{font-size:28px;font-weight:700;color:var(--gt-fg,#FFFFFF);letter-spacing:-0.02em}
+    .progress-card .pc-trend{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:500;padding:2px 8px;border-radius:var(--gt-radius-full,9999px)}
+    .progress-card .pc-trend--up{background:var(--gt-success-surface,rgba(34,197,94,0.12));color:var(--gt-success,#22C55E)}
+    .progress-card .pc-trend--down{background:var(--gt-error-surface,rgba(239,68,68,0.12));color:var(--gt-error,#EF4444)}
+    .progress-card .pc-label{font-size:13px;color:var(--gt-fg-secondary,#B8B8B8);margin-bottom:2px}
+    .progress-card .pc-period{font-size:12px;color:var(--gt-fg-tertiary,#888888)}
+    .progress-card .pc-bar{height:4px;background:var(--gt-surface-3,#252525);border-radius:var(--gt-radius-full,9999px);margin-top:12px;overflow:hidden}
+    .progress-card .pc-bar-fill{height:100%;border-radius:var(--gt-radius-full,9999px);background:var(--gt-primary,#FF7A1A);transition:width var(--gt-duration-slow,300ms) var(--gt-ease-decelerate)}
+
+    .session-card .sc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .session-card .sc-icon{width:40px;height:40px;border-radius:var(--gt-radius-md,8px);display:grid;place-items:center;font-size:20px;background:rgba(255,122,26,0.12);color:var(--gt-primary,#FF7A1A);flex-shrink:0}
+    .session-card .sc-name{font-size:15px;font-weight:600;color:var(--gt-fg,#FFFFFF)}
+    .session-card .sc-date{font-size:12px;color:var(--gt-fg-tertiary,#888888)}
+    .session-card .sc-details{display:flex;gap:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
+    .session-card .sc-detail{display:flex;flex-direction:column}
+    .session-card .sc-detail-value{font-size:14px;font-weight:600;color:var(--gt-fg,#FFFFFF)}
+    .session-card .sc-detail-label{font-size:11px;color:var(--gt-fg-tertiary,#888888);text-transform:uppercase;letter-spacing:0.06em}
+
+    .stat-card{text-align:center;padding:var(--gt-space-4,16px)}
+    .stat-card .stc-value{font-size:32px;font-weight:700;color:var(--gt-fg,#FFFFFF);letter-spacing:-0.02em;line-height:1.1}
+    .stat-card .stc-label{font-size:12px;color:var(--gt-fg-tertiary,#888888);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+    .stat-card .stc-delta{font-size:13px;font-weight:500;margin-top:8px;display:inline-flex;align-items:center;gap:4px}
+    .stat-card .stc-delta--up{color:var(--gt-success,#22C55E)}
+    .stat-card .stc-delta--down{color:var(--gt-error,#EF4444)}
+
+    .profile-card .pc-user{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .profile-card .pc-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gt-primary,#FF7A1A),#FF9249);display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--gt-bg,#0A0A0A);flex-shrink:0}
+    .profile-card .pc-name{font-size:15px;font-weight:600;color:var(--gt-fg,#FFFFFF)}
+    .profile-card .pc-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:2px 8px;border-radius:var(--gt-radius-full,9999px);margin-top:2px}
+    .profile-card .pc-badge--pro{background:rgba(255,122,26,0.15);color:var(--gt-primary,#FF7A1A);border:1px solid rgba(255,122,26,0.25)}
+    .profile-card .pc-badge--free{background:var(--gt-surface-3,#252525);color:var(--gt-fg-tertiary,#888888);border:1px solid rgba(255,255,255,0.08)}
+    .profile-card .pc-stats{display:flex;gap:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)}
+    .profile-card .pc-stat{display:flex;align-items:center;gap:6px}
+    .profile-card .pc-stat-icon{font-size:14px;color:var(--gt-primary,#FF7A1A)}
+    .profile-card .pc-stat-value{font-size:14px;font-weight:600;color:var(--gt-fg,#FFFFFF)}
+    .profile-card .pc-stat-label{font-size:11px;color:var(--gt-fg-tertiary,#888888)}
+
+    .state-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+    .state-card{background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:12px}
+    .state-card-name{font-size:13px;font-weight:600;color:#E0E0E0}
+    .state-card-desc{font-size:12px;color:#888}
+
+    .variant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+    .platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .platform-card{background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:20px}
+    .platform-card h4{font-size:14px;font-weight:600;color:#FFFFFF;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .platform-card p{font-size:13px;color:#B8B8B8;line-height:1.6}
+    .platform-card .platform-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--gt-radius-full,9999px);font-size:11px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase}
+    .platform-badge--mobile{background:var(--gt-primary,#FF7A1A);color:#0A0A0A}
+    .platform-badge--web{background:var(--gt-info,#3B82F6);color:#FFFFFF}
+
+    .mobile-toc-btn{display:none;position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--gt-primary);color:var(--gt-bg);border:none;font-size:20px;cursor:pointer;z-index:200;box-shadow:var(--gt-elevation-3)}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0}.content-area{padding:var(--gt-space-6) var(--gt-space-4)}.card-types-grid,.platform-grid,.variant-grid{grid-template-columns:1fr}.state-grid{grid-template-columns:1fr}}
+    .mobile-toc-btn{display:none;position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--gt-primary);color:var(--gt-bg);border:none;font-size:20px;cursor:pointer;z-index:200;box-shadow:var(--gt-elevation-3)}
+    @media(max-width:768px){.mobile-toc-btn{display:grid;place-items:center}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1><span class="brand-dot"></span> GymTracker</h1><p>Design System v1.0</p></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Fundamentos</div><nav class="sidebar-nav"><a href="index.html">Visão Geral</a><a href="colors.html">Cores</a><a href="typography.html">Tipografia</a><a href="spacing.html">Espaçamento</a><a href="elevation.html">Elevação</a><a href="radius.html">Raio de Borda</a><a href="iconography.html">Iconografia</a><a href="motion.html">Movimento</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Componentes</div><nav class="sidebar-nav"><a href="components-buttons.html">Botões</a><a href="components-inputs.html">Inputs</a><a href="components-selects.html">Seletores</a><a href="components-cards.html" class="active">Cards</a><a href="components-chips.html">Chips</a><a href="components-tabs.html">Tabs</a><a href="components-navigation.html">Navegação</a><a href="components-bottom-nav.html">Navegação Inferior</a><a href="components-tables.html">Tabelas</a><a href="components-modals.html">Modais</a><a href="components-drawers.html">Drawers</a><a href="components-tooltips.html">Tooltips</a><a href="components-toasts.html">Toasts</a><a href="components-empty-states.html">Estados Vazios</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Diretrizes</div><nav class="sidebar-nav"><a href="accessibility.html">Acessibilidade</a><a href="reanimated.html">Reanimated</a></nav></div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <p style="color:var(--gt-fg-tertiary);font-size:13px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--gt-space-2);">Componentes</p>
+          <h1 class="section-title" style="font-size:32px;font-weight:700;letter-spacing:-0.02em;margin-bottom:var(--gt-space-2);">Cards</h1>
+          <p class="section-desc" style="max-width:65ch;">Contêineres visuais que agrupam informações relacionadas. Usados para exibir treinos, progresso, sessões e estatísticas em formato escaneável com hierarquia clara de conteúdo.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tipos de Card</h2>
+          <p class="section-desc">Cinco tipos especializados para diferentes contextos da interface do GymTracker.</p>
+
+          <div class="card-types-grid">
+            <div class="card-demo-col">
+              <div class="card-demo-label">Workout Card</div>
+              <div class="gt-card gt-card--elevated gt-card--interactive workout-card">
+                <div class="wc-header">
+                  <div class="wc-title">Supino Reto</div>
+                  <div class="wc-meta">Peito</div>
+                </div>
+                <div class="wc-stats">
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">4×12</span>
+                    <span class="wc-stat-label">Séries × Reps</span>
+                  </div>
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">60kg</span>
+                    <span class="wc-stat-label">Carga</span>
+                  </div>
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">90s</span>
+                    <span class="wc-stat-label">Descanso</span>
+                  </div>
+                </div>
+                <div class="wc-rest">
+                  <span class="wc-rest-icon">&#9202;</span> Descanso ativo — 0:47 restante
+                </div>
+                <a href="#" class="wc-action">Ver detalhes &#8594;</a>
+              </div>
+            </div>
+
+            <div class="card-demo-col">
+              <div class="card-demo-label">Progress Card</div>
+              <div class="gt-card gt-card--elevated progress-card">
+                <div class="pc-top">
+                  <div>
+                    <div class="pc-value">82,5kg</div>
+                    <div class="pc-label">Carga máxima — Supino</div>
+                  </div>
+                  <span class="pc-trend pc-trend--up">&#9650; 7,5%</span>
+                </div>
+                <div class="pc-period">Últimos 30 dias</div>
+                <div class="pc-bar"><div class="pc-bar-fill" style="width:75%"></div></div>
+              </div>
+            </div>
+
+            <div class="card-demo-col">
+              <div class="card-demo-label">Session Card</div>
+              <div class="gt-card gt-card--elevated session-card">
+                <div class="sc-header">
+                  <div class="sc-icon">&#9131;</div>
+                  <div>
+                    <div class="sc-name">Treino A — Peito e Tríceps</div>
+                    <div class="sc-date">Seg, 16 Jun 2025</div>
+                  </div>
+                </div>
+                <div class="sc-details">
+                  <div class="sc-detail">
+                    <span class="sc-detail-value">52 min</span>
+                    <span class="sc-detail-label">Duração</span>
+                  </div>
+                  <div class="sc-detail">
+                    <span class="sc-detail-value">8</span>
+                    <span class="sc-detail-label">Exercícios</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-demo-col">
+              <div class="card-demo-label">Stat Card (Dashboard)</div>
+              <div class="gt-card gt-card--elevated stat-card">
+                <div class="stc-value">147</div>
+                <div class="stc-label">Treinos este mês</div>
+                <div class="stc-delta stc-delta--up">&#9650; 12 vs. mês anterior</div>
+              </div>
+            </div>
+
+            <div class="card-demo-col" style="grid-column:1/-1;max-width:400px">
+              <div class="card-demo-label">Profile Card</div>
+              <div class="gt-card gt-card--elevated profile-card">
+                <div class="pc-user">
+                  <div class="pc-avatar">R</div>
+                  <div>
+                    <div class="pc-name">Rafael Mendes</div>
+                    <span class="pc-badge pc-badge--pro">&#9733; PRO</span>
+                  </div>
+                </div>
+                <div class="pc-stats">
+                  <div class="pc-stat">
+                    <span class="pc-stat-icon">&#128293;</span>
+                    <div>
+                      <div class="pc-stat-value">28</div>
+                      <div class="pc-stat-label">Sequência</div>
+                    </div>
+                  </div>
+                  <div class="pc-stat">
+                    <span class="pc-stat-icon">&#127947;</span>
+                    <div>
+                      <div class="pc-stat-value">342</div>
+                      <div class="pc-stat-label">Treinos</div>
+                    </div>
+                  </div>
+                  <div class="pc-stat">
+                    <span class="pc-stat-icon">&#9889;</span>
+                    <div>
+                      <div class="pc-stat-value">1.280</div>
+                      <div class="pc-stat-label">Minutos</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Variantes</h2>
+          <p class="section-desc">Três variantes visuais que alteram a aparência do card sem mudar sua estrutura ou conteúdo.</p>
+
+          <div class="variant-grid">
+            <div>
+              <div class="card-demo-label">Elevated (padrão)</div>
+              <div class="gt-card gt-card--elevated workout-card">
+                <div class="wc-header">
+                  <div class="wc-title">Leg Press</div>
+                  <div class="wc-meta">Pernas</div>
+                </div>
+                <div class="wc-stats">
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">3×10</span>
+                    <span class="wc-stat-label">Séries × Reps</span>
+                  </div>
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">120kg</span>
+                    <span class="wc-stat-label">Carga</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="card-demo-label">Outlined</div>
+              <div class="gt-card gt-card--outlined workout-card">
+                <div class="wc-header">
+                  <div class="wc-title">Leg Press</div>
+                  <div class="wc-meta">Pernas</div>
+                </div>
+                <div class="wc-stats">
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">3×10</span>
+                    <span class="wc-stat-label">Séries × Reps</span>
+                  </div>
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">120kg</span>
+                    <span class="wc-stat-label">Carga</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="card-demo-label">Filled</div>
+              <div class="gt-card gt-card--filled workout-card">
+                <div class="wc-header">
+                  <div class="wc-title">Leg Press</div>
+                  <div class="wc-meta">Pernas</div>
+                </div>
+                <div class="wc-stats">
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">3×10</span>
+                    <span class="wc-stat-label">Séries × Reps</span>
+                  </div>
+                  <div class="wc-stat">
+                    <span class="wc-stat-value">120kg</span>
+                    <span class="wc-stat-label">Carga</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <table class="token-table" style="margin-top:24px">
+            <thead><tr><th>Variante</th><th>Background</th><th>Border</th><th>Shadow</th></tr></thead>
+            <tbody>
+              <tr><td>Elevated</td><td><code>var(--gt-surface)</code> #151515</td><td><code>rgba(255,255,255,0.08)</code></td><td><code>var(--gt-elevation-1)</code></td></tr>
+              <tr><td>Outlined</td><td><code>var(--gt-surface)</code> #151515</td><td><code>rgba(255,255,255,0.08)</code></td><td>none</td></tr>
+              <tr><td>Filled</td><td><code>var(--gt-surface-2)</code> #1D1D1D</td><td><code>rgba(255,255,255,0.05)</code></td><td>none</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Estados</h2>
+          <p class="section-desc">Estados interativos aplicáveis quando a prop <code>interactive</code> está ativa.</p>
+          <div class="state-grid">
+            <div class="state-card">
+              <div class="state-card-name">Default</div>
+              <div class="gt-card gt-card--elevated" style="padding:12px 16px">
+                <div style="font-size:15px;font-weight:600;color:#FFFFFF">Supino Reto</div>
+                <div style="font-size:13px;color:#B8B8B8">4×12 · 60kg</div>
+              </div>
+              <div class="state-card-desc">Borda padrão <code>rgba(255,255,255,0.08)</code></div>
+            </div>
+            <div class="state-card">
+              <div class="state-card-name">Hover</div>
+              <div class="gt-card gt-card--elevated gt-card--interactive" style="padding:12px 16px;border-color:rgba(255,122,26,0.25);box-shadow:var(--gt-elevation-2),0 0 0 1px rgba(255,122,26,0.08)">
+                <div style="font-size:15px;font-weight:600;color:#FFFFFF">Supino Reto</div>
+                <div style="font-size:13px;color:#B8B8B8">4×12 · 60kg</div>
+              </div>
+              <div class="state-card-desc">Borda com glow sutil <code>rgba(255,122,26,0.25)</code></div>
+            </div>
+            <div class="state-card">
+              <div class="state-card-name">Pressed</div>
+              <div class="gt-card gt-card--elevated" style="padding:12px 16px;transform:scale(0.98);transition-duration:100ms">
+                <div style="font-size:15px;font-weight:600;color:#FFFFFF">Supino Reto</div>
+                <div style="font-size:13px;color:#B8B8B8">4×12 · 60kg</div>
+              </div>
+              <div class="state-card-desc"><code>scale(0.98)</code> com transição rápida</div>
+            </div>
+            <div class="state-card">
+              <div class="state-card-name">Disabled</div>
+              <div class="gt-card gt-card--elevated gt-card--disabled" style="padding:12px 16px">
+                <div style="font-size:15px;font-weight:600;color:#FFFFFF">Supino Reto</div>
+                <div style="font-size:13px;color:#B8B8B8">4×12 · 60kg</div>
+              </div>
+              <div class="state-card-desc">Opacidade 50%, <code>pointer-events: none</code></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Mobile vs Web</h2>
+          <p class="section-desc">Diferenças de comportamento e layout do card em cada plataforma.</p>
+          <div class="platform-grid">
+            <div class="platform-card">
+              <h4><span class="platform-badge platform-badge--mobile">Mobile</span></h4>
+              <p>No app React Native, cards ocupam a largura total da tela com padding lateral de 16px. A altura mínima do alvo tátil é 44px. Workout Cards inline devem mostrar no máximo 3 dados por linha para evitar overflow. Use <code>TouchableWithoutFeedback</code> + <code>Animated</code> para o estado pressed com scale.</p>
+              <ul class="rules-list" style="margin-top:12px">
+                <li>Largura 100% com padding lateral <code>space-4 (16px)</code></li>
+                <li>Altura mínima de toque: <code>44px</code></li>
+                <li>Máximo 3 pontos de dados por linha</li>
+                <li>Use <code>TouchableWithoutFeedback</code> + <code>Animated.scale</code></li>
+                <li>Swipe lateral no Workout Card para revelar ações</li>
+              </ul>
+            </div>
+            <div class="platform-card">
+              <h4><span class="platform-badge platform-badge--web">Web</span></h4>
+              <p>No dashboard Next.js, cards usam grid layout com largura máxima de 400px. O hover é ativado por <code>:hover</code> com transição suave de borda e sombra. Cards interativos devem ter <code>tabindex="0"</code> e simular hover com <code>:focus-visible</code> para acessibilidade de teclado.</p>
+              <ul class="rules-list" style="margin-top:12px">
+                <li>Largura máxima <code>400px</code> em grid responsivo</li>
+                <li>Hover via <code>:hover</code> + <code>:focus-visible</code></li>
+                <li><code>tabindex="0"</code> em cards interativos</li>
+                <li>Transição de hover com <code>var(--gt-duration-normal)</code></li>
+                <li>Elevação progressiva <code>elevation-1 → elevation-2</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras de Uso</h2>
+          <ul class="rules-list">
+            <li>Card padding: <code>16px (space-4)</code> padrão, <code>20px (space-5)</code> para large</li>
+            <li>Card border-radius: <code>12px (radius-lg)</code></li>
+            <li>Card border: <code>1px solid rgba(255,255,255,0.08)</code> padrão</li>
+            <li>Card elevation on hover: <code>elevation-2</code></li>
+            <li>Altura mínima do alvo tátil: <code>44px</code> no mobile</li>
+            <li>Hierarquia de conteúdo: título (semibold 15px) → metadados (13px secondary) → ação (cor primária)</li>
+            <li>Nunca empilhar mais de 3 pontos de dados em uma única linha do card</li>
+            <li>Use <code>--gt-primary</code> apenas para links de ação, nunca para bordas decorativas</li>
+            <li>Cards disabled devem usar opacidade 50% e <code>pointer-events: none</code></li>
+            <li>O estado pressed deve usar <code>scale(0.98)</code> com duração rápida (100ms)</li>
+            <li>Nunca use mais de 2 cards por linha em telas menores que 768px</li>
+            <li>A transição de hover do card deve usar <code>--gt-duration-normal (200ms)</code> com <code>--gt-ease-standard</code></li>
+            <li>Cards de estatísticas (Stat Card) devem sempre exibir o rótulo abaixo do valor, nunca ao lado</li>
+            <li>Progress Card deve sempre incluir a barra de progresso quando houver meta definida</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">API</h2>
+          <p class="section-desc">Props do componente Card.</p>
+          <table class="token-table">
+            <thead><tr><th>Prop</th><th>Tipo</th><th>Padrão</th><th>Descrição</th></tr></thead>
+            <tbody>
+              <tr><td><code>variant</code></td><td><code>elevated / outlined / filled</code></td><td><code>elevated</code></td><td>Variante visual do card</td></tr>
+              <tr><td><code>padding</code></td><td><code>sm / md / lg</code></td><td><code>md</code></td><td>Espaçamento interno</td></tr>
+              <tr><td><code>interactive</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Ativa estados de hover/press</td></tr>
+              <tr><td><code>disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Desabilita interação</td></tr>
+              <tr><td><code>platform</code></td><td><code>mobile / web / both</code></td><td><code>both</code></td><td>Plataforma alvo</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Especificações</h2>
+          <p class="section-desc">Tokens e valores de design do componente Card.</p>
+          <table class="token-table">
+            <thead><tr><th>Propriedade</th><th>Token</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td>Background (elevated/outlined)</td><td><code>--gt-surface</code></td><td>#151515</td></tr>
+              <tr><td>Background (filled)</td><td><code>--gt-surface-2</code></td><td>#1D1D1D</td></tr>
+              <tr><td>Border</td><td><code>--gt-border</code></td><td>rgba(255,255,255,0.08)</td></tr>
+              <tr><td>Border radius</td><td><code>--gt-radius-lg</code></td><td>12px</td></tr>
+              <tr><td>Padding md</td><td><code>--gt-space-4</code></td><td>16px</td></tr>
+              <tr><td>Padding lg</td><td><code>--gt-space-5</code></td><td>20px</td></tr>
+              <tr><td>Padding sm</td><td><code>--gt-space-3</code></td><td>12px</td></tr>
+              <tr><td>Elevation (default)</td><td><code>--gt-elevation-1</code></td><td>Nível 1</td></tr>
+              <tr><td>Elevation (hover)</td><td><code>--gt-elevation-2</code></td><td>Nível 2</td></tr>
+              <tr><td>Hover border</td><td>—</td><td>rgba(255,122,26,0.25)</td></tr>
+              <tr><td>Hover glow</td><td>—</td><td>0 0 0 1px rgba(255,122,26,0.08)</td></tr>
+              <tr><td>Pressed scale</td><td>—</td><td>scale(0.98)</td></tr>
+              <tr><td>Disabled opacity</td><td>—</td><td>0.5</td></tr>
+              <tr><td>Title font</td><td>—</td><td>Inter 600 15px #FFFFFF</td></tr>
+              <tr><td>Metadata font</td><td>—</td><td>Inter 400 13px #B8B8B8</td></tr>
+              <tr><td>Action font</td><td><code>--gt-primary</code></td><td>Inter 500 13px #FF7A1A</td></tr>
+              <tr><td>Min touch height (mobile)</td><td>—</td><td>44px</td></tr>
+              <tr><td>Transition duration</td><td><code>--gt-duration-normal</code></td><td>200ms</td></tr>
+              <tr><td>Transition easing</td><td><code>--gt-ease-standard</code></td><td>cubic-bezier(0.25,0.1,0.25,1)</td></tr>
+              <tr><td>Pressed duration</td><td><code>--gt-duration-fast</code></td><td>100ms</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Exemplo de Código</h2>
+          <p class="section-desc">Uso do Card com React Native e tokens CSS.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="comment">// React Native — WorkoutCard.tsx</span>
+<span class="keyword">import</span> { View, Text, Pressable } <span class="keyword">from</span> <span class="string">'react-native'</span>;
+<span class="keyword">import</span> { tokens } <span class="keyword">from</span> <span class="string">'@gymtracker/tokens'</span>;
+
+<span class="keyword">interface</span> <span class="tag">WorkoutCardProps</span> {
+  <span class="prop">variant</span>: <span class="string">'elevated' | 'outlined' | 'filled'</span>;
+  <span class="prop">padding</span>: <span class="string">'sm' | 'md' | 'lg'</span>;
+  <span class="prop">interactive</span>: <span class="string">boolean</span>;
+  <span class="prop">disabled</span>: <span class="string">boolean</span>;
+  <span class="prop">platform</span>: <span class="string">'mobile' | 'web' | 'both'</span>;
+}
+
+<span class="keyword">export function</span> <span class="tag">WorkoutCard</span>({ variant, padding, interactive, disabled }: <span class="tag">WorkoutCardProps</span>) {
+  <span class="keyword">const</span> padMap = { <span class="prop">sm</span>: tokens.space[3], <span class="prop">md</span>: tokens.space[4], <span class="prop">lg</span>: tokens.space[5] };
+  <span class="keyword">const</span> bgMap  = { <span class="prop">elevated</span>: tokens.surface, <span class="prop">outlined</span>: tokens.surface, <span class="prop">filled</span>: tokens.surface2 };
+
+  <span class="keyword">return</span> (
+    <<span class="tag">Pressable</span>
+      disabled={disabled}
+      style={[{
+        <span class="prop">backgroundColor</span>: bgMap[variant],
+        <span class="prop">borderRadius</span>: tokens.radiusLg,     <span class="comment">// 12px</span>
+        <span class="prop">padding</span>: padMap[padding],            <span class="comment">// 16px (md)</span>
+        <span class="prop">borderWidth</span>: 1,
+        <span class="prop">borderColor</span>: <span class="val">'rgba(255,255,255,0.08)'</span>,
+        <span class="prop">opacity</span>: disabled ? 0.5 : 1,
+        <span class="prop">minHeight</span>: platform !== <span class="string">'web'</span> ? 44 : undefined,
+      }, variant === <span class="string">'elevated'</span> && tokens.elevation[1]]}
+    >
+      <<span class="tag">Text</span> style={{ <span class="prop">fontSize</span>: 15, <span class="prop">fontWeight</span>: <span class="string">'600'</span>, <span class="prop">color</span>: tokens.fg }}>
+        Supino Reto
+      </<span class="tag">Text</span>>
+      <<span class="tag">Text</span> style={{ <span class="prop">fontSize</span>: 13, <span class="prop">color</span>: tokens.fgSecondary }}>
+        4×12 · 60kg · 90s descanso
+      </<span class="tag">Text</span>>
+      <<span class="tag">Text</span> style={{ <span class="prop">fontSize</span>: 13, <span class="prop">color</span>: tokens.primary, <span class="prop">fontWeight</span>: <span class="string">'500'</span> }}>
+        Ver detalhes →
+      </<span class="tag">Text</span>>
+    </<span class="tag">Pressable</span>>
+  );
+}
+
+<span class="comment">/* CSS Tokens para cards */</span>
+<span class="prop">.gt-card</span> {
+  <span class="prop">background</span>: <span class="val">var(--gt-surface)</span>;                 <span class="comment">/* #151515 */</span>
+  <span class="prop">border</span>: <span class="val">1px solid rgba(255,255,255,0.08)</span>;
+  <span class="prop">border-radius</span>: <span class="val">var(--gt-radius-lg)</span>;           <span class="comment">/* 12px */</span>
+  <span class="prop">padding</span>: <span class="val">var(--gt-space-4)</span>;               <span class="comment">/* 16px */</span>
+  <span class="prop">transition</span>: <span class="val">all 200ms var(--gt-ease-standard)</span>;
+}
+<span class="prop">.gt-card--interactive:hover</span> {
+  <span class="prop">border-color</span>: <span class="val">rgba(255,122,26,0.25)</span>;
+  <span class="prop">box-shadow</span>: <span class="val">var(--gt-elevation-2), 0 0 0 1px rgba(255,122,26,0.08)</span>;
+}
+<span class="prop">.gt-card--interactive:active</span> {
+  <span class="prop">transform</span>: <span class="val">scale(0.98)</span>;
+  <span class="prop">transition-duration</span>: <span class="val">100ms</span>;
+}</pre>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="comment">/* Card Base */</span>
+  <span class="prop">--gt-card-bg</span>: <span class="val">var(--gt-surface)</span>;                    <span class="comment">/* #151515 */</span>
+  <span class="prop">--gt-card-bg-filled</span>: <span class="val">var(--gt-surface-2)</span>;             <span class="comment">/* #1D1D1D */</span>
+  <span class="prop">--gt-card-border</span>: <span class="val">var(--gt-border)</span>;                 <span class="comment">/* rgba(255,255,255,0.08) */</span>
+  <span class="prop">--gt-card-radius</span>: <span class="val">var(--gt-radius-lg)</span>;              <span class="comment">/* 12px */</span>
+  <span class="prop">--gt-card-padding-sm</span>: <span class="val">var(--gt-space-3)</span>;            <span class="comment">/* 12px */</span>
+  <span class="prop">--gt-card-padding-md</span>: <span class="val">var(--gt-space-4)</span>;            <span class="comment">/* 16px */</span>
+  <span class="prop">--gt-card-padding-lg</span>: <span class="val">var(--gt-space-5)</span>;            <span class="comment">/* 20px */</span>
+  <span class="prop">--gt-card-elevation</span>: <span class="val">var(--gt-elevation-1)</span>;
+  <span class="prop">--gt-card-elevation-hover</span>: <span class="val">var(--gt-elevation-2)</span>;
+
+  <span class="comment">/* Card States */</span>
+  <span class="prop">--gt-card-hover-border</span>: <span class="val">rgba(255,122,26,0.25)</span>;
+  <span class="prop">--gt-card-hover-glow</span>: <span class="val">0 0 0 1px rgba(255,122,26,0.08)</span>;
+  <span class="prop">--gt-card-pressed-scale</span>: <span class="val">0.98</span>;
+  <span class="prop">--gt-card-disabled-opacity</span>: <span class="val">0.5</span>;
+  <span class="prop">--gt-card-min-touch-height</span>: <span class="val">44px</span>;
+
+  <span class="comment">/* Card Typography */</span>
+  <span class="prop">--gt-card-title-font</span>: <span class="val">Inter 600 15px</span>;
+  <span class="prop">--gt-card-title-color</span>: <span class="val">var(--gt-fg)</span>;                <span class="comment">/* #FFFFFF */</span>
+  <span class="prop">--gt-card-meta-font</span>: <span class="val">Inter 400 13px</span>;
+  <span class="prop">--gt-card-meta-color</span>: <span class="val">var(--gt-fg-secondary)</span>;      <span class="comment">/* #B8B8B8 */</span>
+  <span class="prop">--gt-card-action-font</span>: <span class="val">Inter 500 13px</span>;
+  <span class="prop">--gt-card-action-color</span>: <span class="val">var(--gt-primary)</span>;          <span class="comment">/* #FF7A1A */</span>
+
+  <span class="comment">/* Card Transition */</span>
+  <span class="prop">--gt-card-duration</span>: <span class="val">var(--gt-duration-normal)</span>;      <span class="comment">/* 200ms */</span>
+  <span class="prop">--gt-card-ease</span>: <span class="val">var(--gt-ease-standard)</span>;
+  <span class="prop">--gt-card-pressed-duration</span>: <span class="val">var(--gt-duration-fast)</span>;  <span class="comment">/* 100ms */</span>
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <button class="mobile-toc-btn" aria-label="Menu">&#9776;</button>
+  <script src="js/docs.js"></script>
+  <script>
+    function copyCode(btn) {
+      const pre = btn.parentElement.querySelector('pre');
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        btn.textContent = 'Copiado!';
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

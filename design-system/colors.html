@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cores — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <style>
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--gt-surface);
+      border-right: 1px solid var(--gt-border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: var(--gt-space-6) 0;
+      z-index: 100;
+    }
+    .sidebar-brand {
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-brand h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--gt-fg);
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-2);
+    }
+    .sidebar-brand .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      display: inline-block;
+    }
+    .sidebar-brand p {
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+    .sidebar-section {
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gt-fg-muted);
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-2);
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-3);
+      padding: var(--gt-space-2) var(--gt-space-6);
+      font-size: 14px;
+      color: var(--gt-fg-secondary);
+      text-decoration: none;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      border-left: 2px solid transparent;
+    }
+    .sidebar-nav a:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-2);
+    }
+    .sidebar-nav a.active {
+      color: var(--gt-primary);
+      background: rgba(255, 122, 26, 0.06);
+      border-left-color: var(--gt-primary);
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-width: 0;
+    }
+    .content-area {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: var(--gt-space-10) var(--gt-space-8);
+    }
+    .color-group {
+      margin-bottom: var(--gt-space-10);
+    }
+    .color-group-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gt-fg);
+      margin-bottom: var(--gt-space-2);
+    }
+    .color-group-desc {
+      font-size: 14px;
+      color: var(--gt-fg-tertiary);
+      margin-bottom: var(--gt-space-4);
+    }
+    .token-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .token-name {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      color: var(--gt-fg);
+    }
+    .token-hex {
+      font-family: var(--gt-font-mono);
+      font-size: 12px;
+      color: var(--gt-fg-secondary);
+    }
+    .token-oklch {
+      font-family: var(--gt-font-mono);
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+    }
+    .semantic-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--gt-space-2);
+    }
+    .semantic-row {
+      display: flex;
+      gap: var(--gt-space-4);
+      align-items: stretch;
+    }
+    .semantic-swatch-pair {
+      display: flex;
+      gap: var(--gt-space-2);
+      flex-shrink: 0;
+    }
+    .swatch-label {
+      font-size: 11px;
+      text-align: center;
+      color: var(--gt-fg-tertiary);
+      margin-top: 4px;
+    }
+    .contrast-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .contrast-table th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--gt-fg);
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border-strong);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .contrast-table td {
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border);
+      color: var(--gt-fg-secondary);
+    }
+    .contrast-table td:first-child {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      color: var(--gt-fg);
+    }
+    .contrast-table tr:hover td {
+      background: var(--gt-surface);
+    }
+    .badge-approved {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: var(--gt-radius-full);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--gt-success-surface);
+      color: var(--gt-success);
+    }
+    .rules-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: var(--gt-space-4);
+    }
+    .rules-table th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--gt-fg);
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border-strong);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .rules-table td {
+      padding: var(--gt-space-3) var(--gt-space-4);
+      border-bottom: 1px solid var(--gt-border);
+      color: var(--gt-fg-secondary);
+    }
+    .rules-table tr:hover td {
+      background: var(--gt-surface);
+    }
+    .code-block {
+      background: var(--gt-surface);
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-lg);
+      padding: var(--gt-space-5);
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-block pre {
+      font-family: var(--gt-font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--gt-fg-secondary);
+      margin: 0;
+      white-space: pre;
+    }
+    .code-block .copy-btn {
+      position: absolute;
+      top: var(--gt-space-3);
+      right: var(--gt-space-3);
+      background: var(--gt-surface-3);
+      border: 1px solid var(--gt-border);
+      color: var(--gt-fg-tertiary);
+      padding: 4px 10px;
+      border-radius: var(--gt-radius-sm);
+      font-size: 12px;
+      font-family: var(--gt-font-mono);
+      cursor: pointer;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+    }
+    .code-block .copy-btn:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-4);
+    }
+    .swatch-mini {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--gt-radius-xs);
+      border: 1px solid var(--gt-border);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    .mobile-toc-btn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: var(--gt-elevation-3);
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+      .mobile-toc-btn { display: grid; place-items: center; }
+      .content-area { padding: var(--gt-space-6) var(--gt-space-4); }
+      .semantic-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Visão Geral</a>
+          <a href="colors.html" class="active">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html">Elevação</a>
+          <a href="radius.html">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+        <p class="section-description" style="color: var(--gt-fg-tertiary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--gt-space-2);">Fundamentos</p>
+        <h1 class="section-title">Cores</h1>
+        <p class="section-description">Paleta de cores do tema escuro do GymTracker. Cada token inclui valores HEX e OKLch para consistência entre plataformas.</p>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Paleta Primária</h2>
+          <p class="color-group-desc">A identidade visual do GymTracker. Usada para CTAs, indicadores ativos e destaques.</p>
+
+          <div class="token-row">
+            <div class="token-swatch" style="background: #FF7A1A;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-primary</span>
+              <span class="token-hex">#FF7A1A</span>
+              <span class="token-oklch">oklch(72% 0.175 55)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #FF9249;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-primary-hover</span>
+              <span class="token-hex">#FF9249</span>
+              <span class="token-oklch">oklch(77% 0.16 55)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #E06510;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-primary-active</span>
+              <span class="token-hex">#E06510</span>
+              <span class="token-oklch">oklch(65% 0.19 50)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Superfícies</h2>
+          <p class="color-group-desc">Hierarquia de camadas para o tema escuro. Cada nível eleva o conteúdo acima do background.</p>
+
+          <div class="token-row">
+            <div class="token-swatch" style="background: #0A0A0A;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-bg</span>
+              <span class="token-hex">#0A0A0A</span>
+              <span class="token-oklch">oklch(12% 0.01 0)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #151515;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-surface</span>
+              <span class="token-hex">#151515</span>
+              <span class="token-oklch">oklch(18% 0.01 0)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #1D1D1D;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-surface-2</span>
+              <span class="token-hex">#1D1D1D</span>
+              <span class="token-oklch">oklch(22% 0.01 0)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #252525;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-surface-3</span>
+              <span class="token-hex">#252525</span>
+              <span class="token-oklch">oklch(27% 0.01 0)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #2D2D2D;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-surface-4</span>
+              <span class="token-hex">#2D2D2D</span>
+              <span class="token-oklch">oklch(31% 0.01 0)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Texto</h2>
+          <p class="color-group-desc">Níveis de hierarquia textual. Do principal ao silenciado.</p>
+
+          <div class="token-row">
+            <div class="token-swatch" style="background: #FFFFFF;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-fg</span>
+              <span class="token-hex">#FFFFFF</span>
+              <span class="token-oklch">oklch(100% 0 0)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #B8B8B8;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-fg-secondary</span>
+              <span class="token-hex">#B8B8B8</span>
+              <span class="token-oklch">oklch(76% 0.01 0)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #888888;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-fg-tertiary</span>
+              <span class="token-hex">#888888</span>
+              <span class="token-oklch">oklch(58% 0.01 0)</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #555555;"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-fg-muted</span>
+              <span class="token-hex">#555555</span>
+              <span class="token-oklch">oklch(39% 0.01 0)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Cores Semânticas</h2>
+          <p class="color-group-desc">Estados de feedback. Cada cor possui uma variante de superfície com 12% de opacidade para fundos leves.</p>
+
+          <div class="token-row">
+            <div class="token-swatch" style="background: #22C55E;"></div>
+            <div class="token-swatch" style="background: rgba(34, 197, 94, 0.12);"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-success</span>
+              <span class="token-hex">#22C55E · rgba(34, 197, 94, 0.12)</span>
+              <span class="token-oklch">Success · Success Surface</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #F59E0B;"></div>
+            <div class="token-swatch" style="background: rgba(245, 158, 11, 0.12);"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-warning</span>
+              <span class="token-hex">#F59E0B · rgba(245, 158, 11, 0.12)</span>
+              <span class="token-oklch">Warning · Warning Surface</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #EF4444;"></div>
+            <div class="token-swatch" style="background: rgba(239, 68, 68, 0.12);"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-error</span>
+              <span class="token-hex">#EF4444 · rgba(239, 68, 68, 0.12)</span>
+              <span class="token-oklch">Error · Error Surface</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: #3B82F6;"></div>
+            <div class="token-swatch" style="background: rgba(59, 130, 246, 0.12);"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-info</span>
+              <span class="token-hex">#3B82F6 · rgba(59, 130, 246, 0.12)</span>
+              <span class="token-oklch">Info · Info Surface</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Bordas</h2>
+          <p class="color-group-desc">Bordas semi-transparentes. Branco com opacidade para tema escuro — nunca use bordas escuras sólidas.</p>
+
+          <div class="token-row">
+            <div class="token-swatch" style="background: rgba(255,255,255,0.08);"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-border</span>
+              <span class="token-hex">rgba(255, 255, 255, 0.08)</span>
+              <span class="token-oklch">Borda padrão</span>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-swatch" style="background: rgba(255,255,255,0.15);"></div>
+            <div class="token-info">
+              <span class="token-name">--gt-border-strong</span>
+              <span class="token-hex">rgba(255, 255, 255, 0.15)</span>
+              <span class="token-oklch">Borda forte (hover, foco)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Contraste</h2>
+          <p class="color-group-desc">Razões de contraste WCAG 2.1 para combinações de texto sobre fundo. Mínimo exigido: 4.5:1 (AA).</p>
+
+          <table class="contrast-table">
+            <thead>
+              <tr>
+                <th>Combinação</th>
+                <th>Razão</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="swatch-mini" style="background:#FFFFFF;"></span>#FFFFFF sobre <span class="swatch-mini" style="background:#0A0A0A;"></span>#0A0A0A</td>
+                <td>18.05:1</td>
+                <td><span class="badge-approved">Aprovado</span></td>
+              </tr>
+              <tr>
+                <td><span class="swatch-mini" style="background:#B8B8B8;"></span>#B8B8B8 sobre <span class="swatch-mini" style="background:#0A0A0A;"></span>#0A0A0A</td>
+                <td>9.68:1</td>
+                <td><span class="badge-approved">Aprovado</span></td>
+              </tr>
+              <tr>
+                <td><span class="swatch-mini" style="background:#888888;"></span>#888888 sobre <span class="swatch-mini" style="background:#0A0A0A;"></span>#0A0A0A</td>
+                <td>5.21:1</td>
+                <td><span class="badge-approved">Aprovado</span></td>
+              </tr>
+              <tr>
+                <td><span class="swatch-mini" style="background:#FFFFFF;"></span>#FFFFFF sobre <span class="swatch-mini" style="background:#151515;"></span>#151515</td>
+                <td>14.62:1</td>
+                <td><span class="badge-approved">Aprovado</span></td>
+              </tr>
+              <tr>
+                <td><span class="swatch-mini" style="background:#FFFFFF;"></span>#FFFFFF sobre <span class="swatch-mini" style="background:#1D1D1D;"></span>#1D1D1D</td>
+                <td>12.57:1</td>
+                <td><span class="badge-approved">Aprovado</span></td>
+              </tr>
+              <tr>
+                <td><span class="swatch-mini" style="background:#FF7A1A;"></span>#FF7A1A sobre <span class="swatch-mini" style="background:#0A0A0A;"></span>#0A0A0A</td>
+                <td>5.12:1</td>
+                <td><span class="badge-approved">Aprovado</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Regras do Tema Escuro</h2>
+          <p class="color-group-desc">Princípios obrigatórios para manter a coerência visual no tema escuro do GymTracker.</p>
+
+          <div class="callout">
+            <p><strong>Atenção:</strong> Estas regras devem ser seguidas em todas as plataformas (React Native e Next.js). Violações causam inconsistência visual e problemas de acessibilidade.</p>
+          </div>
+
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th>Regra</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sem preto ou branco puro</td>
+                <td>Nunca use <code>#000000</code> como fundo ou <code>#FFFFFF</code> como cor de fundo. Use os tokens de superfície e texto.</td>
+              </tr>
+              <tr>
+                <td>Bordas semi-transparentes</td>
+                <td>Use branco com opacidade (<code>rgba(255,255,255,0.08)</code>) para bordas. Nunca use bordas escuras sólidas.</td>
+              </tr>
+              <tr>
+                <td>Primary é a única cor saturada</td>
+                <td>Sobre uma superfície, a cor primária (#FF7A1A) deve ser o único elemento saturado visible. Cores semânticas apenas para feedback.</td>
+              </tr>
+              <tr>
+                <td>Superfícies semânticas a 12%</td>
+                <td>Cores semânticas usam fundos com 12% de opacidade da cor base, nunca a cor pura como fundo.</td>
+              </tr>
+              <tr>
+                <td>Hierarquia de superfícies</td>
+                <td>bg → surface → surface-2 → surface-3 → surface-4. Cada nível representa uma camada visual acima da anterior.</td>
+              </tr>
+              <tr>
+                <td>Orçamento de destaque</td>
+                <td>No máximo 2 usos visíveis da cor primária por tela. O excesso dilui o impacto visual.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="color-group">
+          <h2 class="color-group-title">Tokens CSS</h2>
+          <p class="color-group-desc">Bloco de custom properties para copiar e usar no projeto.</p>
+
+          <div class="code-block">
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').textContent)">Copiar</button>
+            <pre><code>:root {
+  /* Paleta Primária */
+  --gt-primary: #FF7A1A;          /* oklch(72% 0.175 55) */
+  --gt-primary-hover: #FF9249;    /* oklch(77% 0.16 55) */
+  --gt-primary-active: #E06510;   /* oklch(65% 0.19 50) */
+
+  /* Superfícies */
+  --gt-bg: #0A0A0A;              /* oklch(12% 0.01 0) */
+  --gt-surface: #151515;          /* oklch(18% 0.01 0) */
+  --gt-surface-2: #1D1D1D;       /* oklch(22% 0.01 0) */
+  --gt-surface-3: #252525;        /* oklch(27% 0.01 0) */
+  --gt-surface-4: #2D2D2D;       /* oklch(31% 0.01 0) */
+
+  /* Texto */
+  --gt-fg: #FFFFFF;              /* oklch(100% 0 0) */
+  --gt-fg-secondary: #B8B8B8;    /* oklch(76% 0.01 0) */
+  --gt-fg-tertiary: #888888;     /* oklch(58% 0.01 0) */
+  --gt-fg-muted: #555555;        /* oklch(39% 0.01 0) */
+
+  /* Bordas */
+  --gt-border: rgba(255, 255, 255, 0.08);
+  --gt-border-strong: rgba(255, 255, 255, 0.15);
+
+  /* Semânticas */
+  --gt-success: #22C55E;
+  --gt-success-surface: rgba(34, 197, 94, 0.12);
+  --gt-warning: #F59E0B;
+  --gt-warning-surface: rgba(245, 158, 11, 0.12);
+  --gt-error: #EF4444;
+  --gt-error-surface: rgba(239, 68, 68, 0.12);
+  --gt-info: #3B82F6;
+  --gt-info-surface: rgba(59, 130, 246, 0.12);
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+</body>
+</html>

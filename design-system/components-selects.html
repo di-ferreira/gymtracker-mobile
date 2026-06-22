@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seletores — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .layout{display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar-width);background:var(--gt-surface);border-right:1px solid var(--gt-border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;padding:var(--gt-space-6) 0;z-index:100}
+    .sidebar-brand{padding:0 var(--gt-space-6);margin-bottom:var(--gt-space-6)}
+    .sidebar-brand h1{font-size:18px;font-weight:700;letter-spacing:-0.01em;color:var(--gt-fg);display:flex;align-items:center;gap:var(--gt-space-2)}
+    .sidebar-brand .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--gt-primary);display:inline-block}
+    .sidebar-brand p{font-size:12px;color:var(--gt-fg-tertiary);margin-top:4px;letter-spacing:0.02em}
+    .sidebar-section{margin-bottom:var(--gt-space-6)}
+    .sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gt-fg-muted);padding:0 var(--gt-space-6);margin-bottom:var(--gt-space-2)}
+    .sidebar-nav a{display:flex;align-items:center;gap:var(--gt-space-3);padding:var(--gt-space-2) var(--gt-space-6);font-size:14px;color:var(--gt-fg-secondary);text-decoration:none;transition:all var(--gt-duration-fast) var(--gt-ease-standard);border-left:2px solid transparent}
+    .sidebar-nav a:hover{color:var(--gt-fg);background:var(--gt-surface-2)}
+    .sidebar-nav a.active{color:var(--gt-primary);background:rgba(255,122,26,0.06);border-left-color:var(--gt-primary)}
+    .main-content{margin-left:var(--sidebar-width);flex:1;min-width:0}
+    .content-area{max-width:960px;margin:0 auto;padding:var(--gt-space-10) var(--gt-space-8)}
+    .doc-section{margin-bottom:48px}
+    .section-title{font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px}
+    .section-desc{color:#888;font-size:15px;margin-bottom:24px;line-height:1.6}
+    .token-table{width:100%;border-collapse:collapse;font-size:14px}
+    .token-table th{text-align:left;padding:10px 14px;border-bottom:2px solid rgba(255,255,255,0.12);color:#FF7A1A;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+    .token-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8}
+    .token-table tr:hover td{background:rgba(255,122,26,0.04)}
+    .token-table code{font-family:'JetBrains Mono',monospace;font-size:13px;color:#FF7A1A;background:rgba(255,122,26,0.08);padding:2px 6px;border-radius:4px}
+    .rules-list{list-style:none;padding:0}
+    .rules-list li{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8;line-height:1.6;padding-left:20px;position:relative}
+    .rules-list li::before{content:'';position:absolute;left:0;top:18px;width:6px;height:6px;border-radius:50%;background:#FF7A1A}
+    .code-block{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#C8C8C8;overflow-x:auto;position:relative}
+    .code-block .copy-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#A0A0A0;padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+    .code-block .copy-btn:hover{background:rgba(255,122,26,0.15);color:#FF7A1A}
+    .code-block .prop{color:#FF7A1A}
+    .code-block .val{color:#7EC8E3}
+
+    .select-demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .select-demo-col{display:flex;flex-direction:column;gap:16px}
+    .select-demo-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:#FF7A1A;margin-bottom:4px;letter-spacing:0.04em;text-transform:uppercase}
+
+    .gt-select{position:relative;display:inline-block;min-width:220px}
+    .gt-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:var(--gt-radius-sm,6px);color:#FFFFFF;font-family:'Inter',sans-serif;font-size:14px;cursor:pointer;transition:all 150ms ease;user-select:none}
+    .gt-select-trigger:hover{border-color:rgba(255,255,255,0.15)}
+    .gt-select-trigger .chevron{width:16px;height:16px;flex-shrink:0;color:#888;transition:transform 200ms ease}
+    .gt-select-trigger .chevron.open{transform:rotate(180deg)}
+    .gt-select-trigger .placeholder{color:#555}
+
+    .gt-select-trigger--sm{padding:6px 10px;font-size:13px;border-radius:var(--gt-radius-xs,4px)}
+    .gt-select-trigger--md{padding:10px 12px;font-size:14px;border-radius:var(--gt-radius-sm,6px)}
+    .gt-select-trigger--lg{padding:14px 16px;font-size:16px;border-radius:var(--gt-radius-md,8px)}
+
+    .gt-select-trigger--focus{border-color:var(--gt-primary,#FF7A1A);box-shadow:0 0 0 3px rgba(255,122,26,0.16);outline:none}
+    .gt-select-trigger--error{border-color:var(--gt-error,#EF4444);box-shadow:0 0 0 3px rgba(239,68,68,0.16)}
+    .gt-select-trigger--disabled{opacity:0.4;cursor:not-allowed;pointer-events:none}
+
+    .gt-select-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1D1D1D;border:1px solid rgba(255,255,255,0.08);border-radius:var(--gt-radius-md,8px);box-shadow:var(--gt-elevation-3,0 4px 8px rgba(0,0,0,0.3),0 8px 16px rgba(0,0,0,0.2));z-index:50;overflow:hidden;max-height:220px;overflow-y:auto}
+    .gt-select-option{padding:10px 12px;font-size:14px;color:#B8B8B8;cursor:pointer;transition:background 100ms ease}
+    .gt-select-option:hover{background:#252525;color:#FFFFFF}
+    .gt-select-option--selected{color:#FF7A1A;font-weight:500}
+    .gt-select-option--selected::after{content:'✓';float:right;color:#FF7A1A;font-weight:600}
+    .gt-select-option--disabled{opacity:0.35;cursor:not-allowed;pointer-events:none}
+
+    .gt-field{display:flex;flex-direction:column;gap:6px}
+    .gt-field-label{font-size:14px;font-weight:500;color:#B8B8B8}
+    .gt-field-error{font-size:12px;color:#EF4444}
+
+    .gt-multi-tags{display:flex;flex-wrap:wrap;gap:6px;padding:6px 10px;min-height:38px;align-items:center}
+    .gt-multi-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(255,122,26,0.12);color:#FF7A1A;border:1px solid rgba(255,122,26,0.2);border-radius:var(--gt-radius-full,9999px);padding:2px 10px;font-size:12px;font-weight:500}
+    .gt-multi-tag .tag-x{cursor:pointer;color:#888;font-size:14px;line-height:1;transition:color 100ms ease}
+    .gt-multi-tag .tag-x:hover{color:#EF4444}
+
+    .state-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+    .state-card{background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:12px}
+    .state-card-name{font-size:13px;font-weight:600;color:#E0E0E0}
+    .state-card-desc{font-size:12px;color:#888}
+
+    .platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .platform-card{background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:20px}
+    .platform-card h4{font-size:14px;font-weight:600;color:#FFFFFF;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .platform-card p{font-size:13px;color:#B8B8B8;line-height:1.6}
+    .platform-card .platform-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--gt-radius-full,9999px);font-size:11px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase}
+    .platform-badge--mobile{background:var(--gt-primary,#FF7A1A);color:#0A0A0A}
+    .platform-badge--web{background:var(--gt-info,#3B82F6);color:#FFFFFF}
+
+    .mobile-toc-btn{display:none;position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--gt-primary);color:var(--gt-bg);border:none;font-size:20px;cursor:pointer;z-index:200;box-shadow:var(--gt-elevation-3)}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0}.content-area{padding:var(--gt-space-6) var(--gt-space-4)}.select-demo-grid,.platform-grid,.do-dont-grid{grid-template-columns:1fr}.state-grid{grid-template-columns:1fr}}
+    .mobile-toc-btn{display:none;position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--gt-primary);color:var(--gt-bg);border:none;font-size:20px;cursor:pointer;z-index:200;box-shadow:var(--gt-elevation-3)}
+    @media(max-width:768px){.mobile-toc-btn{display:grid;place-items:center}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1><span class="brand-dot"></span> GymTracker</h1><p>Design System v1.0</p></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Fundamentos</div><nav class="sidebar-nav"><a href="index.html">Visão Geral</a><a href="colors.html">Cores</a><a href="typography.html">Tipografia</a><a href="spacing.html">Espaçamento</a><a href="elevation.html">Elevação</a><a href="radius.html">Raio de Borda</a><a href="iconography.html">Iconografia</a><a href="motion.html">Movimento</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Componentes</div><nav class="sidebar-nav"><a href="components-buttons.html">Botões</a><a href="components-inputs.html">Inputs</a><a href="components-selects.html" class="active">Seletores</a><a href="components-cards.html">Cards</a><a href="components-chips.html">Chips</a><a href="components-tabs.html">Tabs</a><a href="components-navigation.html">Navegação</a><a href="components-bottom-nav.html">Navegação Inferior</a><a href="components-tables.html">Tabelas</a><a href="components-modals.html">Modais</a><a href="components-drawers.html">Drawers</a><a href="components-tooltips.html">Tooltips</a><a href="components-toasts.html">Toasts</a><a href="components-empty-states.html">Estados Vazios</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Diretrizes</div><nav class="sidebar-nav"><a href="accessibility.html">Acessibilidade</a><a href="reanimated.html">Reanimated</a></nav></div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <p style="color:var(--gt-fg-tertiary);font-size:13px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--gt-space-2);">Componentes</p>
+          <h1 class="section-title" style="font-size:32px;font-weight:700;letter-spacing:-0.02em;margin-bottom:var(--gt-space-2);">Seletores</h1>
+          <p class="section-desc" style="max-width:65ch;">Componente dropdown select para escolha de opções em listas. Funciona como um input com um ícone de chevron à direita e um painel de opções suspensa.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Variantes</h2>
+          <p class="section-desc">Quatro variantes do seletor, cada uma com uso específico dentro da interface.</p>
+
+          <div class="select-demo-grid">
+            <div class="select-demo-col">
+              <div class="select-demo-label">Default</div>
+              <div class="gt-select" data-select>
+                <div class="gt-select-trigger gt-select-trigger--md" tabindex="0">
+                  <span class="placeholder">Selecione o grupo</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+                <div class="gt-select-dropdown" style="display:none">
+                  <div class="gt-select-option" data-value="peito">Peito</div>
+                  <div class="gt-select-option" data-value="costas">Costas</div>
+                  <div class="gt-select-option" data-value="pernas">Pernas</div>
+                  <div class="gt-select-option" data-value="ombros">Ombros</div>
+                  <div class="gt-select-option" data-value="bracos">Braços</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-demo-col">
+              <div class="select-demo-label">With Label</div>
+              <div class="gt-field">
+                <label class="gt-field-label">Grupo muscular</label>
+                <div class="gt-select" data-select>
+                  <div class="gt-select-trigger gt-select-trigger--md" tabindex="0">
+                    <span>Peito</span>
+                    <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                  </div>
+                  <div class="gt-select-dropdown" style="display:none">
+                    <div class="gt-select-option gt-select-option--selected" data-value="peito">Peito</div>
+                    <div class="gt-select-option" data-value="costas">Costas</div>
+                    <div class="gt-select-option" data-value="pernas">Pernas</div>
+                    <div class="gt-select-option" data-value="ombros">Ombros</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-demo-col">
+              <div class="select-demo-label">With Error</div>
+              <div class="gt-field">
+                <label class="gt-field-label">Grupo muscular</label>
+                <div class="gt-select" data-select>
+                  <div class="gt-select-trigger gt-select-trigger--md gt-select-trigger--error" tabindex="0">
+                    <span class="placeholder">Selecione o grupo</span>
+                    <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                  </div>
+                </div>
+                <span class="gt-field-error">Selecione ao menos um grupo muscular</span>
+              </div>
+            </div>
+
+            <div class="select-demo-col">
+              <div class="select-demo-label">Multi-select</div>
+              <div class="gt-field">
+                <label class="gt-field-label">Equipamentos</label>
+                <div class="gt-select" data-select data-multi>
+                  <div class="gt-select-trigger gt-select-trigger--md" tabindex="0">
+                    <div class="gt-multi-tags">
+                      <span class="gt-multi-tag">Halteres<span class="tag-x">×</span></span>
+                      <span class="gt-multi-tag">Barra<span class="tag-x">×</span></span>
+                      <span class="placeholder" style="padding-left:4px">Adicionar...</span>
+                    </div>
+                    <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                  </div>
+                  <div class="gt-select-dropdown" style="display:none">
+                    <div class="gt-select-option gt-select-option--selected" data-value="halteres">Halteres</div>
+                    <div class="gt-select-option gt-select-option--selected" data-value="barra">Barra</div>
+                    <div class="gt-select-option" data-value="maquina">Máquina</div>
+                    <div class="gt-select-option" data-value="cabos">Cabos</div>
+                    <div class="gt-select-option" data-value="elastico">Elástico</div>
+                    <div class="gt-select-option" data-value="corpo">Peso corporal</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tamanhos</h2>
+          <p class="section-desc">Três tamanhos para se adaptar a diferentes densidades de conteúdo.</p>
+          <div style="display:flex;flex-direction:column;gap:20px;max-width:320px">
+            <div>
+              <div class="select-demo-label">sm — 32px</div>
+              <div class="gt-select" data-select>
+                <div class="gt-select-trigger gt-select-trigger--sm" tabindex="0">
+                  <span class="placeholder">Selecione</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+                <div class="gt-select-dropdown" style="display:none">
+                  <div class="gt-select-option" style="padding:6px 10px;font-size:13px">Peito</div>
+                  <div class="gt-select-option" style="padding:6px 10px;font-size:13px">Costas</div>
+                  <div class="gt-select-option" style="padding:6px 10px;font-size:13px">Pernas</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="select-demo-label">md — 40px (padrão)</div>
+              <div class="gt-select" data-select>
+                <div class="gt-select-trigger gt-select-trigger--md" tabindex="0">
+                  <span class="placeholder">Selecione</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+                <div class="gt-select-dropdown" style="display:none">
+                  <div class="gt-select-option">Peito</div>
+                  <div class="gt-select-option">Costas</div>
+                  <div class="gt-select-option">Pernas</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="select-demo-label">lg — 48px</div>
+              <div class="gt-select" data-select>
+                <div class="gt-select-trigger gt-select-trigger--lg" tabindex="0">
+                  <span class="placeholder">Selecione</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+                <div class="gt-select-dropdown" style="display:none">
+                  <div class="gt-select-option" style="padding:14px 16px;font-size:16px">Peito</div>
+                  <div class="gt-select-option" style="padding:14px 16px;font-size:16px">Costas</div>
+                  <div class="gt-select-option" style="padding:14px 16px;font-size:16px">Pernas</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Estados</h2>
+          <p class="section-desc">Os cinco estados interativos do trigger do seletor.</p>
+          <div class="state-grid">
+            <div class="state-card">
+              <div class="state-card-name">Default</div>
+              <div class="gt-select" style="min-width:unset">
+                <div class="gt-select-trigger gt-select-trigger--md" tabindex="0">
+                  <span class="placeholder">Selecione</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+              </div>
+              <div class="state-card-desc">Borda padrão <code>rgba(255,255,255,0.08)</code></div>
+            </div>
+            <div class="state-card">
+              <div class="state-card-name">Open</div>
+              <div class="gt-select" style="min-width:unset">
+                <div class="gt-select-trigger gt-select-trigger--md" tabindex="0" style="border-color:rgba(255,255,255,0.15)">
+                  <span>Costas</span>
+                  <svg class="chevron open" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+              </div>
+              <div class="state-card-desc">Chevron rotacionado 180°, dropdown visível</div>
+            </div>
+            <div class="state-card">
+              <div class="state-card-name">Focus</div>
+              <div class="gt-select" style="min-width:unset">
+                <div class="gt-select-trigger gt-select-trigger--md gt-select-trigger--focus" tabindex="0">
+                  <span class="placeholder">Selecione</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+              </div>
+              <div class="state-card-desc">Borda <code>#FF7A1A</code> + ring 3px</div>
+            </div>
+            <div class="state-card">
+              <div class="state-card-name">Error</div>
+              <div class="gt-select" style="min-width:unset">
+                <div class="gt-select-trigger gt-select-trigger--md gt-select-trigger--error" tabindex="0">
+                  <span class="placeholder">Selecione</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+              </div>
+              <div class="state-card-desc">Borda <code>#EF4444</code> + ring 3px vermelho</div>
+            </div>
+            <div class="state-card">
+              <div class="state-card-name">Disabled</div>
+              <div class="gt-select" style="min-width:unset">
+                <div class="gt-select-trigger gt-select-trigger--md gt-select-trigger--disabled" tabindex="-1">
+                  <span>Peito</span>
+                  <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+              </div>
+              <div class="state-card-desc">Opacidade 40%, <code>pointer-events: none</code></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Dropdown</h2>
+          <p class="section-desc">O painel de opções do dropdown usa a superfície <code>#1D1D1D</code> com hover em <code>#252525</code> e opção selecionada com acento <code>#FF7A1A</code>.</p>
+          <div style="max-width:300px">
+            <div class="gt-select-dropdown" style="display:block;position:relative">
+              <div class="gt-select-option">Peito</div>
+              <div class="gt-select-option gt-select-option--selected" data-value="costas">Costas</div>
+              <div class="gt-select-option">Pernas</div>
+              <div class="gt-select-option">Ombros</div>
+              <div class="gt-select-option" style="background:#252525">Braços <span style="float:right;font-size:11px;color:#888">hover</span></div>
+              <div class="gt-select-option gt-select-option--disabled">Core (indisponível)</div>
+            </div>
+          </div>
+          <table class="token-table" style="margin-top:24px">
+            <thead><tr><th>Elemento</th><th>Token / Valor</th><th>Descrição</th></tr></thead>
+            <tbody>
+              <tr><td>Background</td><td><code>#1D1D1D</code></td><td>Superfície do painel de opções</td></tr>
+              <tr><td>Border</td><td><code>rgba(255,255,255,0.08)</code></td><td>Borda do dropdown</td></tr>
+              <tr><td>Shadow</td><td><code>--gt-elevation-3</code></td><td>Sombra do painel suspenso</td></tr>
+              <tr><td>Option hover</td><td><code>#252525</code></td><td>Fundo da opção ao passar o mouse</td></tr>
+              <tr><td>Option selected fg</td><td><code>#FF7A1A</code></td><td>Texto e ícone ✓ da opção selecionada</td></tr>
+              <tr><td>Option disabled</td><td><code>opacity: 0.35</code></td><td>Opção indisponível</td></tr>
+              <tr><td>Max height</td><td><code>220px</code></td><td>Scroll interno após limite</td></tr>
+              <tr><td>Border radius</td><td><code>--gt-radius-md (8px)</code></td><td>Arredondamento do painel</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Especificações</h2>
+          <p class="section-desc">Tokens e valores de design do componente seletor.</p>
+          <table class="token-table">
+            <thead><tr><th>Propriedade</th><th>Token</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td>Trigger bg</td><td><code>--gt-surface</code></td><td>#151515</td></tr>
+              <tr><td>Trigger border</td><td><code>--gt-border</code></td><td>rgba(255,255,255,0.08)</td></tr>
+              <tr><td>Trigger border radius</td><td><code>--gt-radius-sm</code></td><td>6px</td></tr>
+              <tr><td>Trigger font</td><td><code>--gt-font-body</code></td><td>Inter 400 14px</td></tr>
+              <tr><td>Focus ring</td><td><code>--gt-primary</code></td><td>0 0 0 3px rgba(255,122,26,0.16)</td></tr>
+              <tr><td>Error ring</td><td><code>--gt-error</code></td><td>0 0 0 3px rgba(239,68,68,0.16)</td></tr>
+              <tr><td>Disabled opacity</td><td>—</td><td>0.4</td></tr>
+              <tr><td>Dropdown bg</td><td><code>--gt-surface-2</code></td><td>#1D1D1D</td></tr>
+              <tr><td>Dropdown shadow</td><td><code>--gt-elevation-3</code></td><td>Elevação nível 3</td></tr>
+              <tr><td>Dropdown radius</td><td><code>--gt-radius-md</code></td><td>8px</td></tr>
+              <tr><td>Option padding</td><td>—</td><td>10px 12px</td></tr>
+              <tr><td>Option hover bg</td><td><code>--gt-surface-3</code></td><td>#252525</td></tr>
+              <tr><td>Selected text</td><td><code>--gt-primary</code></td><td>#FF7A1A</td></tr>
+              <tr><td>Chevron size</td><td>—</td><td>16×16px</td></tr>
+              <tr><td>Chevron color</td><td><code>--gt-fg-tertiary</code></td><td>#888888</td></tr>
+              <tr><td>Label font</td><td>—</td><td>Inter 500 14px #B8B8B8</td></tr>
+              <tr><td>Error text</td><td><code>--gt-error</code></td><td>Inter 400 12px #EF4444</td></tr>
+              <tr><td>Tag bg (multi-select)</td><td>—</td><td>rgba(255,122,26,0.12)</td></tr>
+              <tr><td>Tag border (multi-select)</td><td>—</td><td>rgba(255,122,26,0.2)</td></tr>
+              <tr><td>Tag text (multi-select)</td><td><code>--gt-primary</code></td><td>#FF7A1A</td></tr>
+              <tr><td>sm height</td><td>—</td><td>32px (6px 10px)</td></tr>
+              <tr><td>md height</td><td>—</td><td>40px (10px 12px)</td></tr>
+              <tr><td>lg height</td><td>—</td><td>48px (14px 16px)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Mobile vs Web</h2>
+          <p class="section-desc">O componente seletor se comporta de forma diferente em cada plataforma para respeitar as convenções nativas.</p>
+          <div class="platform-grid">
+            <div class="platform-card">
+              <h4><span class="platform-badge platform-badge--mobile">Mobile</span></h4>
+              <p>No app React Native, use um <strong>ActionSheet</strong> (iOS) ou <strong>bottom sheet picker</strong> (Android) para selecionar opções. Evite dropdowns flutuantes — eles não são ergonômicos em telas touch. O trigger permanece visualmente igual, mas ao tocar, abre o sheet de baixo para cima com as opções em lista scrollável.</p>
+              <ul class="rules-list" style="margin-top:12px">
+                <li>Use <code><BottomSheetSelect></code> no React Native</li>
+                <li>O sheet ocupa no máximo 50% da tela</li>
+                <li>Opções com altura mínima de 48px para toque</li>
+                <li>Adicione gesto de swipe-down para fechar</li>
+              </ul>
+            </div>
+            <div class="platform-card">
+              <h4><span class="platform-badge platform-badge--web">Web</span></h4>
+              <p>No dashboard Next.js, use o <strong>dropdown customizado</strong> com painel absoluto. O dropdown posiciona-se abaixo do trigger com 4px de gap. Suporta teclado: <kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd> para navegar, <kbd class="kbd">Enter</kbd> para selecionar, <kbd class="kbd">Esc</kbd> para fechar.</p>
+              <ul class="rules-list" style="margin-top:12px">
+                <li>Use <code><Select></code> custom com portal</li>
+                <li>Posição: absolute abaixo do trigger</li>
+                <li>Fechar ao clicar fora (outside click)</li>
+                <li>Navegação por teclado obrigatória</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras de Uso</h2>
+          <ul class="rules-list">
+            <li>Use seletor quando houver <strong>5 ou mais opções</strong>. Para menos de 5, considere chips ou radio buttons</li>
+            <li>Sempre inclua um placeholder descritivo — nunca deixe o trigger vazio</li>
+            <li>O label é obrigatório quando o seletor faz parte de um formulário</li>
+            <li>Ao validar, mostre a mensagem de erro abaixo do trigger — nunca use alert</li>
+            <li>Multi-select deve usar tags com botão de remoção dentro do trigger</li>
+            <li>No mobile, nunca use dropdown flutuante — use ActionSheet ou bottom sheet</li>
+            <li>Limite o dropdown a no máximo 200px de altura com scroll interno</li>
+            <li>Opções desabilitadas devem ficar visíveis mas com opacidade reduzida (0.35)</li>
+            <li>Nunca use mais de 2 seletores por linha em telas mobile</li>
+            <li>A transição de abertura do dropdown deve usar <code>--gt-duration-normal (200ms)</code> com <code>--gt-ease-decelerate</code></li>
+            <li>O chevron deve rotacionar 180° quando o dropdown está aberto</li>
+            <li>Feche o dropdown ao selecionar uma opção (exceto multi-select)</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="comment">/* Select Trigger */</span>
+  <span class="prop">--gt-select-bg</span>: <span class="val">var(--gt-surface)</span>;               <span class="comment">/* #151515 */</span>
+  <span class="prop">--gt-select-border</span>: <span class="val">var(--gt-border)</span>;            <span class="comment">/* rgba(255,255,255,0.08) */</span>
+  <span class="prop">--gt-select-radius</span>: <span class="val">var(--gt-radius-sm)</span>;         <span class="comment">/* 6px */</span>
+  <span class="prop">--gt-select-font</span>: <span class="val">var(--gt-font-body)</span>;           <span class="comment">/* Inter */</span>
+  <span class="prop">--gt-select-fg</span>: <span class="val">var(--gt-fg)</span>;                  <span class="comment">/* #FFFFFF */</span>
+  <span class="prop">--gt-select-placeholder</span>: <span class="val">var(--gt-fg-muted)</span>;      <span class="comment">/* #555555 */</span>
+  <span class="prop">--gt-select-focus-ring</span>: <span class="val">0 0 0 3px rgba(255,122,26,0.16)</span>;
+  <span class="prop">--gt-select-error-ring</span>: <span class="val">0 0 0 3px rgba(239,68,68,0.16)</span>;
+  <span class="prop">--gt-select-disabled-opacity</span>: <span class="val">0.4</span>;
+
+  <span class="comment">/* Sizes */</span>
+  <span class="prop">--gt-select-sm</span>: <span class="val">6px 10px</span>;      <span class="comment">/* 32px height */</span>
+  <span class="prop">--gt-select-md</span>: <span class="val">10px 12px</span>;     <span class="comment">/* 40px height */</span>
+  <span class="prop">--gt-select-lg</span>: <span class="val">14px 16px</span>;     <span class="comment">/* 48px height */</span>
+
+  <span class="comment">/* Dropdown Panel */</span>
+  <span class="prop">--gt-dropdown-bg</span>: <span class="val">var(--gt-surface-2)</span>;         <span class="comment">/* #1D1D1D */</span>
+  <span class="prop">--gt-dropdown-border</span>: <span class="val">var(--gt-border)</span>;         <span class="comment">/* rgba(255,255,255,0.08) */</span>
+  <span class="prop">--gt-dropdown-shadow</span>: <span class="val">var(--gt-elevation-3)</span>;
+  <span class="prop">--gt-dropdown-radius</span>: <span class="val">var(--gt-radius-md)</span>;       <span class="comment">/* 8px */</span>
+  <span class="prop">--gt-dropdown-max-h</span>: <span class="val">220px</span>;
+  <span class="prop">--gt-dropdown-option-pad</span>: <span class="val">10px 12px</span>;
+  <span class="prop">--gt-dropdown-hover-bg</span>: <span class="val">var(--gt-surface-3)</span>;     <span class="comment">/* #252525 */</span>
+  <span class="prop">--gt-dropdown-selected-fg</span>: <span class="val">var(--gt-primary)</span>;   <span class="comment">/* #FF7A1A */</span>
+  <span class="prop">--gt-dropdown-disabled-opacity</span>: <span class="val">0.35</span>;
+
+  <span class="comment">/* Chevron */</span>
+  <span class="prop">--gt-select-chevron-size</span>: <span class="val">16px</span>;
+  <span class="prop">--gt-select-chevron-color</span>: <span class="val">var(--gt-fg-tertiary)</span>;  <span class="comment">/* #888888 */</span>
+  <span class="prop">--gt-select-chevron-rotation</span>: <span class="val">180deg</span>;
+
+  <span class="comment">/* Labels & Error */</span>
+  <span class="prop">--gt-select-label-fg</span>: <span class="val">var(--gt-fg-secondary)</span>;   <span class="comment">/* #B8B8B8 */</span>
+  <span class="prop">--gt-select-error-fg</span>: <span class="val">var(--gt-error)</span>;         <span class="comment">/* #EF4444 */</span>
+
+  <span class="comment">/* Multi-select Tags */</span>
+  <span class="prop">--gt-select-tag-bg</span>: <span class="val">rgba(255,122,26,0.12)</span>;
+  <span class="prop">--gt-select-tag-border</span>: <span class="val">rgba(255,122,26,0.2)</span>;
+  <span class="prop">--gt-select-tag-fg</span>: <span class="val">var(--gt-primary)</span>;           <span class="comment">/* #FF7A1A */</span>
+  <span class="prop">--gt-select-tag-radius</span>: <span class="val">var(--gt-radius-full)</span>;    <span class="comment">/* 9999px */</span>
+
+  <span class="comment">/* Transition */</span>
+  <span class="prop">--gt-select-duration</span>: <span class="val">var(--gt-duration-normal)</span>;  <span class="comment">/* 200ms */</span>
+  <span class="prop">--gt-select-ease</span>: <span class="val">var(--gt-ease-decelerate)</span>;
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <button class="mobile-toc-btn" aria-label="Menu">&#9776;</button>
+  <script src="js/docs.js"></script>
+  <script>
+    function copyCode(btn) {
+      const pre = btn.parentElement.querySelector('pre');
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        btn.textContent = 'Copiado!';
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+      });
+    }
+    document.querySelectorAll('[data-select]').forEach(function(sel) {
+      var trigger = sel.querySelector('.gt-select-trigger');
+      var dropdown = sel.querySelector('.gt-select-dropdown');
+      var chevron = sel.querySelector('.chevron');
+      if (!trigger || !dropdown) return;
+      trigger.addEventListener('click', function(e) {
+        if (trigger.classList.contains('gt-select-trigger--disabled')) return;
+        var isOpen = dropdown.style.display === 'block';
+        dropdown.style.display = isOpen ? 'none' : 'block';
+        if (chevron) chevron.classList.toggle('open', !isOpen);
+        if (!isOpen) trigger.style.borderColor = 'rgba(255,255,255,0.15)';
+        else trigger.style.borderColor = '';
+      });
+      dropdown.querySelectorAll('.gt-select-option:not(.gt-select-option--disabled)').forEach(function(opt) {
+        opt.addEventListener('click', function() {
+          if (sel.hasAttribute('data-multi')) return;
+          var placeholder = trigger.querySelector('.placeholder');
+          var span = trigger.querySelector('span:not(.chevron):not(.placeholder)');
+          if (placeholder) {
+            var newSpan = document.createElement('span');
+            newSpan.textContent = opt.textContent;
+            placeholder.replaceWith(newSpan);
+          } else if (span) {
+            span.textContent = opt.textContent;
+          }
+          dropdown.querySelectorAll('.gt-select-option').forEach(function(o) { o.classList.remove('gt-select-option--selected'); });
+          opt.classList.add('gt-select-option--selected');
+          dropdown.style.display = 'none';
+          if (chevron) chevron.classList.remove('open');
+          trigger.style.borderColor = '';
+        });
+      });
+    });
+    document.addEventListener('click', function(e) {
+      document.querySelectorAll('[data-select]').forEach(function(sel) {
+        if (!sel.contains(e.target)) {
+          var dd = sel.querySelector('.gt-select-dropdown');
+          var ch = sel.querySelector('.chevron');
+          var tr = sel.querySelector('.gt-select-trigger');
+          if (dd) dd.style.display = 'none';
+          if (ch) ch.classList.remove('open');
+          if (tr) tr.style.borderColor = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

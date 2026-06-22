@@ -28,11 +28,11 @@ Consultar substituições.
 
 RF006
 
-Consultar catálogo offline.
+Consultar treinos e exercicios dos treinos offline.
 
 RF007
 
-Atualizar catálogo quando houver internet.
+Atualizar exercicios quando houver internet.
 
 RF008
 

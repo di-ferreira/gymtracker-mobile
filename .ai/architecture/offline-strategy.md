@@ -48,4 +48,4 @@ MMKV
 
 # Objetivo
 
-Abrir qualquer exercício sem internet.
+Abrir qualquer exercício do usuário sem internet.

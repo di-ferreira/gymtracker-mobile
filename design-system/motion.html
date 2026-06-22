@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movimento — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .token-table{width:100%;border-collapse:collapse;font-size:14px}
+    .token-table th{text-align:left;padding:10px 14px;border-bottom:2px solid rgba(255,255,255,0.12);color:#FF7A1A;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+    .token-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8}
+    .token-table tr:hover td{background:rgba(255,122,26,0.04)}
+    .token-table code{font-family:'JetBrains Mono',monospace;font-size:13px;color:#FF7A1A;background:rgba(255,122,26,0.08);padding:2px 6px;border-radius:4px}
+    .section-title{font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px}
+    .section-desc{color:#888;font-size:15px;margin-bottom:24px;line-height:1.6}
+    .doc-section{margin-bottom:48px}
+    .rules-list{list-style:none;padding:0}
+    .rules-list li{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8;line-height:1.6;padding-left:20px;position:relative}
+    .rules-list li::before{content:'';position:absolute;left:0;top:18px;width:6px;height:6px;border-radius:50%;background:#FF7A1A}
+    .curve-demo{display:flex;gap:16px;flex-wrap:wrap;padding:24px;background:var(--gt-bg,#0A0A0A);border-radius:8px}
+    .curve-card{background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:16px;min-width:160px;flex:1}
+    .curve-card .curve-name{font-weight:600;font-size:14px;color:#E0E0E0;margin-bottom:4px}
+    .curve-card .curve-value{font-family:'JetBrains Mono',monospace;font-size:12px;color:#FF7A1A;margin-bottom:8px}
+    .curve-card .curve-visual{height:64px;position:relative;border-bottom:1px solid rgba(255,255,255,0.06);border-left:1px solid rgba(255,255,255,0.06);margin-bottom:8px}
+    .curve-card .curve-path{position:absolute;inset:0;overflow:hidden}
+    .curve-card .curve-path svg{width:100%;height:100%}
+    .curve-card .curve-use{font-size:12px;color:#888;line-height:1.5}
+    .transition-demo{display:flex;gap:24px;flex-wrap:wrap;padding:24px;background:var(--gt-bg,#0A0A0A);border-radius:8px}
+    .transition-box{background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:16px;text-align:center;min-width:120px}
+    .transition-box .t-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:#FF7A1A;margin-bottom:12px}
+    .transition-box .t-bar{height:6px;background:#FF7A1A;border-radius:3px;width:0;transition:width 2s cubic-bezier(0,0,0.2,1)}
+    .transition-box.animate .t-bar{width:100%}
+    .transition-box .t-name{font-size:12px;color:#888;margin-top:8px}
+    .platform-badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px}
+    .badge-mobile{background:rgba(255,122,26,0.12);color:#FF7A1A}
+    .badge-web{background:rgba(126,200,227,0.12);color:#7EC8E3}
+    .code-block{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#C8C8C8;overflow-x:auto;position:relative}
+    .code-block .copy-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#A0A0A0;padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+    .code-block .copy-btn:hover{background:rgba(255,122,26,0.15);color:#FF7A1A}
+    .code-block .prop{color:#FF7A1A}.code-block .val{color:#7EC8E3}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0}.content-area{padding:var(--gt-space-6) var(--gt-space-4)}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1><span class="brand-dot"></span> GymTracker</h1><p>Design System v1.0</p></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Fundamentos</div><nav class="sidebar-nav"><a href="index.html">Visão Geral</a><a href="colors.html">Cores</a><a href="typography.html">Tipografia</a><a href="spacing.html">Espaçamento</a><a href="elevation.html">Elevação</a><a href="radius.html">Raio de Borda</a><a href="iconography.html">Iconografia</a><a href="motion.html" class="active">Movimento</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Componentes</div><nav class="sidebar-nav"><a href="components-buttons.html">Botões</a><a href="components-inputs.html">Inputs</a><a href="components-selects.html">Seletores</a><a href="components-cards.html">Cards</a><a href="components-chips.html">Chips</a><a href="components-tabs.html">Tabs</a><a href="components-navigation.html">Navegação</a><a href="components-bottom-nav.html">Navegação Inferior</a><a href="components-tables.html">Tabelas</a><a href="components-modals.html">Modais</a><a href="components-drawers.html">Drawers</a><a href="components-tooltips.html">Tooltips</a><a href="components-toasts.html">Toasts</a><a href="components-empty-states.html">Estados Vazios</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Diretrizes</div><nav class="sidebar-nav"><a href="accessibility.html">Acessibilidade</a><a href="reanimated.html">Reanimated</a></nav></div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <h2 class="section-title">Durações</h2>
+          <p class="section-desc">A escala de duração define os tempos de animação. Durações menores que 100ms não são percebidas; maiores que 500ms causam sensação de lentidão.</p>
+          <table class="token-table">
+            <thead><tr><th>Token</th><th>Valor</th><th>Uso</th></tr></thead>
+            <tbody>
+              <tr><td><code>--gt-duration-instant</code></td><td>0ms</td><td>Sem transição (imediato)</td></tr>
+              <tr><td><code>--gt-duration-fast</code></td><td>100ms</td><td>Cor, opacidade, borda — mudanças de estado</td></tr>
+              <tr><td><code>--gt-duration-normal</code></td><td>200ms</td><td>Transform, posição — mudanças de layout</td></tr>
+              <tr><td><code>--gt-duration-slow</code></td><td>300ms</td><td>Expansão, colapso — sidebar, drawer</td></tr>
+              <tr><td><code>--gt-duration-slower</code></td><td>500ms</td><td>Page transitions, modais complexos</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Curvas de Easing</h2>
+          <p class="section-desc">Curvas nomeadas para movimento consistente entre plataformas. Cada curva comunica uma intenção diferente.</p>
+          <div class="curve-demo">
+            <div class="curve-card">
+              <div class="curve-name">Standard</div>
+              <div class="curve-value">cubic-bezier(0.25, 0.1, 0.25, 1)</div>
+              <div class="curve-visual"><div class="curve-path"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C25,90 25,80 100,0" stroke="#FF7A1A" stroke-width="2" fill="none"/></svg></div></div>
+              <div class="curve-use">Transições gerais, hover, foco, mudanças de cor</div>
+            </div>
+            <div class="curve-card">
+              <div class="curve-name">Decelerate</div>
+              <div class="curve-value">cubic-bezier(0, 0, 0.2, 1)</div>
+              <div class="curve-visual"><div class="curve-path"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C0,60 20,10 100,0" stroke="#FF7A1A" stroke-width="2" fill="none"/></svg></div></div>
+              <div class="curve-use">Elementos que entram: slides, sheets, modais</div>
+            </div>
+            <div class="curve-card">
+              <div class="curve-name">Accelerate</div>
+              <div class="curve-value">cubic-bezier(0.4, 0, 1, 1)</div>
+              <div class="curve-visual"><div class="curve-path"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C40,90 100,40 100,0" stroke="#FF7A1A" stroke-width="2" fill="none"/></svg></div></div>
+              <div class="curve-use">Elementos que saem: dismiss, close, fade-out</div>
+            </div>
+            <div class="curve-card">
+              <div class="curve-name">Spring</div>
+              <div class="curve-value">cubic-bezier(0.34, 1.56, 0.64, 1)</div>
+              <div class="curve-visual"><div class="curve-path"><svg viewBox="0 0 100 110" preserveAspectRatio="none"><path d="M0,100 C34,-10 64,-10 100,0" stroke="#FF7A1A" stroke-width="2" fill="none"/></svg></div></div>
+              <div class="curve-use">Micro-interações: like, check, contador</div>
+            </div>
+            <div class="curve-card">
+              <div class="curve-name">Sharp</div>
+              <div class="curve-value">cubic-bezier(0.4, 0, 0.6, 1)</div>
+              <div class="curve-visual"><div class="curve-path"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C40,80 60,20 100,0" stroke="#FF7A1A" stroke-width="2" fill="none"/></svg></div></div>
+              <div class="curve-use">Transações rápidas: toggle, press feedback</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Transições por Componente</h2>
+          <p class="section-desc">Mapeamento de duração + curva para cada componente do GymTracker.</p>
+          <table class="token-table">
+            <thead><tr><th>Componente</th><th>Propriedade</th><th>Duração</th><th>Curva</th></tr></thead>
+            <tbody>
+              <tr><td>Botão</td><td>background, border-color, transform</td><td>100ms</td><td>standard</td></tr>
+              <tr><td>Botão (press)</td><td>transform: scale(0.97)</td><td>100ms</td><td>sharp</td></tr>
+              <tr><td>Input (focus)</td><td>border-color, box-shadow</td><td>100ms</td><td>standard</td></tr>
+              <tr><td>Chip (select)</td><td>background, border-color</td><td>100ms</td><td>standard</td></tr>
+              <tr><td>Tab (switch)</td><td>indicator position</td><td>200ms</td><td>decelerate</td></tr>
+              <tr><td>Card (hover)</td><td>border-color, box-shadow</td><td>200ms</td><td>standard</td></tr>
+              <tr><td>Modal (enter)</td><td>opacity + transform</td><td>300ms</td><td>decelerate</td></tr>
+              <tr><td>Modal (exit)</td><td>opacity + transform</td><td>200ms</td><td>accelerate</td></tr>
+              <tr><td>Drawer (slide)</td><td>transform</td><td>300ms</td><td>decelerate</td></tr>
+              <tr><td>Toast (enter)</td><td>opacity + translateY</td><td>300ms</td><td>decelerate</td></tr>
+              <tr><td>Toast (exit)</td><td>opacity + translateY</td><td>200ms</td><td>accelerate</td></tr>
+              <tr><td>Bottom Sheet</td><td>transform</td><td>300ms</td><td>decelerate</td></tr>
+              <tr><td>FAB (press)</td><td>transform: scale(0.93) → 1</td><td>200ms</td><td>spring</td></tr>
+              <tr><td>Checkbox (check)</td><td>stroke-dashoffset</td><td>200ms</td><td>decelerate</td></tr>
+              <tr><td>Página (transition)</td><td>opacity + translateX</td><td>300ms</td><td>standard</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Transições Compartilhadas (React Native)</h2>
+          <p class="section-desc">Diretrizes para transições de elemento compartilhado entre telas no app React Native.</p>
+          <ul class="rules-list">
+            <li>Use <code>SharedTransition</code> do Reanimated para elementos que mudam de posição entre telas (ex: card → detalhe)</li>
+            <li>Duração: 300ms com curva <code>decelerate</code> para entradas e <code>accelerate</code> para saídas</li>
+            <li>Elementos compartilhados: imagem do exercício, avatar, card de treino</li>
+            <li>Não compartilhe mais de 2 elementos simultaneamente entre duas telas</li>
+            <li>Use <code>ScreenTransition</code> do React Navigation para page transitions: fade + slide em iOS, fade em Android</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras</h2>
+          <ul class="rules-list">
+            <li>Reduza movimento quando o usuário ativar "Reduce Motion" (prefers-reduced-motion) — use 0ms ou fade apenas</li>
+            <li>Não use animações decorativas sem propósito — cada animação comunica uma mudança de estado</li>
+            <li>Máximo de 2 animações simultâneas por componente (ex: opacity + transform)</li>
+            <li>Mobil: animações de 300ms+ devem ser interruptíveis (gesture-driven)</li>
+            <li>Web: use CSS transitions para mudanças de estado; reserve JS animations para sequências complexas</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="prop">--gt-duration-instant</span>: <span class="val">0ms</span>;
+  <span class="prop">--gt-duration-fast</span>: <span class="val">100ms</span>;
+  <span class="prop">--gt-duration-normal</span>: <span class="val">200ms</span>;
+  <span class="prop">--gt-duration-slow</span>: <span class="val">300ms</span>;
+  <span class="prop">--gt-duration-slower</span>: <span class="val">500ms</span>;
+
+  <span class="prop">--gt-ease-standard</span>: <span class="val">cubic-bezier(0.25, 0.1, 0.25, 1)</span>;
+  <span class="prop">--gt-ease-decelerate</span>: <span class="val">cubic-bezier(0, 0, 0.2, 1)</span>;
+  <span class="prop">--gt-ease-accelerate</span>: <span class="val">cubic-bezier(0.4, 0, 1, 1)</span>;
+  <span class="prop">--gt-ease-spring</span>: <span class="val">cubic-bezier(0.34, 1.56, 0.64, 1)</span>;
+  <span class="prop">--gt-ease-sharp</span>: <span class="val">cubic-bezier(0.4, 0, 0.6, 1)</span>;
+}
+
+<span class="prop">@media</span> (prefers-reduced-motion: reduce) {
+  <span class="prop">*</span> { transition-duration: <span class="val">0ms !important</span>; animation-duration: <span class="val">0ms !important</span>; }
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+  <script>function copyCode(btn){const pre=btn.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>{btn.textContent='Copiar'},2000)})}</script>
+</body>
+</html>

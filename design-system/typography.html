@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tipografia — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .token-table { width:100%; border-collapse:collapse; font-size:14px; }
+    .token-table th { text-align:left; padding:10px 14px; border-bottom:2px solid rgba(255,255,255,0.12); color:#FF7A1A; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; }
+    .token-table td { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.06); color:#C8C8C8; }
+    .token-table tr:hover td { background:rgba(255,122,26,0.04); }
+    .token-table code { font-family:'JetBrains Mono',monospace; font-size:13px; color:#FF7A1A; background:rgba(255,122,26,0.08); padding:2px 6px; border-radius:4px; }
+    .section-title { font-size:24px; font-weight:700; color:#FFFFFF; margin-bottom:8px; }
+    .section-desc { color:#888; font-size:15px; margin-bottom:24px; line-height:1.6; }
+    .doc-section { margin-bottom:48px; }
+    .rules-list { list-style:none; padding:0; }
+    .rules-list li { padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); color:#C8C8C8; line-height:1.6; padding-left:20px; position:relative; }
+    .rules-list li::before { content:''; position:absolute; left:0; top:18px; width:6px; height:6px; border-radius:50%; background:#FF7A1A; }
+    .type-demo { padding:24px; background:var(--gt-bg,#0A0A0A); border-radius:8px; }
+    .type-demo-item { margin-bottom:24px; }
+    .type-demo-item:last-child { margin-bottom:0; }
+    .type-demo-label { font-family:'JetBrains Mono',monospace; font-size:11px; color:#FF7A1A; margin-bottom:4px; letter-spacing:0.04em; text-transform:uppercase; }
+    .type-demo-meta { font-family:'JetBrains Mono',monospace; font-size:12px; color:#888; margin-top:4px; }
+    .font-families { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+    .font-card { background:#161616; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:20px; }
+    .font-card .font-name { font-weight:600; font-size:14px; color:#E0E0E0; margin-bottom:12px; }
+    .font-card .font-role { font-size:12px; color:#FF7A1A; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em; }
+    .font-card .font-sample { font-size:28px; color:#E0E0E0; margin-bottom:8px; line-height:1.2; }
+    .font-card .font-detail { font-size:12px; color:#888; line-height:1.5; }
+    .weight-row { display:flex; align-items:baseline; gap:16px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+    .weight-label { font-family:'JetBrains Mono',monospace; font-size:12px; color:#888; min-width:80px; }
+    .weight-name { font-size:13px; color:#C8C8C8; min-width:120px; }
+    .code-block { background:#111; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:20px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.7; color:#C8C8C8; overflow-x:auto; position:relative; }
+    .code-block .copy-btn { position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); color:#A0A0A0; padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif; }
+    .code-block .copy-btn:hover { background:rgba(255,122,26,0.15); color:#FF7A1A; }
+    .code-block .prop { color:#FF7A1A; }
+    .code-block .val { color:#7EC8E3; }
+    @media (max-width:768px) { .sidebar{display:none} .main-content{margin-left:0} .content-area{padding:var(--gt-space-6) var(--gt-space-4)} .font-families{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1><span class="brand-dot"></span> GymTracker</h1><p>Design System v1.0</p></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Fundamentos</div><nav class="sidebar-nav"><a href="index.html">Visão Geral</a><a href="colors.html">Cores</a><a href="typography.html" class="active">Tipografia</a><a href="spacing.html">Espaçamento</a><a href="elevation.html">Elevação</a><a href="radius.html">Raio de Borda</a><a href="iconography.html">Iconografia</a><a href="motion.html">Movimento</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Componentes</div><nav class="sidebar-nav"><a href="components-buttons.html">Botões</a><a href="components-inputs.html">Inputs</a><a href="components-selects.html">Seletores</a><a href="components-cards.html">Cards</a><a href="components-chips.html">Chips</a><a href="components-tabs.html">Tabs</a><a href="components-navigation.html">Navegação</a><a href="components-bottom-nav.html">Navegação Inferior</a><a href="components-tables.html">Tabelas</a><a href="components-modals.html">Modais</a><a href="components-drawers.html">Drawers</a><a href="components-tooltips.html">Tooltips</a><a href="components-toasts.html">Toasts</a><a href="components-empty-states.html">Estados Vazios</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Diretrizes</div><nav class="sidebar-nav"><a href="accessibility.html">Acessibilidade</a><a href="reanimated.html">Reanimated</a></nav></div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <h2 class="section-title">Famílias Tipográficas</h2>
+          <p class="section-desc">O GymTracker usa duas famílias principais: Inter para display e body, JetBrains Mono para código e dados tabulares. A mesma família (Inter) é usada em display e body com peso e rastreamento diferentes para estabelecer hierarquia.</p>
+          <div class="font-families">
+            <div class="font-card">
+              <div class="font-role">Display & Body</div>
+              <div class="font-name">Inter</div>
+              <div class="font-sample" style="font-family:'Inter',sans-serif;">Aa Bb Cc</div>
+              <div class="font-detail">Pesos: 400 (Read), 500 (Emphasize), 600–700 (Announce)<br>Fallback: -apple-system, BlinkMacSystemFont, system-ui, sans-serif</div>
+            </div>
+            <div class="font-card">
+              <div class="font-role">Mono</div>
+              <div class="font-name">JetBrains Mono</div>
+              <div class="font-sample" style="font-family:'JetBrains Mono',monospace;">0O 1lI</div>
+              <div class="font-detail">Pesos: 400, 500<br>Fallback: IBM Plex Mono, ui-monospace, Menlo, monospace<br>Usado para: código, IDs, dados tabulares, timestamps</div>
+            </div>
+            <div class="font-card">
+              <div class="font-role">Numeros</div>
+              <div class="font-name">Tabular Nums</div>
+              <div class="font-sample" style="font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;">1234567890</div>
+              <div class="font-detail">font-variant-numeric: tabular-nums<br>Usado para: métricas, pesos, séries, estatísticas</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Escala Tipográfica</h2>
+          <p class="section-desc">Escala multiplicativa baseada em 4px. Máximo 7 tamanhos visíveis por tela para manter a coerência.</p>
+          <table class="token-table">
+            <thead><tr><th>Token</th><th>Tamanho</th><th>Linha</th><th>Peso</th><th>Rastreamento</th><th>Papel</th></tr></thead>
+            <tbody>
+              <tr><td><code>--gt-text-display</code></td><td>48px</td><td>1.05</td><td>700</td><td>-0.03em</td><td>Hero, métricas grandes</td></tr>
+              <tr><td><code>--gt-text-h1</code></td><td>32px</td><td>1.1</td><td>700</td><td>-0.02em</td><td>Títulos de página</td></tr>
+              <tr><td><code>--gt-text-h2</code></td><td>24px</td><td>1.2</td><td>600</td><td>-0.01em</td><td>Títulos de seção</td></tr>
+              <tr><td><code>--gt-text-h3</code></td><td>20px</td><td>1.3</td><td>600</td><td>-0.01em</td><td>Subtítulos</td></tr>
+              <tr><td><code>--gt-text-body</code></td><td>16px</td><td>1.5</td><td>400</td><td>0</td><td>Corpo de texto</td></tr>
+              <tr><td><code>--gt-text-body-sm</code></td><td>14px</td><td>1.5</td><td>400</td><td>0.01em</td><td>Texto secundário</td></tr>
+              <tr><td><code>--gt-text-caption</code></td><td>12px</td><td>1.5</td><td>500</td><td>0.02em</td><td>Labels, badges, captions</td></tr>
+              <tr><td><code>--gt-text-overline</code></td><td>11px</td><td>1.5</td><td>600</td><td>0.08em</td><td>OVERLINE, eyebrow, kicker</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Demonstração</h2>
+          <p class="section-desc">Visualização da escala tipográfica com os tokens aplicados.</p>
+          <div class="type-demo">
+            <div class="type-demo-item">
+              <div class="type-demo-label">Display · 48px / 700 / -0.03em</div>
+              <div style="font-size:48px;font-weight:700;line-height:1.05;letter-spacing:-0.03em;color:#FFFFFF;">GymTracker Pro</div>
+              <div class="type-demo-meta">--gt-text-display</div>
+            </div>
+            <div class="type-demo-item">
+              <div class="type-demo-label">H1 · 32px / 700 / -0.02em</div>
+              <div style="font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-0.02em;color:#FFFFFF;">Histórico de Treinos</div>
+              <div class="type-demo-meta">--gt-text-h1</div>
+            </div>
+            <div class="type-demo-item">
+              <div class="type-demo-label">H2 · 24px / 600 / -0.01em</div>
+              <div style="font-size:24px;font-weight:600;line-height:1.2;letter-spacing:-0.01em;color:#FFFFFF;">Exercícios do Dia</div>
+              <div class="type-demo-meta">--gt-text-h2</div>
+            </div>
+            <div class="type-demo-item">
+              <div class="type-demo-label">H3 · 20px / 600 / -0.01em</div>
+              <div style="font-size:20px;font-weight:600;line-height:1.3;letter-spacing:-0.01em;color:#FFFFFF;">Supino Reto</div>
+              <div class="type-demo-meta">--gt-text-h3</div>
+            </div>
+            <div class="type-demo-item">
+              <div class="type-demo-label">Body · 16px / 400 / 0</div>
+              <div style="font-size:16px;font-weight:400;line-height:1.5;letter-spacing:0;color:#B8B8B8;max-width:55ch;">3 séries de 12 repetições com 60kg. Descanso de 90 segundos entre séries.</div>
+              <div class="type-demo-meta">--gt-text-body</div>
+            </div>
+            <div class="type-demo-item">
+              <div class="type-demo-label">Body SM · 14px / 400 / 0.01em</div>
+              <div style="font-size:14px;font-weight:400;line-height:1.5;letter-spacing:0.01em;color:#B8B8B8;">Última atualização: hoje às 14:32</div>
+              <div class="type-demo-meta">--gt-text-body-sm</div>
+            </div>
+            <div class="type-demo-item">
+              <div class="type-demo-label">Caption · 12px / 500 / 0.02em</div>
+              <div style="font-size:12px;font-weight:500;line-height:1.5;letter-spacing:0.02em;color:#888888;">Série 3 de 4</div>
+              <div class="type-demo-meta">--gt-text-caption</div>
+            </div>
+            <div class="type-demo-item">
+              <div class="type-demo-label">Overline · 11px / 600 / 0.08em</div>
+              <div style="font-size:11px;font-weight:600;line-height:1.5;letter-spacing:0.08em;text-transform:uppercase;color:#888888;">RESUMO SEMANAL</div>
+              <div class="type-demo-meta">--gt-text-overline</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Sistema de Pesos</h2>
+          <p class="section-desc">Três pesos de uso para manter a disciplina tipográfica em toda a interface.</p>
+          <div style="background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;">
+            <div class="weight-row">
+              <span class="weight-label">400</span>
+              <span class="weight-name" style="font-weight:400;">Read</span>
+              <span style="color:#888;font-size:13px;">Corpo de texto, parágrafos, descrições</span>
+            </div>
+            <div class="weight-row">
+              <span class="weight-label">500</span>
+              <span class="weight-name" style="font-weight:500;">Emphasize</span>
+              <span style="color:#888;font-size:13px;">Labels, navegação, UI text, botões médios</span>
+            </div>
+            <div class="weight-row">
+              <span class="weight-label">600–700</span>
+              <span class="weight-name" style="font-weight:700;">Announce</span>
+              <span style="color:#888;font-size:13px;">Headlines, CTAs, títulos, números de destaque</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras de Rastreamento</h2>
+          <p class="section-desc">Letter-spacing é obrigatório e não opcional. Títulos sem rastreamento negativo parecem soltos; ALL CAPS sem rastreamento positivo parecem amadores.</p>
+          <ul class="rules-list">
+            <li>Display (48px+): <code>-0.03em</code> — obrigatório para evitar que o texto pareça solto</li>
+            <li>H1–H3 (20–32px): <code>-0.01em</code> a <code>-0.02em</code> — rastreamento negativo consistente</li>
+            <li>Body (14–16px): <code>0</code> — nunca adicione rastreamento em corpo de texto</li>
+            <li>Small / Caption (11–12px): <code>0.01em</code> a <code>0.02em</code> — rastreamento positivo sutil</li>
+            <li>ALL CAPS / Overline: <code>0.06em</code> a <code>0.1em</code> — piso de 0.06em para evitar que as letras colem</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras de Comprimento de Linha</h2>
+          <p class="section-desc">Limite o corpo de texto a 50–75 caracteres por linha para legibilidade ideal.</p>
+          <ul class="rules-list">
+            <li>Corpo de texto: <code>max-width: 65ch</code></li>
+            <li>Labels e UI text: sem limite de linha</li>
+            <li>Nunca use <code>text-align: justify</code> — cria rios de espaço no texto</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="prop">--gt-font-display</span>: <span class="val">'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif</span>;
+  <span class="prop">--gt-font-body</span>: <span class="val">'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif</span>;
+  <span class="prop">--gt-font-mono</span>: <span class="val">'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace</span>;
+
+  <span class="prop">--gt-text-display</span>: <span class="val">48px / 1.05 / 700 / -0.03em</span>;
+  <span class="prop">--gt-text-h1</span>: <span class="val">32px / 1.1 / 700 / -0.02em</span>;
+  <span class="prop">--gt-text-h2</span>: <span class="val">24px / 1.2 / 600 / -0.01em</span>;
+  <span class="prop">--gt-text-h3</span>: <span class="val">20px / 1.3 / 600 / -0.01em</span>;
+  <span class="prop">--gt-text-body</span>: <span class="val">16px / 1.5 / 400 / 0</span>;
+  <span class="prop">--gt-text-body-sm</span>: <span class="val">14px / 1.5 / 400 / 0.01em</span>;
+  <span class="prop">--gt-text-caption</span>: <span class="val">12px / 1.5 / 500 / 0.02em</span>;
+  <span class="prop">--gt-text-overline</span>: <span class="val">11px / 1.5 / 600 / 0.08em</span>;
+
+  <span class="prop">--gt-weight-read</span>: <span class="val">400</span>;
+  <span class="prop">--gt-weight-emphasize</span>: <span class="val">500</span>;
+  <span class="prop">--gt-weight-announce</span>: <span class="val">700</span>;
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+  <script>function copyCode(btn){const pre=btn.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>{btn.textContent='Copiar'},2000)})}</script>
+</body>
+</html>

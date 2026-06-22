@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chips — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <style>
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: var(--sidebar-width); background: var(--gt-surface); border-right: 1px solid var(--gt-border); position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; padding: var(--gt-space-6) 0; z-index: 100; }
+    .sidebar-brand { padding: 0 var(--gt-space-6); margin-bottom: var(--gt-space-6); }
+    .sidebar-brand h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--gt-fg); display: flex; align-items: center; gap: var(--gt-space-2); }
+    .sidebar-brand .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gt-primary); display: inline-block; }
+    .sidebar-brand p { font-size: 12px; color: var(--gt-fg-tertiary); margin-top: 4px; letter-spacing: 0.02em; }
+    .sidebar-section { margin-bottom: var(--gt-space-6); }
+    .sidebar-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gt-fg-muted); padding: 0 var(--gt-space-6); margin-bottom: var(--gt-space-2); }
+    .sidebar-nav a { display: flex; align-items: center; gap: var(--gt-space-3); padding: var(--gt-space-2) var(--gt-space-6); font-size: 14px; color: var(--gt-fg-secondary); text-decoration: none; transition: all var(--gt-duration-fast) var(--gt-ease-standard); border-left: 2px solid transparent; }
+    .sidebar-nav a:hover { color: var(--gt-fg); background: var(--gt-surface-2); }
+    .sidebar-nav a.active { color: var(--gt-primary); background: rgba(255,122,26,0.06); border-left-color: var(--gt-primary); }
+    .main-content { margin-left: var(--sidebar-width); flex: 1; min-width: 0; }
+    .content-area { max-width: 960px; margin: 0 auto; padding: var(--gt-space-10) var(--gt-space-8); }
+
+    .component-group { margin-bottom: var(--gt-space-10); }
+    .component-group-title { font-size: 20px; font-weight: 600; color: var(--gt-fg); margin-bottom: var(--gt-space-2); }
+    .component-group-desc { font-size: 14px; color: var(--gt-fg-tertiary); margin-bottom: var(--gt-space-4); }
+
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .spec-table th { text-align: left; font-weight: 600; color: var(--gt-fg); padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border-strong); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .spec-table td { padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border); color: var(--gt-fg-secondary); }
+    .spec-table td:first-child { font-family: var(--gt-font-mono); font-size: 13px; color: var(--gt-fg); }
+    .spec-table td code { font-family: var(--gt-font-mono); font-size: 12px; background: var(--gt-surface-3); padding: 2px 6px; border-radius: var(--gt-radius-xs); color: var(--gt-fg-secondary); }
+    .spec-table tr:hover td { background: var(--gt-surface); }
+
+    .rules-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .rules-table th { text-align: left; font-weight: 600; color: var(--gt-fg); padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border-strong); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .rules-table td { padding: var(--gt-space-3) var(--gt-space-4); border-bottom: 1px solid var(--gt-border); color: var(--gt-fg-secondary); }
+    .rules-table tr:hover td { background: var(--gt-surface); }
+
+    .code-block { background: var(--gt-surface); border: 1px solid var(--gt-border); border-radius: var(--gt-radius-lg); padding: var(--gt-space-5); overflow-x: auto; position: relative; }
+    .code-block pre { font-family: var(--gt-font-mono); font-size: 13px; line-height: 1.6; color: var(--gt-fg-secondary); margin: 0; white-space: pre; }
+    .code-block .copy-btn { position: absolute; top: var(--gt-space-3); right: var(--gt-space-3); background: var(--gt-surface-3); border: 1px solid var(--gt-border); color: var(--gt-fg-tertiary); padding: 4px 10px; border-radius: var(--gt-radius-sm); font-size: 12px; font-family: var(--gt-font-mono); cursor: pointer; transition: all var(--gt-duration-fast) var(--gt-ease-standard); }
+    .code-block .copy-btn:hover { color: var(--gt-fg); background: var(--gt-surface-4); }
+
+    .state-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--gt-space-4); }
+    .state-card { background: var(--gt-surface); border: 1px solid var(--gt-border); border-radius: var(--gt-radius-lg); padding: var(--gt-space-5); display: flex; flex-direction: column; align-items: center; gap: var(--gt-space-3); }
+    .state-card-label { font-size: 12px; font-weight: 500; color: var(--gt-fg-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .variant-row { display: flex; align-items: center; gap: var(--gt-space-4); padding: var(--gt-space-4) var(--gt-space-5); border-radius: var(--gt-radius-md); transition: background var(--gt-duration-fast) var(--gt-ease-standard); }
+    .variant-row:hover { background: var(--gt-surface); }
+    .variant-label { min-width: 100px; }
+    .variant-label .name { font-size: 14px; font-weight: 600; color: var(--gt-fg); }
+    .variant-label .desc { font-size: 12px; color: var(--gt-fg-tertiary); margin-top: 2px; }
+
+    /* ── Chip Styles ── */
+    .gt-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--gt-radius-full);
+      font-family: var(--gt-font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      user-select: none;
+      white-space: nowrap;
+      border: 1px solid var(--gt-border);
+      background: var(--gt-surface-2);
+      color: var(--gt-fg-secondary);
+      outline: none;
+      position: relative;
+    }
+    .gt-chip:focus-visible {
+      outline: 2px solid var(--gt-primary);
+      outline-offset: 2px;
+    }
+    .gt-chip:hover {
+      border-color: var(--gt-border-strong);
+    }
+    .gt-chip-selected {
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+      border-color: var(--gt-primary);
+    }
+    .gt-chip-selected:hover {
+      background: var(--gt-primary-hover);
+      border-color: var(--gt-primary-hover);
+    }
+
+    .gt-chip-action {
+      gap: var(--gt-space-2);
+      cursor: pointer;
+    }
+    .gt-chip-action:active {
+      transform: scale(0.97);
+    }
+    .gt-chip-action .chip-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .gt-chip-info {
+      cursor: default;
+      background: var(--gt-surface-2);
+      border: 1px solid var(--gt-border);
+      color: var(--gt-fg-secondary);
+    }
+    .gt-chip-info:hover {
+      border-color: var(--gt-border);
+    }
+
+    .gt-chip-deletable {
+      padding-right: 8px;
+      gap: var(--gt-space-1);
+    }
+    .gt-chip-delete {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--gt-fg-tertiary);
+      cursor: pointer;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      flex-shrink: 0;
+      padding: 0;
+      font-size: 10px;
+      margin-left: 4px;
+      line-height: 1;
+    }
+    .gt-chip-delete:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--gt-fg);
+    }
+    .gt-chip-delete:focus-visible {
+      outline: 2px solid var(--gt-primary);
+      outline-offset: 1px;
+    }
+
+    .chip-group { display: flex; flex-wrap: wrap; gap: var(--gt-space-2); }
+
+    .mobile-toc-btn { display: none; position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px; border-radius: 50%; background: var(--gt-primary); color: var(--gt-bg); border: none; font-size: 20px; cursor: pointer; z-index: 200; box-shadow: var(--gt-elevation-3); }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+      .mobile-toc-btn { display: grid; place-items: center; }
+      .content-area { padding: var(--gt-space-6) var(--gt-space-4); }
+      .state-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .state-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Visão Geral</a>
+          <a href="colors.html">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html">Elevação</a>
+          <a href="radius.html">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html" class="active">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="content-area">
+
+        <p class="section-description" style="color: var(--gt-fg-tertiary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--gt-space-2);">Componentes</p>
+        <h1 class="section-title">Chips</h1>
+        <p class="section-description">Chips são elementos compactos que representam filtros, ações rápidas, informações ou seleções removíveis. Quatro variantes cobrem todos os contextos do GymTracker — de filtros de grupo muscular a tags de séries e cargas.</p>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Filtro Chip</h2>
+          <p class="component-group-desc">Chips de alternância usados para filtrar treinos por grupo muscular. Tocar alterna entre os estados padrão e selecionado. <span class="badge badge-mobile">mobile</span> <span class="badge badge-web">web</span></p>
+
+          <div class="component-preview">
+            <p style="font-size:12px;color:var(--gt-fg-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--gt-space-3);">Interativo — clique para alternar</p>
+            <div class="chip-group" id="filter-chip-demo">
+              <button class="gt-chip gt-chip-filter" data-chip-filter onclick="this.classList.toggle('gt-chip-selected')">Peito</button>
+              <button class="gt-chip gt-chip-filter gt-chip-selected" data-chip-filter onclick="this.classList.toggle('gt-chip-selected')">Costas</button>
+              <button class="gt-chip gt-chip-filter" data-chip-filter onclick="this.classList.toggle('gt-chip-selected')">Pernas</button>
+              <button class="gt-chip gt-chip-filter" data-chip-filter onclick="this.classList.toggle('gt-chip-selected')">Ombros</button>
+              <button class="gt-chip gt-chip-filter" data-chip-filter onclick="this.classList.toggle('gt-chip-selected')">Bíceps</button>
+              <button class="gt-chip gt-chip-filter" data-chip-filter onclick="this.classList.toggle('gt-chip-selected')">Tríceps</button>
+            </div>
+          </div>
+
+          <div class="component-preview" style="margin-top:var(--gt-space-4);">
+            <p style="font-size:12px;color:var(--gt-fg-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--gt-space-3);">Estados</p>
+            <div class="state-grid">
+              <div class="state-card">
+                <span class="state-card-label">Padrão (desligado)</span>
+                <button class="gt-chip">Peito</button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Selecionado</span>
+                <button class="gt-chip gt-chip-selected">Costas</button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Hover</span>
+                <button class="gt-chip" style="border-color:var(--gt-border-strong);">Pernas</button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Selecionado + Hover</span>
+                <button class="gt-chip gt-chip-selected" style="background:var(--gt-primary-hover);border-color:var(--gt-primary-hover);">Ombros</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Ação Chip</h2>
+          <p class="component-group-desc">Chips com ícone e rótulo para ações rápidas. Usados em barras de ação e menus de contexto. <span class="badge badge-mobile">mobile</span> <span class="badge badge-web">web</span></p>
+
+          <div class="component-preview">
+            <div class="chip-group">
+              <button class="gt-chip gt-chip-action">
+                <svg class="chip-icon" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Adicionar exercício
+              </button>
+              <button class="gt-chip gt-chip-action">
+                <svg class="chip-icon" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9.2 9.2L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Filtrar
+              </button>
+              <button class="gt-chip gt-chip-action">
+                <svg class="chip-icon" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M1 7h12M1 11h8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Ordenar
+              </button>
+            </div>
+          </div>
+
+          <div class="component-preview" style="margin-top:var(--gt-space-4);">
+            <p style="font-size:12px;color:var(--gt-fg-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--gt-space-3);">Estados</p>
+            <div class="state-grid">
+              <div class="state-card">
+                <span class="state-card-label">Padrão</span>
+                <button class="gt-chip gt-chip-action">
+                  <svg class="chip-icon" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Adicionar
+                </button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Hover</span>
+                <button class="gt-chip gt-chip-action" style="border-color:var(--gt-border-strong);">
+                  <svg class="chip-icon" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Adicionar
+                </button>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Pressionado</span>
+                <button class="gt-chip gt-chip-action" style="border-color:var(--gt-border-strong);transform:scale(0.97);">
+                  <svg class="chip-icon" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Adicionar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Informação Chip</h2>
+          <p class="component-group-desc">Chips não interativos que exibem valores como séries, repetições e cargas. Usados para exibir estatísticas e tags de exercício. <span class="badge badge-both">ambos</span></p>
+
+          <div class="component-preview">
+            <p style="font-size:13px;color:var(--gt-fg-tertiary);margin-bottom:var(--gt-space-3);">Supino Reto</p>
+            <div class="chip-group">
+              <span class="gt-chip gt-chip-info">3x12</span>
+              <span class="gt-chip gt-chip-info">80kg</span>
+              <span class="gt-chip gt-chip-info">Descanso: 90s</span>
+              <span class="gt-chip gt-chip-info">RIR 2</span>
+            </div>
+            <p style="font-size:13px;color:var(--gt-fg-tertiary);margin-top:var(--gt-space-5);margin-bottom:var(--gt-space-3);">Agachamento Livre</p>
+            <div class="chip-group">
+              <span class="gt-chip gt-chip-info">4x8</span>
+              <span class="gt-chip gt-chip-info">120kg</span>
+              <span class="gt-chip gt-chip-info">Descanso: 180s</span>
+            </div>
+          </div>
+
+          <div class="callout" style="margin-top:var(--gt-space-4);">
+            <p><strong>Nota:</strong> Info Chips são <strong>puramente exibitivos</strong>. Não respondem a cliques, hover ou foco. Use <code><span></code> no HTML — nunca <code><button></code>.</p>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Removível Chip</h2>
+          <p class="component-group-desc">Chips com botão de fechamento (X) usados em seleções de filtro ativas. O botão de exclusão permite remover filtros selecionados. <span class="badge badge-mobile">mobile</span> <span class="badge badge-web">web</span></p>
+
+          <div class="component-preview">
+            <p style="font-size:12px;color:var(--gt-fg-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--gt-space-3);">Filtros ativos — clique X para remover</p>
+            <div class="chip-group" id="deletable-chip-demo">
+              <span class="gt-chip gt-chip-deletable">
+                Peito
+                <button class="gt-chip-delete" onclick="this.parentElement.remove()" aria-label="Remover filtro Peito">&#10005;</button>
+              </span>
+              <span class="gt-chip gt-chip-deletable">
+                Iniciante
+                <button class="gt-chip-delete" onclick="this.parentElement.remove()" aria-label="Remover filtro Iniciante">&#10005;</button>
+              </span>
+              <span class="gt-chip gt-chip-deletable">
+                60-80kg
+                <button class="gt-chip-delete" onclick="this.parentElement.remove()" aria-label="Remover filtro 60-80kg">&#10005;</button>
+              </span>
+              <span class="gt-chip gt-chip-deletable">
+                Última semana
+                <button class="gt-chip-delete" onclick="this.parentElement.remove()" aria-label="Remover filtro Última semana">&#10005;</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="component-preview" style="margin-top:var(--gt-space-4);">
+            <p style="font-size:12px;color:var(--gt-fg-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--gt-space-3);">Estados do botão X</p>
+            <div class="state-grid">
+              <div class="state-card">
+                <span class="state-card-label">Padrão</span>
+                <span class="gt-chip gt-chip-deletable" style="pointer-events:none;">
+                  Peito
+                  <button class="gt-chip-delete" tabindex="-1">&#10005;</button>
+                </span>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Hover no X</span>
+                <span class="gt-chip gt-chip-deletable" style="pointer-events:none;">
+                  Costas
+                  <button class="gt-chip-delete" tabindex="-1" style="background:rgba(255,255,255,0.15);color:var(--gt-fg);">&#10005;</button>
+                </span>
+              </div>
+              <div class="state-card">
+                <span class="state-card-label">Foco no X</span>
+                <span class="gt-chip gt-chip-deletable" style="pointer-events:none;">
+                  Pernas
+                  <button class="gt-chip-delete" tabindex="-1" style="outline:2px solid var(--gt-primary);outline-offset:1px;">&#10005;</button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Especificações</h2>
+          <p class="component-group-desc">Tokens de design para implementar Chips em qualquer plataforma.</p>
+
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Propriedade</th>
+                <th>Valor</th>
+                <th>Token</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>height</td>
+                <td>32px</td>
+                <td><code>—</code></td>
+              </tr>
+              <tr>
+                <td>padding</td>
+                <td>0 12px</td>
+                <td><code>0 var(--gt-space-3)</code></td>
+              </tr>
+              <tr>
+                <td>border-radius</td>
+                <td>9999px</td>
+                <td><code>var(--gt-radius-full)</code></td>
+              </tr>
+              <tr>
+                <td>font-size</td>
+                <td>13px</td>
+                <td><code>—</code></td>
+              </tr>
+              <tr>
+                <td>font-weight</td>
+                <td>500</td>
+                <td><code>—</code></td>
+              </tr>
+              <tr>
+                <td>gap (entre chips)</td>
+                <td>8px</td>
+                <td><code>var(--gt-space-2)</code></td>
+              </tr>
+              <tr>
+                <td>bg padrão</td>
+                <td>#1D1D1D</td>
+                <td><code>var(--gt-surface-2)</code></td>
+              </tr>
+              <tr>
+                <td>border padrão</td>
+                <td>1px solid rgba(255,255,255,0.08)</td>
+                <td><code>1px solid var(--gt-border)</code></td>
+              </tr>
+              <tr>
+                <td>text padrão</td>
+                <td>#B8B8B8</td>
+                <td><code>var(--gt-fg-secondary)</code></td>
+              </tr>
+              <tr>
+                <td>bg selecionado</td>
+                <td>#FF7A1A</td>
+                <td><code>var(--gt-primary)</code></td>
+              </tr>
+              <tr>
+                <td>text selecionado</td>
+                <td>#0A0A0A</td>
+                <td><code>var(--gt-bg)</code></td>
+              </tr>
+              <tr>
+                <td>border hover</td>
+                <td>rgba(255,255,255,0.15)</td>
+                <td><code>var(--gt-border-strong)</code></td>
+              </tr>
+              <tr>
+                <td>delete button</td>
+                <td>16×16 circle</td>
+                <td><code>—</code></td>
+              </tr>
+              <tr>
+                <td>delete margin-left</td>
+                <td>4px</td>
+                <td><code>var(--gt-space-1)</code></td>
+              </tr>
+              <tr>
+                <td>alvo toque mobile</td>
+                <td>44×44px</td>
+                <td><code>—</code> (via padding)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">API</h2>
+          <p class="component-group-desc">Propriedades e eventos disponíveis para cada variante de Chip.</p>
+
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Prop</th>
+                <th>Tipo</th>
+                <th>Padrão</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>variant</td>
+                <td><code>filter | action | info | deletable</code></td>
+                <td><code>filter</code></td>
+                <td>Define o tipo visual e comportamental do chip</td>
+              </tr>
+              <tr>
+                <td>selected</td>
+                <td><code>boolean</code></td>
+                <td><code>false</code></td>
+                <td>Estado selecionado do Filtro Chip (toggle)</td>
+              </tr>
+              <tr>
+                <td>icon</td>
+                <td><code>ReactNode | string</code></td>
+                <td><code>—</code></td>
+                <td>Ícone exibido à esquerda do rótulo (Ação Chip)</td>
+              </tr>
+              <tr>
+                <td>label</td>
+                <td><code>string</code></td>
+                <td>—</td>
+                <td>Texto do chip (obrigatório)</td>
+              </tr>
+              <tr>
+                <td>onDelete</td>
+                <td><code>(() => void)</code></td>
+                <td><code>—</code></td>
+                <td>Callback ao clicar no botão X (Removível Chip)</td>
+              </tr>
+              <tr>
+                <td>disabled</td>
+                <td><code>boolean</code></td>
+                <td><code>false</code></td>
+                <td>Desabilita interação (Filter, Action, Deletable)</td>
+              </tr>
+              <tr>
+                <td>onPress</td>
+                <td><code>(() => void)</code></td>
+                <td><code>—</code></td>
+                <td>Callback ao pressionar o chip (Ação Chip)</td>
+              </tr>
+              <tr>
+                <td>onToggle</td>
+                <td><code>((sel: boolean) => void)</code></td>
+                <td><code>—</code></td>
+                <td>Callback ao alternar seleção (Filtro Chip)</td>
+              </tr>
+              <tr>
+                <td>accessibilityLabel</td>
+                <td><code>string</code></td>
+                <td><code>label</code></td>
+                <td>Rótulo de acessibilidade para leitores de tela</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Regras de Uso</h2>
+          <p class="component-group-desc">Diretrizes para manter consistência e acessibilidade.</p>
+
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th>Regra</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Filtro Chip para múltipla seleção</td>
+                <td>Múltiplos Filtro Chips podem ser selecionados simultaneamente (ex: filtrar por Peito E Costas). Nunca use Filtro Chip para seleção única — use Tabs ou Seletores.</td>
+              </tr>
+              <tr>
+                <td>Ação Chip para ações simples</td>
+                <td>Ação Chips devem disparar ações imediatas. Nunca use Ação Chip como toggle — para isso, use Filtro Chip.</td>
+              </tr>
+              <tr>
+                <td>Info Chip não é interativo</td>
+                <td>Info Chips nunca devem ter hover, foco ou cursor pointer. Use <code><span></code> no HTML, nunca <code><button></code>.</td>
+              </tr>
+              <tr>
+                <td>Removível Chip com acessibilidade</td>
+                <td>O botão X deve ter <code>aria-label</code> descritivo (ex: "Remover filtro Peito"). O chip container não é focusable — apenas o botão X recebe foco.</td>
+              </tr>
+              <tr>
+                <td>Alvo de toque mobile</td>
+                <td>No mobile, todos Chips interativos devem ter área de toque mínima de <strong>44×44px</strong>. Use padding adicional para atingir o mínimo sem alterar a altura visual de 32px.</td>
+              </tr>
+              <tr>
+                <td>Texto conciso</td>
+                <td>Máximo de 20 caracteres no rótulo. Para textos longos, use truncamento com reticências. Rótulos de grupo muscular devem ser palavras únicas.</td>
+              </tr>
+              <tr>
+                <td>Espaçamento entre Chips</td>
+                <td>Sempre use gap de <strong>8px</strong> (<code>var(--gt-space-2)</code>) entre chips. Nunca use margem individual — use flexbox com gap no container.</td>
+              </tr>
+              <tr>
+                <td>Não misture variantes na mesma linha</td>
+                <td>Evite misturar Filtro Chips e Ação Chips na mesma fileira. Cada variante tem propósito distinto e deve ser agrupada separadamente.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Fazer / Não Fazer</h2>
+          <p class="component-group-desc">Erros comuns e melhores práticas ao utilizar Chips.</p>
+
+          <div class="do-dont-grid">
+            <div class="do-box">
+              <h4>Fazer</h4>
+              <p>Use Filtro Chips para permitir que o usuário selecione múltiplos grupos musculares simultaneamente.</p>
+              <div style="margin-top:var(--gt-space-3);">
+                <div class="chip-group">
+                  <span class="gt-chip gt-chip-selected" style="cursor:default;">Peito</span>
+                  <span class="gt-chip gt-chip-selected" style="cursor:default;">Costas</span>
+                  <span class="gt-chip" style="cursor:default;">Pernas</span>
+                </div>
+              </div>
+            </div>
+            <div class="dont-box">
+              <h4>Não Fazer</h4>
+              <p>Não use Chips para seleção exclusiva. Para escolha única, use Seletores ou Tabs segmentados.</p>
+              <div style="margin-top:var(--gt-space-3);">
+                <div class="chip-group" style="gap:4px;">
+                  <span class="gt-chip" style="cursor:default;font-size:11px;padding:0 8px;height:28px;border:1px solid var(--gt-error);color:var(--gt-error);">Sim</span>
+                  <span class="gt-chip" style="cursor:default;font-size:11px;padding:0 8px;height:28px;border:1px solid var(--gt-error);color:var(--gt-error);">Não</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="do-dont-grid" style="margin-top:var(--gt-space-4);">
+            <div class="do-box">
+              <h4>Fazer</h4>
+              <p>Use Info Chips para exibir valores de séries e cargas de forma compacta ao lado do nome do exercício.</p>
+              <div style="margin-top:var(--gt-space-3);">
+                <div class="chip-group">
+                  <span class="gt-chip gt-chip-info" style="cursor:default;">3x12</span>
+                  <span class="gt-chip gt-chip-info" style="cursor:default;">80kg</span>
+                </div>
+              </div>
+            </div>
+            <div class="dont-box">
+              <h4>Não Fazer</h4>
+              <p>Não coloque Info Chips como botões clicáveis. Eles são puramente exibitivos.</p>
+              <div style="margin-top:var(--gt-space-3);">
+                <span class="gt-chip gt-chip-info" style="cursor:default;border:1px solid var(--gt-error);color:var(--gt-error);">3x12</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="do-dont-grid" style="margin-top:var(--gt-space-4);">
+            <div class="do-box">
+              <h4>Fazer</h4>
+              <p>No mobile, garanta alvo de toque mínimo de 44×44px usando padding adicional invisível.</p>
+              <div style="margin-top:var(--gt-space-3);">
+                <span class="gt-chip" style="cursor:default;outline:2px dashed var(--gt-success);outline-offset:6px;">Peito</span>
+              </div>
+            </div>
+            <div class="dont-box">
+              <h4>Não Fazer</h4>
+              <p>Não use Chips com área de toque menor que 44px no mobile — dificulta a interação por toque.</p>
+              <div style="margin-top:var(--gt-space-3);">
+                <span class="gt-chip" style="cursor:default;outline:2px dashed var(--gt-error);outline-offset:0;">Peito</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="component-group">
+          <h2 class="component-group-title">Exemplo de Código</h2>
+          <p class="component-group-desc">Implementação dos Chips com React Native e CSS.</p>
+
+          <div class="code-block">
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').textContent)">Copiar</button>
+            <pre><code>/* ── Chips ── */
+
+.gt-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 var(--gt-space-3);
+  border-radius: var(--gt-radius-full);
+  font-family: var(--gt-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--gt-border);
+  background: var(--gt-surface-2);
+  color: var(--gt-fg-secondary);
+  cursor: pointer;
+  transition: all 100ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  user-select: none;
+  white-space: nowrap;
+  outline: none;
+}
+
+.gt-chip:hover {
+  border-color: var(--gt-border-strong);
+}
+
+.gt-chip-selected {
+  background: var(--gt-primary);
+  color: var(--gt-bg);
+  border-color: var(--gt-primary);
+}
+
+.gt-chip-selected:hover {
+  background: var(--gt-primary-hover);
+  border-color: var(--gt-primary-hover);
+}
+
+.gt-chip:focus-visible {
+  outline: 2px solid var(--gt-primary);
+  outline-offset: 2px;
+}
+
+/* Ação Chip */
+.gt-chip-action {
+  gap: var(--gt-space-2);
+}
+.gt-chip-action:active {
+  transform: scale(0.97);
+}
+
+/* Info Chip (não interativo) */
+.gt-chip-info {
+  cursor: default;
+  background: var(--gt-surface-2);
+  border: 1px solid var(--gt-border);
+  color: var(--gt-fg-secondary);
+}
+.gt-chip-info:hover {
+  border-color: var(--gt-border);
+}
+
+/* Removível Chip */
+.gt-chip-deletable {
+  padding-right: 8px;
+  gap: var(--gt-space-1);
+}
+.gt-chip-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--gt-fg-tertiary);
+  cursor: pointer;
+  transition: all 100ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  flex-shrink: 0;
+  padding: 0;
+  font-size: 10px;
+  margin-left: 4px;
+}
+.gt-chip-delete:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--gt-fg);
+}
+.gt-chip-delete:focus-visible {
+  outline: 2px solid var(--gt-primary);
+  outline-offset: 1px;
+}
+
+/* Container de Chips */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gt-space-2);
+}
+
+/* Mobile: alvo de toque mínimo */
+@media (pointer: coarse) {
+  .gt-chip:not(.gt-chip-info) {
+    min-height: 44px;
+    padding: 6px var(--gt-space-3);
+  }
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+</body>
+</html>

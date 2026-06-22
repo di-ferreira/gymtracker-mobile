@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espaçamento — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .token-table{width:100%;border-collapse:collapse;font-size:14px}
+    .token-table th{text-align:left;padding:10px 14px;border-bottom:2px solid rgba(255,255,255,0.12);color:#FF7A1A;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+    .token-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8}
+    .token-table tr:hover td{background:rgba(255,122,26,0.04)}
+    .token-table code{font-family:'JetBrains Mono',monospace;font-size:13px;color:#FF7A1A;background:rgba(255,122,26,0.08);padding:2px 6px;border-radius:4px}
+    .section-title{font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px}
+    .section-desc{color:#888;font-size:15px;margin-bottom:24px;line-height:1.6}
+    .doc-section{margin-bottom:48px}
+    .spacing-demo{display:flex;align-items:flex-end;gap:8px;padding:32px 24px;background:var(--gt-bg,#0A0A0A);border-radius:8px;flex-wrap:wrap}
+    .spacing-bar{background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:4px;height:48px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px}
+    .spacing-bar .bar-fill{background:rgba(255,122,26,0.25);border-radius:2px;height:100%;min-width:1px}
+    .spacing-bar .bar-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#FF7A1A;margin-top:4px;white-space:nowrap}
+    .spacing-bar .bar-value{font-family:'JetBrains Mono',monospace;font-size:10px;color:#888;white-space:nowrap}
+    .rules-list{list-style:none;padding:0}
+    .rules-list li{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#C8C8C8;line-height:1.6;padding-left:20px;position:relative}
+    .rules-list li::before{content:'';position:absolute;left:0;top:18px;width:6px;height:6px;border-radius:50%;background:#FF7A1A}
+    .code-block{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#C8C8C8;overflow-x:auto;position:relative}
+    .code-block .copy-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#A0A0A0;padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+    .code-block .copy-btn:hover{background:rgba(255,122,26,0.15);color:#FF7A1A}
+    .code-block .prop{color:#FF7A1A}.code-block .val{color:#7EC8E3}
+    @media (max-width:768px){.sidebar{display:none}.main-content{margin-left:0}.content-area{padding:var(--gt-space-6) var(--gt-space-4)}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1><span class="brand-dot"></span> GymTracker</h1><p>Design System v1.0</p></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Fundamentos</div><nav class="sidebar-nav"><a href="index.html">Visão Geral</a><a href="colors.html">Cores</a><a href="typography.html">Tipografia</a><a href="spacing.html" class="active">Espaçamento</a><a href="elevation.html">Elevação</a><a href="radius.html">Raio de Borda</a><a href="iconography.html">Iconografia</a><a href="motion.html">Movimento</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Componentes</div><nav class="sidebar-nav"><a href="components-buttons.html">Botões</a><a href="components-inputs.html">Inputs</a><a href="components-selects.html">Seletores</a><a href="components-cards.html">Cards</a><a href="components-chips.html">Chips</a><a href="components-tabs.html">Tabs</a><a href="components-navigation.html">Navegação</a><a href="components-bottom-nav.html">Navegação Inferior</a><a href="components-tables.html">Tabelas</a><a href="components-modals.html">Modais</a><a href="components-drawers.html">Drawers</a><a href="components-tooltips.html">Tooltips</a><a href="components-toasts.html">Toasts</a><a href="components-empty-states.html">Estados Vazios</a></nav></div>
+      <div class="sidebar-section"><div class="sidebar-section-title">Diretrizes</div><nav class="sidebar-nav"><a href="accessibility.html">Acessibilidade</a><a href="reanimated.html">Reanimated</a></nav></div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+        <div class="doc-section">
+          <h2 class="section-title">Escala de Espaçamento</h2>
+          <p class="section-desc">Grid base de 4px. Cada token é múltiplo de 4 para manter a consistência visual e o alinhamento entre plataformas. Use os tokens em vez de valores livres.</p>
+          <table class="token-table">
+            <thead><tr><th>Token</th><th>Valor</th><th>Uso</th></tr></thead>
+            <tbody>
+              <tr><td><code>--gt-space-0</code></td><td>0px</td><td>Sem espaçamento</td></tr>
+              <tr><td><code>--gt-space-1</code></td><td>4px</td><td>Micro gaps, ícone-label</td></tr>
+              <tr><td><code>--gt-space-2</code></td><td>8px</td><td>Gaps internos, padding de input</td></tr>
+              <tr><td><code>--gt-space-3</code></td><td>12px</td><td>Gaps entre elementos, padding de card</td></tr>
+              <tr><td><code>--gt-space-4</code></td><td>16px</td><td>Padding de seção, gaps de lista</td></tr>
+              <tr><td><code>--gt-space-5</code></td><td>20px</td><td>Padding de card grande</td></tr>
+              <tr><td><code>--gt-space-6</code></td><td>24px</td><td>Padding de container, gaps de grid</td></tr>
+              <tr><td><code>--gt-space-8</code></td><td>32px</td><td>Margens de página, separadores</td></tr>
+              <tr><td><code>--gt-space-10</code></td><td>40px</td><td>Seções de página</td></tr>
+              <tr><td><code>--gt-space-12</code></td><td>48px</td><td>Headers, separadores grandes</td></tr>
+              <tr><td><code>--gt-space-16</code></td><td>64px</td><td>Margens de hero</td></tr>
+              <tr><td><code>--gt-space-20</code></td><td>80px</td><td>Full-bleed páginas</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Visualização</h2>
+          <p class="section-desc">Progressão visual da escala de espaçamento. Cada barra representa o valor em pixels.</p>
+          <div class="spacing-demo">
+            <div class="spacing-bar" style="width:4px"><div class="bar-fill" style="width:4px"></div><div class="bar-label">1</div><div class="bar-value">4</div></div>
+            <div class="spacing-bar" style="width:8px"><div class="bar-fill" style="width:8px"></div><div class="bar-label">2</div><div class="bar-value">8</div></div>
+            <div class="spacing-bar" style="width:12px"><div class="bar-fill" style="width:12px"></div><div class="bar-label">3</div><div class="bar-value">12</div></div>
+            <div class="spacing-bar" style="width:16px"><div class="bar-fill" style="width:16px"></div><div class="bar-label">4</div><div class="bar-value">16</div></div>
+            <div class="spacing-bar" style="width:20px"><div class="bar-fill" style="width:20px"></div><div class="bar-label">5</div><div class="bar-value">20</div></div>
+            <div class="spacing-bar" style="width:24px"><div class="bar-fill" style="width:24px"></div><div class="bar-label">6</div><div class="bar-value">24</div></div>
+            <div class="spacing-bar" style="width:32px"><div class="bar-fill" style="width:32px"></div><div class="bar-label">8</div><div class="bar-value">32</div></div>
+            <div class="spacing-bar" style="width:40px"><div class="bar-fill" style="width:40px"></div><div class="bar-label">10</div><div class="bar-value">40</div></div>
+            <div class="spacing-bar" style="width:48px"><div class="bar-fill" style="width:48px"></div><div class="bar-label">12</div><div class="bar-value">48</div></div>
+            <div class="spacing-bar" style="width:64px"><div class="bar-fill" style="width:64px"></div><div class="bar-label">16</div><div class="bar-value">64</div></div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras</h2>
+          <ul class="rules-list">
+            <li>Sempre use tokens de espaço — nunca valores livres em CSS ou RN StyleSheet</li>
+            <li>Use múltiplos de 4px para qualquer espaço não coberto pelos tokens</li>
+            <li>Padding e gap no mesmo componente devem usar tokens do mesmo nível ou adjacente</li>
+            <li>Mobile: reduzir space-8+ para space-6 em telas menores que 400px</li>
+            <li>Web: usar space-8 como padding mínimo de conteúdo em containers</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="prop">--gt-space-0</span>: <span class="val">0px</span>;
+  <span class="prop">--gt-space-1</span>: <span class="val">4px</span>;
+  <span class="prop">--gt-space-2</span>: <span class="val">8px</span>;
+  <span class="prop">--gt-space-3</span>: <span class="val">12px</span>;
+  <span class="prop">--gt-space-4</span>: <span class="val">16px</span>;
+  <span class="prop">--gt-space-5</span>: <span class="val">20px</span>;
+  <span class="prop">--gt-space-6</span>: <span class="val">24px</span>;
+  <span class="prop">--gt-space-8</span>: <span class="val">32px</span>;
+  <span class="prop">--gt-space-10</span>: <span class="val">40px</span>;
+  <span class="prop">--gt-space-12</span>: <span class="val">48px</span>;
+  <span class="prop">--gt-space-16</span>: <span class="val">64px</span>;
+  <span class="prop">--gt-space-20</span>: <span class="val">80px</span>;
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+  <script>function copyCode(btn){const pre=btn.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>{btn.textContent='Copiar'},2000)})}</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raio de Borda — GymTracker Design System</title>
+  <link rel="stylesheet" href="css/foundation.css">
+  <style>
+    .token-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .token-table th {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 2px solid rgba(255,255,255,0.12);
+      color: #FF7A1A;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .token-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #C8C8C8;
+    }
+    .token-table tr:hover td {
+      background: rgba(255,122,26,0.04);
+    }
+    .token-table code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #FF7A1A;
+      background: rgba(255,122,26,0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .radius-demo {
+      display: flex;
+      gap: 20px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      padding: 32px 24px;
+      background: var(--gt-bg, #0A0A0A);
+      border-radius: 8px;
+    }
+    .radius-box {
+      width: 72px;
+      height: 72px;
+      background: #161616;
+      border: 2px solid var(--gt-border-strong, rgba(255,255,255,0.16));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .radius-box .radius-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #FF7A1A;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .radius-box .radius-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #888;
+    }
+
+    .radius-xs { border-radius: 4px; }
+    .radius-sm { border-radius: 6px; }
+    .radius-md { border-radius: 8px; }
+    .radius-lg { border-radius: 12px; }
+    .radius-xl { border-radius: 16px; }
+    .radius-2xl { border-radius: 20px; }
+    .radius-full { border-radius: 9999px; }
+
+    .rules-list {
+      list-style: none;
+      padding: 0;
+    }
+    .rules-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #C8C8C8;
+      line-height: 1.6;
+      padding-left: 20px;
+      position: relative;
+    }
+    .rules-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 18px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FF7A1A;
+    }
+
+    .code-block {
+      background: #111111;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #C8C8C8;
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-block .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #A0A0A0;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .code-block .copy-btn:hover {
+      background: rgba(255,122,26,0.15);
+      color: #FF7A1A;
+    }
+    .code-block .prop { color: #FF7A1A; }
+    .code-block .val { color: #7EC8E3; }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    .section-desc {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .doc-section {
+      margin-bottom: 48px;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Visão Geral</a>
+          <a href="colors.html">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html">Elevação</a>
+          <a href="radius.html" class="active">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+    <div class="main-content">
+      <div class="content-area">
+
+        <div class="doc-section">
+          <h2 class="section-title">Escala de Raio</h2>
+          <p class="section-desc">A escala de raio de borda define os arredondamentos consistentes do design system. Marcas de fitness/energia usam bordas mais definidas — não excessivamente arredondadas.</p>
+          <table class="token-table">
+            <thead>
+              <tr>
+                <th>Token</th>
+                <th>Valor</th>
+                <th>Uso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--gt-radius-xs</code></td>
+                <td>4px</td>
+                <td>Elementos pequenos, tags</td>
+              </tr>
+              <tr>
+                <td><code>--gt-radius-sm</code></td>
+                <td>6px</td>
+                <td>Inputs, botões pequenos</td>
+              </tr>
+              <tr>
+                <td><code>--gt-radius-md</code></td>
+                <td>8px</td>
+                <td>Cards, botões médios</td>
+              </tr>
+              <tr>
+                <td><code>--gt-radius-lg</code></td>
+                <td>12px</td>
+                <td>Cards grandes, diálogos</td>
+              </tr>
+              <tr>
+                <td><code>--gt-radius-xl</code></td>
+                <td>16px</td>
+                <td>Bottom sheets, painéis</td>
+              </tr>
+              <tr>
+                <td><code>--gt-radius-2xl</code></td>
+                <td>20px</td>
+                <td>Feature cards, hero cards</td>
+              </tr>
+              <tr>
+                <td><code>--gt-radius-full</code></td>
+                <td>9999px</td>
+                <td>Pills, avatars, FABs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Visualização</h2>
+          <p class="section-desc">Progressão visual da escala de raio de borda, do mais definido ao completamente arredondado.</p>
+          <div class="radius-demo">
+            <div class="radius-box radius-xs">
+              <span class="radius-label">xs</span>
+              <span class="radius-value">4px</span>
+            </div>
+            <div class="radius-box radius-sm">
+              <span class="radius-label">sm</span>
+              <span class="radius-value">6px</span>
+            </div>
+            <div class="radius-box radius-md">
+              <span class="radius-label">md</span>
+              <span class="radius-value">8px</span>
+            </div>
+            <div class="radius-box radius-lg">
+              <span class="radius-label">lg</span>
+              <span class="radius-value">12px</span>
+            </div>
+            <div class="radius-box radius-xl">
+              <span class="radius-label">xl</span>
+              <span class="radius-value">16px</span>
+            </div>
+            <div class="radius-box radius-2xl">
+              <span class="radius-label">2xl</span>
+              <span class="radius-value">20px</span>
+            </div>
+            <div class="radius-box radius-full">
+              <span class="radius-label">full</span>
+              <span class="radius-value">9999px</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Regras</h2>
+          <p class="section-desc">Diretrizes para uso consistente de raio de borda no design system.</p>
+          <ul class="rules-list">
+            <li>Raios conservadores: marcas de fitness/energia usam bordas mais definidas (4–12px), não excessivamente arredondadas</li>
+            <li>Raio full (<code>radius-full</code>) apenas para pills, chips, avatares e FABs</li>
+            <li>Consistência dentro do componente — não misture cantos com radius-sm e radius-lg no mesmo elemento</li>
+            <li>Mobile: bottom sheets sempre usam radius-xl nos cantos superiores</li>
+            <li>Web: modais usam radius-lg</li>
+          </ul>
+        </div>
+
+        <div class="doc-section">
+          <h2 class="section-title">Tokens CSS</h2>
+          <p class="section-desc">Copie o bloco abaixo para o seu projeto.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+<pre><span class="prop">:root</span> {
+  <span class="prop">--gt-radius-xs</span>: <span class="val">4px</span>;
+  <span class="prop">--gt-radius-sm</span>: <span class="val">6px</span>;
+  <span class="prop">--gt-radius-md</span>: <span class="val">8px</span>;
+  <span class="prop">--gt-radius-lg</span>: <span class="val">12px</span>;
+  <span class="prop">--gt-radius-xl</span>: <span class="val">16px</span>;
+  <span class="prop">--gt-radius-2xl</span>: <span class="val">20px</span>;
+  <span class="prop">--gt-radius-full</span>: <span class="val">9999px</span>;
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="js/docs.js"></script>
+  <script>
+    function copyCode(btn) {
+      const pre = btn.parentElement.querySelector('pre');
+      const text = pre.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copiado!';
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

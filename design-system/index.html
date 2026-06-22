@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Design System GymTracker</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <style>
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--gt-surface);
+      border-right: 1px solid var(--gt-border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: var(--gt-space-6) 0;
+      z-index: 100;
+    }
+    .sidebar-brand {
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-brand h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--gt-fg);
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-2);
+    }
+    .sidebar-brand .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      display: inline-block;
+    }
+    .sidebar-brand p {
+      font-size: 12px;
+      color: var(--gt-fg-tertiary);
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+    .sidebar-section {
+      margin-bottom: var(--gt-space-6);
+    }
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gt-fg-muted);
+      padding: 0 var(--gt-space-6);
+      margin-bottom: var(--gt-space-2);
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--gt-space-3);
+      padding: var(--gt-space-2) var(--gt-space-6);
+      font-size: 14px;
+      color: var(--gt-fg-secondary);
+      text-decoration: none;
+      transition: all var(--gt-duration-fast) var(--gt-ease-standard);
+      border-left: 2px solid transparent;
+    }
+    .sidebar-nav a:hover {
+      color: var(--gt-fg);
+      background: var(--gt-surface-2);
+    }
+    .sidebar-nav a.active {
+      color: var(--gt-primary);
+      background: rgba(255, 122, 26, 0.06);
+      border-left-color: var(--gt-primary);
+    }
+    .sidebar-nav a .nav-badge {
+      margin-left: auto;
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-width: 0;
+    }
+    .content-area {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: var(--gt-space-10) var(--gt-space-8);
+    }
+    .hero-section {
+      padding: var(--gt-space-16) var(--gt-space-8);
+      max-width: 960px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--gt-border);
+    }
+    .hero-title {
+      font-size: clamp(40px, 5vw, 56px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: var(--gt-fg);
+      margin-bottom: var(--gt-space-4);
+    }
+    .hero-title span {
+      color: var(--gt-primary);
+    }
+    .hero-desc {
+      font-size: 18px;
+      color: var(--gt-fg-secondary);
+      line-height: 1.6;
+      max-width: 55ch;
+    }
+    .stats-row {
+      display: flex;
+      gap: var(--gt-space-8);
+      margin-top: var(--gt-space-8);
+      padding-top: var(--gt-space-6);
+      border-top: 1px solid var(--gt-border);
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--gt-primary);
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--gt-fg-tertiary);
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--gt-space-4);
+      margin-top: var(--gt-space-8);
+    }
+    .overview-card {
+      background: var(--gt-surface);
+      border: 1px solid var(--gt-border);
+      border-radius: var(--gt-radius-lg);
+      padding: var(--gt-space-5);
+      transition: border-color var(--gt-duration-normal) var(--gt-ease-standard), transform var(--gt-duration-normal) var(--gt-ease-standard);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .overview-card:hover {
+      border-color: var(--gt-primary);
+      transform: translateY(-2px);
+    }
+    .overview-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--gt-radius-md);
+      display: grid;
+      place-items: center;
+      margin-bottom: var(--gt-space-3);
+      font-size: 20px;
+    }
+    .overview-card-icon.colors {
+      background: linear-gradient(135deg, var(--gt-primary), #FF9249);
+    }
+    .overview-card-icon.type {
+      background: var(--gt-surface-3);
+      color: var(--gt-primary);
+      font-family: var(--gt-font-display);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .overview-card-icon.spacing {
+      background: var(--gt-info-surface);
+      color: var(--gt-info);
+    }
+    .overview-card-icon.elevation {
+      background: var(--gt-surface-3);
+      color: var(--gt-fg-secondary);
+    }
+    .overview-card-icon.radius {
+      background: var(--gt-success-surface);
+      color: var(--gt-success);
+    }
+    .overview-card-icon.icons {
+      background: var(--gt-warning-surface);
+      color: var(--gt-warning);
+    }
+    .overview-card-icon.motion {
+      background: rgba(255, 122, 26, 0.1);
+      color: var(--gt-primary);
+    }
+    .overview-card-icon.components {
+      background: var(--gt-error-surface);
+      color: var(--gt-error);
+    }
+    .overview-card-icon.a11y {
+      background: var(--gt-info-surface);
+      color: var(--gt-info);
+    }
+    .overview-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gt-fg);
+      margin-bottom: 4px;
+    }
+    .overview-card p {
+      font-size: 13px;
+      color: var(--gt-fg-tertiary);
+      line-height: 1.4;
+    }
+    .mobile-toc-btn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gt-primary);
+      color: var(--gt-bg);
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: var(--gt-elevation-3);
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+      .mobile-toc-btn { display: grid; place-items: center; }
+      .hero-section { padding: var(--gt-space-8) var(--gt-space-4); }
+      .content-area { padding: var(--gt-space-6) var(--gt-space-4); }
+      .stats-row { gap: var(--gt-space-4); flex-wrap: wrap; }
+      .overview-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .overview-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1><span class="brand-dot"></span> GymTracker</h1>
+        <p>Design System v1.0</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Fundamentos</div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="active">Visão Geral</a>
+          <a href="colors.html">Cores</a>
+          <a href="typography.html">Tipografia</a>
+          <a href="spacing.html">Espaçamento</a>
+          <a href="elevation.html">Elevação</a>
+          <a href="radius.html">Raio de Borda</a>
+          <a href="iconography.html">Iconografia</a>
+          <a href="motion.html">Movimento</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Componentes</div>
+        <nav class="sidebar-nav">
+          <a href="components-buttons.html">Botões</a>
+          <a href="components-inputs.html">Inputs</a>
+          <a href="components-selects.html">Seletores</a>
+          <a href="components-cards.html">Cards</a>
+          <a href="components-chips.html">Chips</a>
+          <a href="components-tabs.html">Tabs</a>
+          <a href="components-navigation.html">Navegação</a>
+          <a href="components-bottom-nav.html">Navegação Inferior</a>
+          <a href="components-tables.html">Tabelas</a>
+          <a href="components-modals.html">Modais</a>
+          <a href="components-drawers.html">Drawers</a>
+          <a href="components-tooltips.html">Tooltips</a>
+          <a href="components-toasts.html">Toasts</a>
+          <a href="components-empty-states.html">Estados Vazios</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Diretrizes</div>
+        <nav class="sidebar-nav">
+          <a href="accessibility.html">Acessibilidade</a>
+          <a href="reanimated.html">Reanimated</a>
+        </nav>
+      </div>
+    </aside>
+    <div class="main-content">
+      <div class="hero-section">
+        <h1 class="hero-title">Gym<span>Tracker</span><br>Design System</h1>
+        <p class="hero-desc">Sistema de design compartilhado entre o app React Native e o dashboard Next.js. Premium, escuro, minimal, de alto contraste e energético.</p>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-value">6</span><span class="stat-label">Tokens de Cor</span></div>
+          <div class="stat"><span class="stat-value">8</span><span class="stat-label">Escala Tipográfica</span></div>
+          <div class="stat"><span class="stat-value">14</span><span class="stat-label">Componentes</span></div>
+          <div class="stat"><span class="stat-value">2</span><span class="stat-label">Plataformas</span></div>
+        </div>
+      </div>
+      <div class="content-area">
+        <h2 class="section-subtitle">Explorar</h2>
+        <p class="section-description">Comece pelos fundamentos ou vá direto aos componentes. Cada seção inclui tokens, exemplos visuais e regras de uso.</p>
+        <div class="overview-grid">
+          <a href="colors.html" class="overview-card">
+            <div class="overview-card-icon colors"></div>
+            <h3>Cores</h3>
+            <p>Paleta primária, superfícies, semânticas e regras de tema escuro</p>
+          </a>
+          <a href="typography.html" class="overview-card">
+            <div class="overview-card-icon type">Aa</div>
+            <h3>Tipografia</h3>
+            <p>Escala, pesos, rastreamento e famílias tipográficas</p>
+          </a>
+          <a href="spacing.html" class="overview-card">
+            <div class="overview-card-icon spacing">&#8212;&#8212;</div>
+            <h3>Espaçamento</h3>
+            <p>Grid de 4px, escala de 0 a 80px</p>
+          </a>
+          <a href="elevation.html" class="overview-card">
+            <div class="overview-card-icon elevation">&#9632;</div>
+            <h3>Elevação</h3>
+            <p>Camadas de sombra e profundidade</p>
+          </a>
+          <a href="radius.html" class="overview-card">
+            <div class="overview-card-icon radius">&#9675;</div>
+            <h3>Raio de Borda</h3>
+            <p>Escala de radianos de 4px a full</p>
+          </a>
+          <a href="iconography.html" class="overview-card">
+            <div class="overview-card-icon icons">&#9733;</div>
+            <h3>Iconografia</h3>
+            <p>Estilo, tamanhos e guias de uso</p>
+          </a>
+          <a href="motion.html" class="overview-card">
+            <div class="overview-card-icon motion">&#9654;</div>
+            <h3>Movimento</h3>
+            <p>Durações, curvas e transições compartilhadas</p>
+          </a>
+          <a href="components-buttons.html" class="overview-card">
+            <div class="overview-card-icon components">&#9638;</div>
+            <h3>Componentes</h3>
+            <p>14 componentes para mobile e web</p>
+          </a>
+          <a href="accessibility.html" class="overview-card">
+            <div class="overview-card-icon a11y">&#9855;</div>
+            <h3>Acessibilidade</h3>
+            <p>Contraste, foco, anúncios e ARIA</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="mobile-toc-btn" aria-label="Menu">&#9776;</button>
+  <script src="js/docs.js"></script>
+</body>
+</html>
