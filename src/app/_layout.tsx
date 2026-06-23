@@ -29,10 +29,11 @@ export default function RootLayout() {
           <StatusBar style="light" />
           <AuthProvider>
             <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(onboarding)" options={{ animation: 'fade' }} />
-              <Stack.Screen name="(auth)" options={{ animation: 'fade' }} />
-              <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(onboarding)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="(auth)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="exercise/[id]" options={{ animation: 'slide_from_right' }} />
             </Stack>
           </AuthProvider>
         </ThemeProvider>

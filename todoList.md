@@ -252,27 +252,34 @@ src/
 
 ---
 
-### Fase 6 — Catálogo de Exercícios do Usuário
+### Fase 6 — Catálogo de Exercícios do Usuário ✅
 
 > **Nota:** Diferente do plano original, o catálogo agora é centrado no usuário. Exercícios vêm dos treinos do usuário (criados por ele ou atribuídos via sync). O sync com a cloud baixa os dados do usuário, não um catálogo global.
 
-- [ ] Seed de exercícios mock para desenvolvimento
-- [ ] **ExerciseListScreen**:
-  - Search bar com debounce
-  - Filters: grupo muscular, equipamento
-  - FlashList com os exercícios dos treinos do usuário
-  - Skeleton loading
-- [ ] **ExerciseDetailsScreen**:
-  - Hero image com shared element transition
-  - GIF animado demonstrativo (se disponível)
-  - Instruções de execução
-  - Equipamentos necessários
-  - Grupos musculares trabalhados
-  - Exercícios alternativos (do mesmo treino do usuário — BR008)
-  - Botão de favoritar
-- [ ] Shared element transition entre list e detail (Reanimated)
-- [ ] Integração TanStack Query para fetch dos dados remotos do usuário
-- [ ] Sync incremental: checar versão local vs servidor (dados do usuário)
+- [x] **Seed data** (`src/database/seed.ts`) — 8 exercícios mock com muscle_groups, movement_groups, equipments, instruções e alternativas
+- [x] **Seed integrado** — chamado automático no `getDatabase()` após migrações (só popula se tabela vazia)
+- [x] **Hooks TanStack Query** (`src/hooks/useExercises.ts`):
+  - `useExercises()` — lista completa para ExerciseListScreen
+  - `useExercise(id)` — detalhes com joins (muscle_group, movement_group, equipment, instructions, alternatives)
+- [x] **ExerciseListScreen** (`src/app/(tabs)/exercises.tsx`):
+  - Search bar com filtro textual (nome + descrição)
+  - Chips de filtro por grupo muscular
+  - Grid 2 colunas com ExerciseCard
+  - Loading / ErrorState / EmptyState
+- [x] **ExerciseDetailsScreen** (`src/app/exercise/[id].tsx`):
+  - Hero placeholder com gradiente
+  - Nome, tags (grupo muscular + movimento)
+  - Descrição, equipamentos, instruções numeradas
+  - Dicas de execução com destaque
+  - Exercícios alternativos com navegação
+  - Botão favoritar (AsyncStorage + toggle)
+  - Back button
+- [x] **Rota adicionada** `exercise/[id]` no root layout com `slide_from_right`
+
+#### Pendentes (pós-MVP)
+- [ ] Shared element transition (Reanimated) — postergado para polimento (Fase 10)
+- [ ] GIF animado demonstrativo — quando URLs reais estiverem disponíveis
+- [ ] Sync incremental com servidor — quando API estiver disponível
 
 ---
 
