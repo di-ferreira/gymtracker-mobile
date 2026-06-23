@@ -1,0 +1,35 @@
+import type { SQLiteDatabase } from 'expo-sqlite';
+import { CREATE_TABLES, CREATE_INDEXES } from './schema';
+
+const MIGRATIONS: Array<{ version: number; name: string; sql: string }> = [
+  {
+    version: 1,
+    name: 'initial_schema',
+    sql: CREATE_TABLES + CREATE_INDEXES,
+  },
+];
+
+export async function runMigrations(db: SQLiteDatabase): Promise<void> {
+  await db.execAsync(
+    `CREATE TABLE IF NOT EXISTS _migrations (
+      version INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );`
+  );
+
+  const currentVersion = await db.getFirstAsync<{ version: number }>(
+    'SELECT COALESCE(MAX(version), 0) as version FROM _migrations'
+  );
+
+  const pending = MIGRATIONS.filter(m => m.version > (currentVersion?.version ?? 0));
+
+  for (const migration of pending) {
+    await db.execAsync(migration.sql);
+    await db.runAsync(
+      'INSERT INTO _migrations (version, name) VALUES (?, ?)',
+      migration.version,
+      migration.name
+    );
+  }
+}

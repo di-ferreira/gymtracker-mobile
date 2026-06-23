@@ -139,10 +139,10 @@ src/
 
 ---
 
-### Fase 2 — Camada de Fundamentos
+### Fase 2 — Camada de Fundamentos ✅
 
 #### Types
-- [ ] Extrair interfaces de `types.md` para `src/types/`:
+- [x] Extrair interfaces de `types.md` para `src/types/`:
   - `user.ts` — User, RegisterRequest, LoginRequest, TokenResponse
   - `exercise.ts` — Exercise, ExerciseCreate, ExerciseUpdate, ExerciseEquipment, ExerciseInstruction, ExerciseAlternative
   - `muscle-group.ts` — MuscleGroup, MuscleGroupCreate, MuscleGroupUpdate
@@ -150,45 +150,37 @@ src/
   - `equipment.ts` — Equipment, EquipmentCreate, EquipmentUpdate
   - `catalog.ts` — CatalogVersion
   - `workout.ts` — Workout, WorkoutExercise, WorkoutHistory, ExerciseProgress
-  - `auth.ts` — 🔒 AuthState, LoginPayload, RegisterPayload, TokenPair
-- [ ] Criar barrel exports (`index.ts`) para cada pasta de types
+- [x] Criar barrel exports (`index.ts`) para `src/types/`
 
 #### Theme / Design System
-- [ ] Referência principal: `design-system/css/foundation.css` — usar como fonte de verdade
-- [ ] Mapear CSS custom properties para constantes TypeScript:
-  - `src/theme/colors.ts` — `--gt-*` tokens → objetos TS (primary, bg, surface, fg, semantic, border)
-  - `src/theme/typography.ts` — fontFamily (Inter, JetBrains Mono), fontSize scale
-  - `src/theme/spacing.ts` — `--gt-space-*` (0–80px, base 4)
-  - `src/theme/borderRadius.ts` — `--gt-radius-*` (xs→full)
-  - `src/theme/shadows.ts` — `--gt-elevation-*` (0–4), adaptado para React Native (shadowColor, shadowOffset, etc.)
-  - `src/theme/motion.ts` — `--gt-duration-*`, `--gt-ease-*` → Reanimated timing configs
-- [ ] `src/theme/index.ts` — export unificado
+- [x] Referência principal: `design-system/css/foundation.css` — fonte de verdade
+- [x] `src/theme/colors.ts` — `--gt-*` tokens (primary, bg, surface, fg, semantic, border)
+- [x] `src/theme/typography.ts` — fontFamily (Inter), fontSize scale (40→11), weights, letterSpacing
+- [x] `src/theme/spacing.ts` — `--gt-space-*` (0–80px, base 4)
+- [x] `src/theme/borderRadius.ts` — `--gt-radius-*` (xs→full)
+- [x] `src/theme/shadows.ts` — `--gt-elevation-*` (0–4), adaptado iOS + Android
+- [x] `src/theme/motion.ts` — `--gt-duration-*` + `--gt-ease-*` → Reanimated configs
+- [x] `src/theme/index.ts` — export unificado
 
 #### Database
-- [ ] Implementar `src/database/schema.ts` — CREATE TABLE para:
-  - `users` — 🔒 cache do usuário logado (id, name, email, etc.)
-  - `exercises`, `muscle_groups`, `movement_groups`, `equipments`
-  - `exercise_alternatives`, `exercise_equipment`, `exercise_instructions`
-  - `workouts`, `workout_exercises`, `workout_history`, `exercise_progress`
-  - `catalog_versions` — versão local dos dados do usuário
-- [ ] Implementar `src/database/migrations.ts` — sistema de migration incremental
-- [ ] Implementar `src/database/repositories/`:
-  - `exercise-repository.ts`, `workout-repository.ts`, `history-repository.ts`, `catalog-repository.ts`, `user-repository.ts` 🔒
-- [ ] Implementar `src/database/index.ts` — initDatabase(), getDatabase()
+- [x] `src/database/schema.ts` — CREATE TABLE para 11 tabelas (users, exercises, muscle_groups, movement_groups, equipments, exercise_equipments, exercise_instructions, exercise_alternatives, workouts, workout_exercises, workout_history, exercise_progress, catalog_versions)
+- [x] `src/database/migrations.ts` — sistema de migration incremental com `_migrations` table
+- [x] `src/database/repositories/`: exercise, workout, history, catalog, user repositories
+- [x] `src/database/index.ts` — initDatabase(), getDatabase(), closeDatabase()
 
 #### Storage (MMKV)
-- [ ] Criar `src/storage/auth-storage.ts` — 🔒 token JWT + refresh token
-- [ ] Criar `src/storage/favorites-storage.ts`
-- [ ] Criar `src/storage/preferences-storage.ts` — tema, unidades, onboarding visto
-- [ ] Criar `src/storage/index.ts`
+- [x] `src/storage/auth-storage.ts` — JWT + refresh token (createMMKV)
+- [x] `src/storage/favorites-storage.ts` — lista de IDs favoritados
+- [x] `src/storage/preferences-storage.ts` — onboarding, weight unit, rest timer, theme
+- [x] `src/storage/index.ts` — barrel export
 
 #### Services (API)
-- [ ] Criar `src/services/api.ts` — instância Axios com baseURL, interceptors (token attach, refresh automático)
-- [ ] Criar `src/services/auth-service.ts` 🔒 — register, login, me, updateProfile, refreshToken
-- [ ] Criar `src/services/catalog-service.ts` — listar exercícios, muscle-groups, movement-groups, equipment (do usuário)
-- [ ] Criar `src/services/sync-service.ts` 🔄 — sincronizar workouts, history, progress do usuário
-- [ ] Criar `src/services/admin-service.ts` — CRUD admin (se aplicável)
-- [ ] Criar `src/services/index.ts`
+- [x] `src/services/api.ts` — Axios instance com interceptors (token attach + refresh automático)
+- [x] `src/services/auth-service.ts` — register, login, getMe, updateProfile, logout
+- [x] `src/services/catalog-service.ts` — fetch exercises, muscle-groups, movement-groups, equipment
+- [x] `src/services/sync-service.ts` — syncCatalog com version check + downloadAndStore
+- [x] `src/services/admin-service.ts` — CRUD admin para users, exercises, muscle-groups, movement-groups, equipment
+- [x] `src/services/index.ts` — barrel export
 
 ---
 
