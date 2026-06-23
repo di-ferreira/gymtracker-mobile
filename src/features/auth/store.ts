@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import type { User, LoginRequest, RegisterRequest } from '../../types';
 import { login as apiLogin, register as apiRegister, getMe } from '../../services/auth-service';
-import { hasToken, clearTokens, clearAll } from '../../storage';
+import { hasToken, clearTokens, clearAll, setAccessToken } from '../../storage';
+import { mockLogin, mockRegister, MOCK_USER, MOCK_TOKEN } from './mock';
+
+const USE_MOCK_AUTH = true;
 
 interface AuthState {
   user: User | null;
@@ -15,6 +18,14 @@ interface AuthState {
   clearError: () => void;
 }
 
+async function mockCheckAuth(): Promise<User | null> {
+  const hasTokenValue = await hasToken();
+  if (hasTokenValue) {
+    return MOCK_USER;
+  }
+  return null;
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: true,
@@ -22,6 +33,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   error: null,
 
   checkAuth: async () => {
+    if (USE_MOCK_AUTH) {
+      const user = await mockCheckAuth();
+      set({
+        user,
+        isAuthenticated: user !== null,
+        isLoading: false,
+      });
+      return;
+    }
+
     const tokenExists = await hasToken();
     if (!tokenExists) {
       set({ isLoading: false, isAuthenticated: false });
@@ -39,9 +60,18 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (data: LoginRequest) => {
     set({ isLoading: true, error: null });
+
+    if (USE_MOCK_AUTH) {
+      await new Promise((r) => setTimeout(r, 500));
+      await setAccessToken(MOCK_TOKEN);
+      set({ user: MOCK_USER, isLoading: false, isAuthenticated: true });
+      return;
+    }
+
     try {
       await apiLogin(data);
-      set({ isLoading: false, isAuthenticated: true });
+      const user = await getMe();
+      set({ user, isLoading: false, isAuthenticated: true });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro ao fazer login';
       set({ isLoading: false, error: message });
@@ -51,13 +81,19 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   register: async (data: RegisterRequest) => {
     set({ isLoading: true, error: null });
+
+    if (USE_MOCK_AUTH) {
+      await new Promise((r) => setTimeout(r, 500));
+      await setAccessToken(MOCK_TOKEN);
+      set({ user: MOCK_USER, isLoading: false, isAuthenticated: true });
+      return;
+    }
+
     try {
       await apiRegister(data);
-      await apiLogin({
-        email: data.email,
-        password: data.password,
-      });
-      set({ isLoading: false, isAuthenticated: true });
+      await apiLogin({ email: data.email, password: data.password });
+      const user = await getMe();
+      set({ user, isLoading: false, isAuthenticated: true });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro ao registrar';
       set({ isLoading: false, error: message });

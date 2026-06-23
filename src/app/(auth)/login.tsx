@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../features/auth/store';
+import { Button } from '../../components/ui/Button';
+import { TextInput } from '../../components/ui/TextInput';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
-import { borderRadius } from '../../theme/borderRadius';
+import { typography } from '../../theme/typography';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -40,6 +42,7 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.content}>
+        <Text style={styles.emoji}>💪</Text>
         <Text style={styles.title}>GymTracker</Text>
         <Text style={styles.subtitle}>Entre na sua conta</Text>
 
@@ -48,9 +51,8 @@ export default function LoginScreen() {
         )}
 
         <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor={colors.fgTertiary}
+          label="Email"
+          placeholder="seu@email.com"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -59,35 +61,31 @@ export default function LoginScreen() {
         />
 
         <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          placeholderTextColor={colors.fgTertiary}
+          label="Senha"
+          placeholder="Sua senha"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
         />
 
-        <TouchableOpacity
-          style={[styles.button, isLoading && styles.buttonDisabled]}
+        <Button
+          title="Entrar"
           onPress={handleLogin}
-          disabled={isLoading}
-          activeOpacity={0.8}
-        >
-          {isLoading ? (
-            <ActivityIndicator color={colors.bg} />
-          ) : (
-            <Text style={styles.buttonText}>Entrar</Text>
-          )}
-        </TouchableOpacity>
+          loading={isLoading}
+          style={styles.button}
+        />
 
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => router.push('/(auth)/register')}
-        >
+        <View style={styles.linkContainer}>
           <Text style={styles.linkText}>
-            Não tem conta? <Text style={styles.linkHighlight}>Cadastre-se</Text>
+            Não tem conta?{' '}
+            <Text
+              style={styles.linkHighlight}
+              onPress={() => router.push('/(auth)/register')}
+            >
+              Cadastre-se
+            </Text>
           </Text>
-        </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -103,16 +101,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing[6],
   },
+  emoji: {
+    fontSize: 48,
+    textAlign: 'center',
+    marginBottom: spacing[4],
+  },
   title: {
-    fontSize: 40,
-    fontWeight: '700',
+    ...typography.display,
     color: colors.fg,
-    letterSpacing: -0.03,
     textAlign: 'center',
     marginBottom: spacing[2],
   },
   subtitle: {
-    fontSize: 16,
+    ...typography.body,
     color: colors.fgSecondary,
     textAlign: 'center',
     marginBottom: spacing[10],
@@ -125,38 +126,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.errorSurface,
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[4],
-    borderRadius: borderRadius.md,
+    borderRadius: 8,
     overflow: 'hidden',
   },
-  input: {
-    backgroundColor: colors.surface2,
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[4],
-    fontSize: 16,
-    color: colors.fg,
-    marginBottom: spacing[3],
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
   button: {
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.xl,
-    paddingVertical: spacing[4],
-    alignItems: 'center',
     marginTop: spacing[4],
-    height: 56,
-    justifyContent: 'center',
   },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.bg,
-  },
-  linkButton: {
+  linkContainer: {
     marginTop: spacing[6],
     alignItems: 'center',
   },

@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView } from 'react-native';
+import { Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../features/auth/store';
+import { Button } from '../../components/ui/Button';
+import { TextInput } from '../../components/ui/TextInput';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
-import { borderRadius } from '../../theme/borderRadius';
+import { typography } from '../../theme/typography';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -53,6 +55,7 @@ export default function RegisterScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+        <Text style={styles.emoji}>💪</Text>
         <Text style={styles.title}>GymTracker</Text>
         <Text style={styles.subtitle}>Crie sua conta</Text>
 
@@ -61,18 +64,16 @@ export default function RegisterScreen() {
         )}
 
         <TextInput
-          style={styles.input}
-          placeholder="Nome"
-          placeholderTextColor={colors.fgTertiary}
+          label="Nome"
+          placeholder="Seu nome"
           value={name}
           onChangeText={setName}
           autoCapitalize="words"
         />
 
         <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor={colors.fgTertiary}
+          label="Email"
+          placeholder="seu@email.com"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -81,44 +82,39 @@ export default function RegisterScreen() {
         />
 
         <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          placeholderTextColor={colors.fgTertiary}
+          label="Senha"
+          placeholder="Mínimo 6 caracteres"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
         />
 
         <TextInput
-          style={styles.input}
-          placeholder="Confirmar senha"
-          placeholderTextColor={colors.fgTertiary}
+          label="Confirmar senha"
+          placeholder="Repita a senha"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
         />
 
-        <TouchableOpacity
-          style={[styles.button, isLoading && styles.buttonDisabled]}
+        <Button
+          title="Criar conta"
           onPress={handleRegister}
-          disabled={isLoading}
-          activeOpacity={0.8}
-        >
-          {isLoading ? (
-            <ActivityIndicator color={colors.bg} />
-          ) : (
-            <Text style={styles.buttonText}>Criar conta</Text>
-          )}
-        </TouchableOpacity>
+          loading={isLoading}
+          style={styles.button}
+        />
 
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => router.push('/(auth)/login')}
-        >
+        <View style={styles.linkContainer}>
           <Text style={styles.linkText}>
-            Já tem conta? <Text style={styles.linkHighlight}>Entrar</Text>
+            Já tem conta?{' '}
+            <Text
+              style={styles.linkHighlight}
+              onPress={() => router.push('/(auth)/login')}
+            >
+              Entrar
+            </Text>
           </Text>
-        </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -135,16 +131,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[6],
     paddingVertical: spacing[10],
   },
+  emoji: {
+    fontSize: 48,
+    textAlign: 'center',
+    marginBottom: spacing[4],
+  },
   title: {
-    fontSize: 40,
-    fontWeight: '700',
+    ...typography.display,
     color: colors.fg,
-    letterSpacing: -0.03,
     textAlign: 'center',
     marginBottom: spacing[2],
   },
   subtitle: {
-    fontSize: 16,
+    ...typography.body,
     color: colors.fgSecondary,
     textAlign: 'center',
     marginBottom: spacing[10],
@@ -157,38 +156,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.errorSurface,
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[4],
-    borderRadius: borderRadius.md,
+    borderRadius: 8,
     overflow: 'hidden',
   },
-  input: {
-    backgroundColor: colors.surface2,
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[4],
-    fontSize: 16,
-    color: colors.fg,
-    marginBottom: spacing[3],
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
   button: {
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.xl,
-    paddingVertical: spacing[4],
-    alignItems: 'center',
     marginTop: spacing[4],
-    height: 56,
-    justifyContent: 'center',
   },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.bg,
-  },
-  linkButton: {
+  linkContainer: {
     marginTop: spacing[6],
     alignItems: 'center',
   },

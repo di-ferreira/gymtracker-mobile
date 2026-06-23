@@ -237,16 +237,18 @@ src/
 
 ---
 
-### Fase 5 — Navegação, Onboarding e Login Flow
+### Fase 5 — Navegação, Onboarding e Login Flow ✅
 
-- [ ] Configurar `src/app/_layout.tsx` — providers (Theme, QueryClient, AuthProvider, Database init)
-  - Check de autenticação: se logado → tabs, senão → login
-- [ ] Configurar `src/app/(tabs)/_layout.tsx` — bottom tabs (Home, Exercises, Favorites, Workouts, Settings)
-- [ ] **SplashScreen** — animação de entrada com logo centralizado + check de auth
-- [ ] **WelcomeScreen / Onboarding** — carrossel de introdução (3 slides)
-- [ ] **LoginScreen** + **RegisterScreen** (detalhados na Fase 3)
-- [ ] Lógica de onboarding visto + login completo → redirect para tabs
-- [ ] Typography e identidade visual aplicada nas telas de onboarding
+- [x] **Root layout** (`src/app/_layout.tsx`) — ThemeProvider + QueryClientProvider + AuthProvider + DB init
+- [x] **Bottom tabs** (`src/app/(tabs)/_layout.tsx`) — theme tokens (cores, altura 72px, label style)
+- [x] **SplashScreen** (`src/app/index.tsx`) — animação fadeIn + spring scale, check onboarding + auth → redirect
+- [x] **Onboarding** (`src/app/(onboarding)/index.tsx`) — FlatList horizontal com 3 slides, pagination dots, "Próximo"/"Pular"/"Começar"
+- [x] **LoginScreen** — refatorada com `Button` e `TextInput` do UI Kit, typography tokens
+- [x] **RegisterScreen** — refatorada com `Button` e `TextInput` do UI Kit, typography tokens
+- [x] **Fluxo completo**: Splash → Onboarding? → Login/Register → Tabs
+  - `isOnboardingDone()` do AsyncStorage → se false, redirect para `/(onboarding)`
+  - `setOnboardingDone()` ao completar → redirect para `/(auth)/login`
+  - Login/Register bem-sucedido → redirect para `/(tabs)`
 
 ---
 
