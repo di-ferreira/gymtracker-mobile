@@ -207,39 +207,33 @@ src/
 
 ---
 
-### Fase 4 — Componentes Base (UI Kit)
+### Fase 4 — Componentes Base (UI Kit) ✅
 
 > **Referência principal:** `design-system/components-*.html` — implementar cada componente com os tokens exatos do `foundation.css`.
 
-#### Tokens e Providers
-- [ ] `ThemeProvider` — Provider que injeta tokens + modo dark
-- [ ] Criar constantes de cores, spacing, radius a partir do `foundation.css`
+#### Componentes criados em `src/components/ui/`
+- [x] `ThemeProvider` — `src/theme/ThemeProvider.tsx`
+- [x] `Button` — primary, secondary, ghost, outline; altura 56px, radius 16px, loading/disabled states
+- [x] `TextInput` — label, placeholder, error, disabled; borda `--gt-border`
+- [x] `Card` — `--gt-surface #151515`, radius 24px, padding configurável
+- [x] `Chip` — `--gt-surface-3 #252525` bg, `--gt-primary #FF7A1A` selected
+- [x] `Header` — título + ações (back, close)
+- [x] `ScreenLayout` — SafeAreaView + padding + scroll toggle
+- [x] `Loading` / `LoadingOverlay` — spinner + mensagem
+- [x] `ErrorState` — mensagem + retry button
+- [x] `EmptyState` — título, descrição, action button
+- [x] `ListItem` — título + subtítulo + chevron
+- [x] `ExerciseCard` — thumbnail, nome, muscle group
+- [x] `RestTimer` — countdown + skip + progress bar (completa Fase 9 RestTimer também)
+- [x] `SetRow` — numeração, peso, reps, checkbox toggle
+- [x] `WeightRepInput` — inputs combinados peso + reps
+- [x] `ProgressBar` — barra linear com progress%
 
-#### Componentes (mapeados do design-system HTML)
-- [ ] `Button` — primary (`--gt-primary #FF7A1A`), secondary, ghost, outline, icon-button
-  - Estados: default, hover (`--gt-primary-hover #FF9249`), active (`--gt-primary-active #E06510`), disabled
-  - Altura 56px, radius 16px
-- [ ] `TextInput` — com label, placeholder, error, disabled; borda `--gt-border`
-- [ ] `Card` — `--gt-surface #151515`, radius 24px, padding configurável
-- [ ] `Chip` — `--gt-surface-3 #252525` bg, `--gt-primary #FF7A1A` selected
-- [ ] `BottomSheet` / `Drawer` — conforme `components-drawers.html`
-- [ ] `Modal` — overlay + conteúdo centralizado
-- [ ] `Header` — título + ações (back, close)
-- [ ] `TabBar` — bottom tab customizada (72px height, `--gt-surface #151515` bg, `--gt-primary` active)
-- [ ] `ScreenLayout` — SafeAreaView + padding + scroll
-- [ ] `Loading` / `LoadingOverlay` — spinner ou skeleton
-- [ ] `ErrorState` — mensagem + retry button
-- [ ] `EmptyState` — ilustração + texto + ação (conforme `components-empty-states.html`)
-- [ ] `ListItem` — linha com título, subtítulo, ícone, chevron
-- [ ] `ExerciseCard` — thumbnail grande, nome, muscle group chips
-- [ ] `RestTimer` — countdown circular + botões pause/skip
-- [ ] `SetRow` — linha de série: ordem, peso, reps, checkbox
-- [ ] `WeightRepInput` — input combinado peso + reps
-- [ ] `ProgressBar` — barra de progresso linear
-- [ ] `Icon` — wrapper para @expo/vector-icons
-
-#### Estados implementados para cada componente (conforme DESIGN-MANIFEST.json)
-- [ ] default, hover, focus, active, disabled, loading, empty, error, success
+#### Pendentes (postergados para Fase 5+ quando necessários)
+- [ ] `BottomSheet` / `Drawer` — quando houver tela que precise
+- [ ] `Modal` — quando houver tela que precise
+- [ ] `TabBar` — Fase 5 (navegação)
+- [ ] `Icon` — wrapper @expo/vector-icons (Fase 5+)
 
 ---
 
