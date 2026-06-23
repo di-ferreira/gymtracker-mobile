@@ -1,17 +1,17 @@
-import { useState, useMemo, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, RefreshControl } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
 import { FlashList, type ListRenderItem } from '@shopify/flash-list';
-import { useExercises } from '../../hooks/useExercises';
-import { ExerciseRow } from '../../database/repositories/exercise-repository';
-import { ExerciseCard } from '../../components/ui/ExerciseCard';
+import { Stack, useRouter } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Chip } from '../../components/ui/Chip';
-import { Loading } from '../../components/ui/Loading';
-import { ErrorState } from '../../components/ui/ErrorState';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { ExerciseCard } from '../../components/ui/ExerciseCard';
+import { Loading } from '../../components/ui/Loading';
+import { ExerciseRow } from '../../database/repositories/exercise-repository';
+import { useExercises } from '../../hooks/useExercises';
+import { borderRadius } from '../../theme/borderRadius';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
-import { borderRadius } from '../../theme/borderRadius';
 
 const ALL_FILTER = 'todos';
 
@@ -41,7 +41,7 @@ export default function ExercisesScreen() {
       result = result.filter(
         (ex) =>
           ex.name.toLowerCase().includes(q) ||
-          (ex.description && ex.description.toLowerCase().includes(q))
+          (ex.description && ex.description.toLowerCase().includes(q)),
       );
     }
 
@@ -52,7 +52,7 @@ export default function ExercisesScreen() {
     return result;
   }, [exercises, search, selectedMuscle]);
 
-    const handleSearch = useCallback((text: string) => {
+  const handleSearch = useCallback((text: string) => {
     setSearch(text);
   }, []);
 
@@ -67,7 +67,7 @@ export default function ExercisesScreen() {
         />
       </View>
     ),
-    [router]
+    [router],
   );
 
   if (isLoading) {
@@ -118,26 +118,30 @@ export default function ExercisesScreen() {
         />
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipsContainer}
-      >
+      <View style={styles.searchContainer}>
         <Chip
           label="Todos"
           selected={selectedMuscle === ALL_FILTER}
           onPress={() => setSelectedMuscle(ALL_FILTER)}
         />
-        {muscleGroups.map((mg) => (
-          <Chip
-            key={mg.id}
-            label={mg.name}
-            selected={selectedMuscle === mg.id}
-            onPress={() => setSelectedMuscle(mg.id)}
-          />
-        ))}
-      </ScrollView>
+      </View>
 
+      {muscleGroups.length > 0 && (
+        <ScrollView
+          horizontal={false}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsContainer}
+        >
+          {muscleGroups.map((mg) => (
+            <Chip
+              key={mg.id}
+              label={mg.name}
+              selected={selectedMuscle === mg.id}
+              onPress={() => setSelectedMuscle(mg.id)}
+            />
+          ))}
+        </ScrollView>
+      )}
       <FlashList<ExerciseRow>
         data={filtered}
         keyExtractor={(item) => item.id}
@@ -152,10 +156,7 @@ export default function ExercisesScreen() {
           />
         }
         ListEmptyComponent={
-          <EmptyState
-            title="Nenhum resultado"
-            description="Tente alterar sua busca ou filtros."
-          />
+          <EmptyState title="Nenhum resultado" description="Tente alterar sua busca ou filtros." />
         }
         renderItem={renderExerciseItem}
       />
@@ -199,15 +200,18 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   chipsContainer: {
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[2],
     gap: spacing[2],
-    marginBottom: spacing[4],
+    marginBottom: spacing[2],
+    paddingVertical: spacing[2],
+    marginHorizontal: spacing[2],
   },
   listContent: {
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[2],
     paddingBottom: spacing[6],
   },
   cardWrapper: {
     flex: 1,
+    padding: spacing[1],
   },
 });
