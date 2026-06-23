@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
   Animated,
   TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
   type ViewStyle,
 } from 'react-native';
 import { colors } from '../../theme/colors';
@@ -17,11 +19,30 @@ interface BottomSheetProps {
   style?: ViewStyle;
 }
 
-const SHEET_HEIGHT = 300;
+const BASE_SHEET_HEIGHT = 300;
 
 export function BottomSheet({ visible, onClose, children, style }: BottomSheetProps) {
-  const translateY = useRef(new Animated.Value(SHEET_HEIGHT)).current;
+  const translateY = useRef(new Animated.Value(BASE_SHEET_HEIGHT)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const sheetHeight = BASE_SHEET_HEIGHT + keyboardHeight;
+
+  useEffect(() => {
+    const showName = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideName = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSubscription = Keyboard.addListener(showName, (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener(hideName, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (visible) {
@@ -40,7 +61,7 @@ export function BottomSheet({ visible, onClose, children, style }: BottomSheetPr
     } else {
       Animated.parallel([
         Animated.timing(translateY, {
-          toValue: SHEET_HEIGHT,
+          toValue: BASE_SHEET_HEIGHT,
           duration: 200,
           useNativeDriver: true,
         }),
@@ -64,11 +85,13 @@ export function BottomSheet({ visible, onClose, children, style }: BottomSheetPr
         style={[
           styles.sheet,
           style,
-          { transform: [{ translateY }] },
+          { height: sheetHeight, transform: [{ translateY }] },
         ]}
       >
         <View style={styles.handle} />
-        {children}
+        <View style={[styles.content, { paddingBottom: keyboardHeight || spacing[4] }]}>
+          {children}
+        </View>
       </Animated.View>
     </View>
   );
@@ -84,12 +107,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: SHEET_HEIGHT,
     backgroundColor: colors.surface,
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
     paddingHorizontal: spacing[4],
     paddingTop: spacing[2],
+  },
+  content: {
+    flex: 1,
   },
   handle: {
     width: 40,
