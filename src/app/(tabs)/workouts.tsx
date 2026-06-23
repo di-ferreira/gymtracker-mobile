@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Stack, useRouter, useFocusEffect } from 'expo-router';
+import { FlashList } from '@shopify/flash-list';
 import { useWorkoutsStore } from '../../features/workouts/store';
+import type { WorkoutWithExerciseCount } from '../../features/workouts/store';
 import { Button } from '../../components/ui/Button';
 import { Loading } from '../../components/ui/Loading';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -20,7 +22,6 @@ function WorkoutCard({
 }) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-      <Text style={styles.cardIcon}>📋</Text>
       <Text style={styles.cardName}>{name}</Text>
       <Text style={styles.cardCount}>
         {exerciseCount} {exerciseCount === 1 ? 'exercício' : 'exercícios'}
@@ -58,13 +59,12 @@ export default function WorkoutsScreen() {
         </Text>
       </View>
 
-      <FlatList
+      <FlashList<WorkoutWithExerciseCount>
         data={workouts}
         keyExtractor={(item) => item.id}
         numColumns={2}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={styles.columnWrapper}
         ListEmptyComponent={
           <EmptyState
             title="Nenhum treino"
@@ -73,7 +73,7 @@ export default function WorkoutsScreen() {
             onAction={() => router.push('/workout/create')}
           />
         }
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: WorkoutWithExerciseCount }) => (
           <View style={styles.cardWrapper}>
             <WorkoutCard
               name={item.name}
@@ -119,10 +119,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing[4],
     paddingBottom: 100,
-  },
-  columnWrapper: {
-    gap: spacing[3],
-    marginBottom: spacing[3],
   },
   cardWrapper: {
     flex: 1,

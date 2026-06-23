@@ -1,24 +1,24 @@
-import { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
+import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
 import { useFavoritesStore } from '../../features/favorites/store';
 import { getDatabase } from '../../database';
 import { ExerciseCard } from '../../components/ui/ExerciseCard';
-import { Loading } from '../../components/ui/Loading';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
 
 export default function FavoritesScreen() {
   const router = useRouter();
-  const { ids, load, isLoading } = useFavoritesStore();
+  const { ids, load } = useFavoritesStore();
 
   useEffect(() => {
     load();
   }, [load]);
 
-  const { data: exercises, isLoading: exercisesLoading } = useQuery({
+  const { data: exercises } = useQuery({
     queryKey: ['favorite-exercises', ids],
     queryFn: async () => {
       if (ids.length === 0) return [];
@@ -37,13 +37,25 @@ export default function FavoritesScreen() {
     enabled: ids.length > 0,
   });
 
-  if (isLoading || exercisesLoading) {
-    return (
-      <View style={styles.container}>
-        <Loading message="Carregando favoritos..." />
+  const renderItem: ListRenderItem<{
+    id: string;
+    name: string;
+    target_muscle_primary: string | null;
+    thumbnail_url: string | null;
+  }> = useCallback(
+    ({ item }) => (
+      <View style={styles.cardWrapper}>
+        <ExerciseCard
+          name={item.name}
+          muscleGroup={item.target_muscle_primary ?? undefined}
+          onPress={() => router.push(`/exercise/${item.id}`)}
+        />
       </View>
-    );
-  }
+    ),
+    [router]
+  );
+
+  const data = exercises ?? [];
 
   return (
     <View style={styles.container}>
@@ -56,13 +68,12 @@ export default function FavoritesScreen() {
         </Text>
       </View>
 
-      <FlatList
-        data={exercises ?? []}
+      <FlashList
+        data={data}
         keyExtractor={(item) => item.id}
         numColumns={2}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={styles.columnWrapper}
         ListEmptyComponent={
           <EmptyState
             title="Nenhum favorito"
@@ -71,15 +82,7 @@ export default function FavoritesScreen() {
             onAction={() => router.push('/(tabs)/exercises')}
           />
         }
-        renderItem={({ item }) => (
-          <View style={styles.cardWrapper}>
-            <ExerciseCard
-              name={item.name}
-              muscleGroup={item.target_muscle_primary ?? undefined}
-              onPress={() => router.push(`/exercise/${item.id}`)}
-            />
-          </View>
-        )}
+        renderItem={renderItem}
       />
     </View>
   );
@@ -109,10 +112,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[6],
-  },
-  columnWrapper: {
-    gap: spacing[3],
-    marginBottom: spacing[3],
   },
   cardWrapper: {
     flex: 1,

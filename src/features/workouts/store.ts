@@ -3,7 +3,7 @@ import { getDatabase } from '../../database';
 import { createWorkoutRepository } from '../../database/repositories/workout-repository';
 import type { WorkoutRow } from '../../database/repositories/workout-repository';
 
-interface WorkoutWithExerciseCount extends WorkoutRow {
+export interface WorkoutWithExerciseCount extends WorkoutRow {
   exercise_count: number;
 }
 

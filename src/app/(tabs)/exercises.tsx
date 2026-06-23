@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, RefreshControl } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
+import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 import { useExercises } from '../../hooks/useExercises';
+import { ExerciseRow } from '../../database/repositories/exercise-repository';
 import { ExerciseCard } from '../../components/ui/ExerciseCard';
 import { Chip } from '../../components/ui/Chip';
 import { Loading } from '../../components/ui/Loading';
@@ -50,9 +52,23 @@ export default function ExercisesScreen() {
     return result;
   }, [exercises, search, selectedMuscle]);
 
-  const handleSearch = useCallback((text: string) => {
+    const handleSearch = useCallback((text: string) => {
     setSearch(text);
   }, []);
+
+  const renderExerciseItem: ListRenderItem<ExerciseRow> = useCallback(
+    ({ item }) => (
+      <View style={styles.cardWrapper}>
+        <ExerciseCard
+          name={item.name}
+          muscleGroup={item.target_muscle_primary ?? undefined}
+          thumbnailUrl={item.thumbnail_url}
+          onPress={() => router.push(`/exercise/${item.id}`)}
+        />
+      </View>
+    ),
+    [router]
+  );
 
   if (isLoading) {
     return (
@@ -102,28 +118,32 @@ export default function ExercisesScreen() {
         />
       </View>
 
-      <FlatList
+      <ScrollView
         horizontal
-        data={[{ id: ALL_FILTER, name: 'Todos' }, ...muscleGroups]}
-        keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.chipsContainer}
-        renderItem={({ item }) => (
+      >
+        <Chip
+          label="Todos"
+          selected={selectedMuscle === ALL_FILTER}
+          onPress={() => setSelectedMuscle(ALL_FILTER)}
+        />
+        {muscleGroups.map((mg) => (
           <Chip
-            label={item.name}
-            selected={selectedMuscle === item.id}
-            onPress={() => setSelectedMuscle(item.id)}
+            key={mg.id}
+            label={mg.name}
+            selected={selectedMuscle === mg.id}
+            onPress={() => setSelectedMuscle(mg.id)}
           />
-        )}
-      />
+        ))}
+      </ScrollView>
 
-      <FlatList
+      <FlashList<ExerciseRow>
         data={filtered}
         keyExtractor={(item) => item.id}
         numColumns={2}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={styles.columnWrapper}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -137,16 +157,7 @@ export default function ExercisesScreen() {
             description="Tente alterar sua busca ou filtros."
           />
         }
-        renderItem={({ item }) => (
-          <View style={styles.cardWrapper}>
-            <ExerciseCard
-              name={item.name}
-              muscleGroup={item.target_muscle_primary ?? undefined}
-              thumbnailUrl={item.thumbnail_url}
-              onPress={() => router.push(`/exercise/${item.id}`)}
-            />
-          </View>
-        )}
+        renderItem={renderExerciseItem}
       />
     </View>
   );
@@ -195,10 +206,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[6],
-  },
-  columnWrapper: {
-    gap: spacing[3],
-    marginBottom: spacing[3],
   },
   cardWrapper: {
     flex: 1,

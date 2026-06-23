@@ -229,11 +229,9 @@ src/
 - [x] `WeightRepInput` — inputs combinados peso + reps
 - [x] `ProgressBar` — barra linear com progress%
 
-#### Pendentes (postergados para Fase 5+ quando necessários)
-- [ ] `BottomSheet` / `Drawer` — quando houver tela que precise
+#### Pendentes
+- [ ] `TabBar` — navegação via expo-router <Tabs> (não requer componente separado)
 - [ ] `Modal` — quando houver tela que precise
-- [ ] `TabBar` — Fase 5 (navegação)
-- [ ] `Icon` — wrapper @expo/vector-icons (Fase 5+)
 
 ---
 
@@ -276,8 +274,8 @@ src/
   - Back button
 - [x] **Rota adicionada** `exercise/[id]` no root layout com `slide_from_right`
 
-#### Pendentes (pós-MVP)
-- [ ] Shared element transition (Reanimated) — postergado para polimento (Fase 10)
+#### Pendentes (pós-MVP, API-dependente)
+- [ ] Shared element transition (Reanimated) — postergado para polimento
 - [ ] GIF animado demonstrativo — quando URLs reais estiverem disponíveis
 - [ ] Sync incremental com servidor — quando API estiver disponível
 
@@ -319,11 +317,9 @@ src/
   - Validação, loading, volta ao salvar
   - Slide from bottom
 - [x] **Rotas** adicionadas ao root layout
-
-#### Pendentes
-- [ ] Seleção de exercícios ao criar/editar treino
-- [ ] Reordenação (drag to reorder)
-- [ ] Botão "Iniciar Treino" — Fase 9
+- [x] **Seleção de exercícios** (`add-exercises.tsx`) — checklist multi-seleção
+- [x] **Drag-to-reorder** — integrado com `react-native-draggable-flatlist`
+- [x] **Remover exercício** — confirm dialog + delete + haptics
 
 ---
 
@@ -382,17 +378,22 @@ src/
   - Limpar cache local com confirm
   - Versão do app
 
-#### Testes (postergados)
-- [ ] Configurar vitest + @testing-library/react-native
-- [ ] Testes unitários para stores (Zustand)
-- [ ] Testes unitários para repositórios (SQLite mock)
+#### Testes ✅
+- [x] Configurar vitest + @testing-library/react-native — `vitest.config.ts`, `vitest.setup.ts`
+- [x] Testes unitários para stores (Zustand) — auth (3), workouts (2)
+- [x] Testes unitários para repositórios (SQLite mock) — exercise (3), workout (4)
 
-#### Polimento (postergado)
+#### Polimento ✅
+- [x] Pull-to-refresh — RefreshControl em exercícios e workout detail
+- [x] Haptic feedback — `expo-haptics` integrado em delete/remove actions
+- [x] Error boundary global — `src/theme/ErrorBoundary.tsx` envolvendo root layout
+- [x] Deep linking — scheme `gymtracker` configurado em `app.json`
+- [x] Performance — `FlashList` em exercícios, favoritos e treinos; `useCallback` em renderItem; `React.memo` em componentes
+
+#### Pendentes (polimento futuro)
 - [ ] Animações de transição com Reanimated
-- [ ] Pull-to-refresh, haptic feedback
-- [ ] Error boundary global
-- [ ] Deep linking
-- [ ] Performance: memo, useCallback, FlashList otimizações
+- [ ] `BottomSheet` — criado mas sem uso em tela ainda
+- [ ] `Icon` — criado (`Icon.tsx`) mas não substituiu ícones literais
 
 ---
 
@@ -430,9 +431,9 @@ src/
 | RF011 | Criar treino | Treinos | ✅ |
 | RF012 | Editar treino | Treinos | ✅ |
 | RF013 | Excluir treino | Treinos | ✅ |
-| RF014 | Adicionar exercício ao treino | Treinos | ☐ (UI) |
-| RF015 | Remover exercício do treino | Treinos | ☐ (UI) |
-| RF016 | Reordenar exercícios | Treinos | ☐ (UI) |
+| RF014 | Adicionar exercício ao treino | Treinos | ✅ |
+| RF015 | Remover exercício do treino | Treinos | ✅ |
+| RF016 | Reordenar exercícios | Treinos | ✅ |
 | RF017 | Registrar carga utilizada | Execução | ✅ |
 | RF018 | Registrar repetições | Execução | ✅ |
 | RF019 | Registrar séries | Execução | ✅ |

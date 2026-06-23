@@ -3,14 +3,15 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Alert,
   RefreshControl,
 } from 'react-native';
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getDatabase } from '../../../database';
 import { createWorkoutRepository } from '../../../database/repositories/workout-repository';
 import { useWorkoutsStore } from '../../../features/workouts/store';
@@ -24,7 +25,8 @@ import { spacing } from '../../../theme/spacing';
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { workouts, remove, removeExercise } = useWorkoutsStore();
+  const queryClient = useQueryClient();
+  const { workouts, remove, removeExercise, reorderExercises } = useWorkoutsStore();
   const workout = workouts.find((w) => w.id === id);
 
   const { data: exercises, isLoading, isError, refetch, isRefetching } = useQuery({
@@ -89,6 +91,45 @@ export default function WorkoutDetailScreen() {
     ]);
   };
 
+  const handleDragEnd = useCallback(
+    ({ data }: { data: typeof exercises }) => {
+      if (!data) return;
+      const orderedIds = data.map((we) => we.id);
+      reorderExercises(id, orderedIds);
+      queryClient.invalidateQueries({ queryKey: ['workout-exercises', id] });
+    },
+    [id, reorderExercises, queryClient]
+  );
+
+  const renderItem = useCallback(
+    ({ item, drag, isActive }: { item: NonNullable<typeof exercises>[0]; drag: () => void; isActive: boolean }) => {
+      if (!item.exercise) return null;
+      return (
+        <ScaleDecorator>
+          <View style={[styles.exerciseRow, isActive && styles.exerciseRowActive]}>
+            <TouchableOpacity
+              onPress={() => router.push(`/exercise/${item.exercise_id}`)}
+              style={styles.exerciseCardTouchable}
+              onLongPress={drag}
+              delayLongPress={200}
+            >
+              <ExerciseCard name={item.exercise.name} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.removeButton}
+              onPress={() => handleRemoveExercise(item.exercise_id, item.exercise!.name)}
+            >
+              <Text style={styles.removeIcon}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        </ScaleDecorator>
+      );
+    },
+    [router, handleRemoveExercise]
+  );
+
+  const keyExtractor = useCallback((item: NonNullable<typeof exercises>[0]) => item.id, []);
+
   if (!workout) {
     return (
       <View style={styles.container}>
@@ -97,8 +138,57 @@ export default function WorkoutDetailScreen() {
     );
   }
 
+  const listItems = exercises ?? [];
+
+  const headerComponent = (
+    <>
+      <View style={styles.titleSection}>
+        <Text style={styles.workoutName}>{workout.name}</Text>
+        {workout.description && (
+          <Text style={styles.workoutDescription}>{workout.description}</Text>
+        )}
+        <Text style={styles.workoutCount}>
+          {workout.exercise_count} {workout.exercise_count === 1 ? 'exercício' : 'exercícios'}
+        </Text>
+      </View>
+
+      {isLoading && <Loading message="Carregando exercícios..." />}
+      {isError && <ErrorState message="Erro ao carregar exercícios" onRetry={() => refetch()} />}
+
+      {listItems.length > 0 && (
+        <View style={styles.exerciseHeader}>
+          <Text style={styles.sectionLabel}>Exercícios</Text>
+          <TouchableOpacity onPress={() => router.push(`/workout/${id}/add-exercises`)}>
+            <Text style={styles.addText}>+ Adicionar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </>
+  );
+
+  const footerComponent = (
+    <>
+      {listItems.length > 0 && (
+        <View style={styles.startSection}>
+          <Button
+            title="Iniciar Treino"
+            onPress={() => router.push(`/workout/${id}/start`)}
+            style={styles.startButton}
+          />
+        </View>
+      )}
+      <Button
+        title="Excluir treino"
+        variant="ghost"
+        onPress={handleDelete}
+        textStyle={{ color: colors.error }}
+        style={styles.deleteButton}
+      />
+    </>
+  );
+
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={styles.header}>
@@ -111,91 +201,37 @@ export default function WorkoutDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            tintColor={colors.primary}
-          />
-        }
-      >
-        <View style={styles.titleSection}>
-          <Text style={styles.workoutName}>{workout.name}</Text>
-          {workout.description && (
-            <Text style={styles.workoutDescription}>{workout.description}</Text>
-          )}
-          <Text style={styles.workoutCount}>
-            {workout.exercise_count} {workout.exercise_count === 1 ? 'exercício' : 'exercícios'}
-          </Text>
-        </View>
-
-        {isLoading && <Loading message="Carregando exercícios..." />}
-        {isError && <ErrorState message="Erro ao carregar exercícios" onRetry={() => refetch()} />}
-
-        {exercises && exercises.length === 0 && (
+      {listItems.length === 0 && !isLoading ? (
+        <>
+          {headerComponent}
           <View style={styles.emptySection}>
             <Text style={styles.emptyTitle}>Nenhum exercício</Text>
             <Text style={styles.emptyDescription}>
               Adicione exercícios a este treino para começar.
             </Text>
           </View>
-        )}
-
-        {exercises && exercises.length > 0 && (
-          <View style={styles.exerciseSection}>
-            <View style={styles.exerciseHeader}>
-              <Text style={styles.sectionLabel}>Exercícios</Text>
-              <TouchableOpacity
-                onPress={() => router.push(`/workout/${id}/add-exercises`)}
-              >
-                <Text style={styles.addText}>+ Adicionar</Text>
-              </TouchableOpacity>
-            </View>
-            {exercises.map((we) =>
-              we.exercise ? (
-                <View key={we.id} style={styles.exerciseRow}>
-                  <TouchableOpacity
-                    onPress={() => router.push(`/exercise/${we.exercise_id}`)}
-                    style={styles.exerciseCardTouchable}
-                  >
-                    <ExerciseCard name={we.exercise.name} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.removeButton}
-                    onPress={() =>
-                      handleRemoveExercise(we.exercise_id, we.exercise!.name)
-                    }
-                  >
-                    <Text style={styles.removeIcon}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : null
-            )}
-          </View>
-        )}
-
-        {exercises && exercises.length > 0 && (
-          <View style={styles.startSection}>
-            <Button
-              title="Iniciar Treino"
-              onPress={() => router.push(`/workout/${id}/start`)}
-              style={styles.startButton}
+          {footerComponent}
+        </>
+      ) : (
+        <DraggableFlatList
+          data={listItems}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          onDragEnd={handleDragEnd}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          ListHeaderComponent={headerComponent}
+          ListFooterComponent={footerComponent}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={colors.primary}
             />
-          </View>
-        )}
-
-        <Button
-          title="Excluir treino"
-          variant="ghost"
-          onPress={handleDelete}
-          textStyle={{ color: colors.error }}
-          style={styles.deleteButton}
+          }
         />
-      </ScrollView>
-    </View>
+      )}
+    </GestureHandlerRootView>
   );
 }
 
@@ -289,6 +325,10 @@ const styles = StyleSheet.create({
   exerciseRow: {
     marginBottom: spacing[2],
     position: 'relative',
+  },
+  exerciseRowActive: {
+    opacity: 0.85,
+    transform: [{ scale: 1.02 }],
   },
   exerciseCardTouchable: {
     width: '100%',
