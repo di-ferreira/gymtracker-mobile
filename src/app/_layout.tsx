@@ -34,6 +34,9 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" options={{ animation: 'fade' }} />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="exercise/[id]" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="workout/create" options={{ animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="workout/[id]/index" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="workout/[id]/edit" options={{ animation: 'slide_from_bottom' }} />
             </Stack>
           </AuthProvider>
         </ThemeProvider>

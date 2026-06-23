@@ -1,6 +1,29 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
 import { colors } from '../../theme/colors';
+import { useFavoritesStore } from '../../features/favorites/store';
+
+function FavoritesTabIcon({ color }: { color: string }) {
+  const { ids, load, isLoading } = useFavoritesStore();
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return (
+    <View>
+      <Text style={{ color: color as unknown as import('react-native').ColorValue, fontSize: 20 }}>⭐</Text>
+      {!isLoading && ids.length > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>
+            {ids.length > 9 ? '9+' : ids.length}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
 
 export default function TabLayout() {
   return (
@@ -40,7 +63,7 @@ export default function TabLayout() {
         name="favorites"
         options={{
           title: 'Favoritos',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>⭐</Text>,
+          tabBarIcon: (props) => <FavoritesTabIcon color={props.color as string} />,
         }}
       />
       <Tabs.Screen
@@ -60,3 +83,23 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -8,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.bg,
+  },
+});

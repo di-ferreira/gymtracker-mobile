@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useExercise } from '../../hooks/useExercises';
-import { toggleFavorite, isFavorite } from '../../storage';
+import { useFavoritesStore } from '../../features/favorites/store';
 import { Chip } from '../../components/ui/Chip';
+import { FavoriteButton } from '../../components/ui/FavoriteButton';
 import { Loading } from '../../components/ui/Loading';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { colors } from '../../theme/colors';
@@ -14,14 +15,15 @@ export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: exercise, isLoading, isError, refetch } = useExercise(id);
+  const { isFavorite, toggle } = useFavoritesStore();
   const [faved, setFaved] = useState(false);
 
   useEffect(() => {
-    isFavorite(id).then(setFaved);
-  }, [id]);
+    setFaved(isFavorite(id));
+  }, [id, isFavorite]);
 
   const handleToggleFavorite = async () => {
-    const newState = await toggleFavorite(id);
+    const newState = await toggle(id);
     setFaved(newState);
   };
 
@@ -49,11 +51,7 @@ export default function ExerciseDetailScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleToggleFavorite} style={styles.favButton}>
-          <Text style={[styles.favIcon, faved && styles.favIconActive]}>
-            {faved ? '★' : '☆'}
-          </Text>
-        </TouchableOpacity>
+        <FavoriteButton isFavorite={faved} onToggle={handleToggleFavorite} size={22} />
       </View>
 
       <ScrollView
@@ -170,13 +168,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface2,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  favIcon: {
-    fontSize: 22,
-    color: colors.fgTertiary,
-  },
-  favIconActive: {
-    color: colors.primary,
   },
   scrollContent: {
     paddingBottom: spacing[10],

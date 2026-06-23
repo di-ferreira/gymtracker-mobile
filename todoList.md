@@ -283,42 +283,47 @@ src/
 
 ---
 
-### Fase 7 — Favoritos
+### Fase 7 — Favoritos ✅
 
-- [ ] Criar store Zustand `useFavoritesStore`:
-  - `favorites: Set<string>` (IDs)
-  - `toggleFavorite(id)`, `isFavorite(id)`, `clearFavorites()`
-  - Persistência em MMKV + sync com cloud
-- [ ] `FavoriteButton` — coração preenchido/vazio com animação
-- [ ] **FavoritesScreen**:
-  - Lista de exercícios favoritados
-  - Swipe to unfavorite
-  - Empty state quando vazio
-  - Badge count na tab ("Favoritos")
+- [x] **FavoritesStore** (`src/features/favorites/store.ts`) — Zustand: `load()`, `toggle()`, `clear()`, `isFavorite()` com persistência AsyncStorage
+- [x] **FavoriteButton** (`src/components/ui/FavoriteButton.tsx`) — estrela preenchida/vazia com toggle
+- [x] **FavoritesScreen** (`src/app/(tabs)/favorites.tsx`):
+  - Grid 2 colunas com ExerciseCard para exercícios favoritados
+  - Empty state com link para explorar exercícios
+  - Contagem de favoritos no header
+- [x] **Badge na tab** — contagem com bolinha laranja no ícone "Favoritos"
+- [x] **ExerciseDetail** refatorado para usar `useFavoritesStore` + `FavoriteButton`
 
 ---
 
-### Fase 8 — Workouts (CRUD com Sync)
+### Fase 8 — Workouts (CRUD com Sync) ✅
 
-- [ ] Criar store Zustand `useWorkoutStore`:
-  - `workouts: Workout[]`
-  - `createWorkout()`, `updateWorkout()`, `deleteWorkout()`
-  - Persistência em SQLite + sync com cloud
-- [ ] **WorkoutLibraryScreen**:
-  - Lista de treinos do usuário
-  - Categorias: Full Body, Upper, Lower, Push, Pull, Legs
-  - Botão "Novo Treino" flutuante
-- [ ] **CreateWorkoutScreen**:
-  - Input de nome
-  - Seleção de exercícios
-  - Ordenação (drag to reorder)
-  - Botão "Criar"
-- [ ] **EditWorkoutScreen**:
-  - Editar nome
-  - Adicionar/remover/reordenar exercícios
-- [ ] **WorkoutDetailsScreen**:
-  - Visualizar exercícios do treino
-  - Botão "Iniciar Treino"
+- [x] **WorkoutsStore** (`src/features/workouts/store.ts`) — Zustand: `load()`, `create()`, `update()`, `remove()` com SQLite via repositório
+- [x] **WorkoutLibraryScreen** (`src/app/(tabs)/workouts.tsx`):
+  - Grid 2 colunas com cards de treino (nome + contagem de exercícios)
+  - Botão "Novo Treino" flutuante (FAB)
+  - Empty state com CTA
+  - `useFocusEffect` pra recarregar ao voltar
+- [x] **CreateWorkoutScreen** (`src/app/workout/create.tsx`):
+  - Inputs: nome (obrigatório), descrição (opcional)
+  - Validação, loading, redirect ao criar
+  - Slide from bottom
+- [x] **WorkoutDetailsScreen** (`src/app/workout/[id]/index.tsx`):
+  - Nome, descrição, contagem de exercícios
+  - Lista de exercícios com ExerciseCard
+  - Empty state quando sem exercícios
+  - Botão "Excluir" com Alert confirm
+  - Botão "Editar" no header
+- [x] **EditWorkoutScreen** (`src/app/workout/[id]/edit.tsx`):
+  - Inputs preenchidos com dados atuais
+  - Validação, loading, volta ao salvar
+  - Slide from bottom
+- [x] **Rotas** adicionadas ao root layout
+
+#### Pendentes
+- [ ] Seleção de exercícios ao criar/editar treino
+- [ ] Reordenação (drag to reorder)
+- [ ] Botão "Iniciar Treino" — Fase 9
 
 ---
 
