@@ -32,7 +32,7 @@ export default function LoginScreen() {
       await login({ email: email.trim(), password });
       router.replace('/(tabs)');
     } catch {
-      setLocalError('Email ou senha inválidos');
+      // store.error já foi definido com a mensagem detalhada
     }
   };
 

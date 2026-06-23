@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { User, LoginRequest, RegisterRequest } from '../../types';
 import { login as apiLogin, register as apiRegister, getMe } from '../../services/auth-service';
 import { hasToken, clearTokens, clearAll } from '../../storage';
-import { refreshBaseUrl } from '../../services/api';
+import { refreshBaseUrl, getBaseUrl } from '../../services/api';
 
 interface AuthState {
   user: User | null;
@@ -48,7 +48,22 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = await getMe();
       set({ user, isLoading: false, isAuthenticated: true });
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Erro ao fazer login';
+      let message = 'Erro ao fazer login';
+      if (err instanceof Error) {
+        const axiosErr = err as any;
+        if (axiosErr.code === 'ERR_NETWORK' || axiosErr.message === 'Network Error') {
+          message = `Não foi possível conectar ao servidor.\nVerifique a URL da API em Configurações.\n\nURL atual: ${await getBaseUrl()}`;
+        } else if (axiosErr.response?.status === 422) {
+          message = 'Dados inválidos. Verifique email e senha.';
+        } else if (axiosErr.response?.status === 401) {
+          message = 'Email ou senha inválidos.';
+        } else if (axiosErr.response?.data?.detail) {
+          const detail = axiosErr.response.data.detail;
+          message = typeof detail === 'string' ? detail : detail[0]?.msg ?? message;
+        } else {
+          message = err.message;
+        }
+      }
       set({ isLoading: false, error: message });
       throw err;
     }
@@ -64,7 +79,20 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = await getMe();
       set({ user, isLoading: false, isAuthenticated: true });
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Erro ao registrar';
+      let message = 'Erro ao registrar';
+      if (err instanceof Error) {
+        const axiosErr = err as any;
+        if (axiosErr.code === 'ERR_NETWORK' || axiosErr.message === 'Network Error') {
+          message = `Não foi possível conectar ao servidor.\nVerifique a URL da API em Configurações.\n\nURL atual: ${await getBaseUrl()}`;
+        } else if (axiosErr.response?.status === 422) {
+          message = 'Dados inválidos. Verifique os campos.';
+        } else if (axiosErr.response?.data?.detail) {
+          const detail = axiosErr.response.data.detail;
+          message = typeof detail === 'string' ? detail : detail[0]?.msg ?? message;
+        } else {
+          message = err.message;
+        }
+      }
       set({ isLoading: false, error: message });
       throw err;
     }

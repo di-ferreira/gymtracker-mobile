@@ -34,6 +34,7 @@ export default function SettingsScreen() {
   const [editingUrl, setEditingUrl] = useState(false);
   const [urlDraft, setUrlDraft] = useState('');
   const [syncing, setSyncing] = useState(false);
+  const [testingConnection, setTestingConnection] = useState(false);
   const [cacheSize, setCacheSize] = useState('');
 
   useEffect(() => {
@@ -65,6 +66,27 @@ export default function SettingsScreen() {
       Alert.alert('Erro', message);
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    try {
+      const { api } = await import('../../services/api');
+      const response = await api.get('/admin/health');
+      if (response.status === 200) {
+        Alert.alert('Conectado', 'API respondendo normalmente.');
+      } else {
+        Alert.alert('Atenção', `API retornou status ${response.status}.`);
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erro desconhecido';
+      Alert.alert(
+        'Falha na conexão',
+        `Não foi possível conectar à API.\n\nURL: ${apiUrl}\n\nErro: ${message}\n\nDica: No Android emulator, use http://10.0.2.2:8000.\nNo iOS simulator, http://localhost:8000.\nEm dispositivo físico, use o IP do seu computador.`
+      );
+    } finally {
+      setTestingConnection(false);
     }
   };
 
@@ -151,6 +173,13 @@ export default function SettingsScreen() {
               <Text style={styles.rowValue}>{apiUrl}</Text>
             </TouchableOpacity>
           )}
+          <View style={styles.spacer} />
+          <Button
+            title={testingConnection ? 'Testando...' : 'Testar conexão'}
+            variant="outline"
+            onPress={handleTestConnection}
+            disabled={testingConnection}
+          />
         </View>
 
         <Text style={styles.sectionLabel}>Preferências</Text>
