@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, View, TouchableOpacity, TextInput as RNTextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../features/auth/store';
 import { Button } from '../../components/ui/Button';
 import { TextInput } from '../../components/ui/TextInput';
@@ -14,6 +15,7 @@ import { refreshBaseUrl } from '../../services/api';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { register, isLoading, error, clearError } = useAuthStore();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,6 +24,8 @@ export default function RegisterScreen() {
   const [localError, setLocalError] = useState<string | null>(null);
   const [showApiConfig, setShowApiConfig] = useState(false);
   const [apiUrlDraft, setApiUrlDraft] = useState('');
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<{ ok: boolean; msg: string } | null>(null);
 
   useEffect(() => {
     getApiUrl().then(setApiUrlDraft);
@@ -64,6 +68,8 @@ export default function RegisterScreen() {
   };
 
   const handleTestConnection = async () => {
+    setTestingConnection(true);
+    setConnectionStatus(null);
     const trimmed = apiUrlDraft.trim().replace(/\/+$/, '');
     await setApiUrl(trimmed);
     await refreshBaseUrl();
@@ -71,12 +77,15 @@ export default function RegisterScreen() {
       const { api } = await import('../../services/api');
       const response = await api.get('/admin/health');
       if (response.status === 200) {
-        alert('Conectado! API respondendo normalmente.');
+        setConnectionStatus({ ok: true, msg: 'Conectado! API respondendo normalmente.' });
       }
     } catch {
-      alert(
-        `Falha na conexão.\n\nURL: ${trimmed}\n\nDicas:\n- Em dispositivo físico, use o IP do computador (ex: http://192.168.0.10:8000)\n- Verifique se o servidor está rodando\n- Verifique se ambos estão na mesma rede Wi-Fi`
-      );
+      setConnectionStatus({
+        ok: false,
+        msg: `Falha na conexão.\n\nDicas:\n- Em dispositivo físico, use o IP do computador\n- Verifique se o servidor está rodando\n- Verifique se ambos estão na mesma rede`,
+      });
+    } finally {
+      setTestingConnection(false);
     }
   };
 
@@ -97,7 +106,7 @@ export default function RegisterScreen() {
         </View>
 
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing[10] + insets.bottom }]}
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.emoji}>💪</Text>
@@ -182,8 +191,18 @@ export default function RegisterScreen() {
           autoCorrect={false}
           keyboardType="url"
         />
+        {connectionStatus && (
+          <Text style={[styles.connectionStatus, connectionStatus.ok ? styles.connectionOk : styles.connectionFail]}>
+            {connectionStatus.ok ? '✓ ' : '✗ '}{connectionStatus.msg}
+          </Text>
+        )}
         <View style={styles.sheetActions}>
-          <Button title="Testar" variant="outline" onPress={handleTestConnection} />
+          <Button
+            title={testingConnection ? 'Testando…' : 'Testar'}
+            variant="outline"
+            onPress={handleTestConnection}
+            disabled={testingConnection}
+          />
           <Button title="Salvar" onPress={handleSaveApiUrl} />
         </View>
       </BottomSheet>
@@ -291,5 +310,16 @@ const styles = StyleSheet.create({
   sheetActions: {
     flexDirection: 'row',
     gap: spacing[3],
+  },
+  connectionStatus: {
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: spacing[3],
+  },
+  connectionOk: {
+    color: '#4CAF50',
+  },
+  connectionFail: {
+    color: '#F44336',
   },
 });

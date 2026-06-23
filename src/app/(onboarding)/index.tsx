@@ -9,6 +9,7 @@ import {
   NativeSyntheticEvent,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setOnboardingDone } from '../../storage';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../theme/colors';
@@ -46,6 +47,7 @@ const slides: Slide[] = [
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -88,7 +90,7 @@ export default function OnboardingScreen() {
         )}
       />
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: spacing[6] + insets.bottom }]}>
         <View style={styles.dots}>
           {slides.map((_, i) => (
             <View

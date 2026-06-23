@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, TextInput } from 'react-native';
 import { Stack } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
@@ -27,6 +28,7 @@ const REST_TIMER_OPTIONS = [
 ];
 
 export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
   const [weightUnit, setWeightUnitState] = useState<'kg' | 'lbs'>('kg');
   const [restTimer, setRestTimerState] = useState(60);
   const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
@@ -134,7 +136,7 @@ export default function SettingsScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing[10] + insets.bottom }]}
       >
         <Text style={styles.sectionLabel}>Treino</Text>
         <View style={styles.section}>

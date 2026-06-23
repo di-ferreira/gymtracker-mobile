@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -25,6 +26,7 @@ import { spacing } from '../../../theme/spacing';
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { workouts, remove, removeExercise, reorderExercises } = useWorkoutsStore();
   const workout = workouts.find((w) => w.id === id);
@@ -169,7 +171,7 @@ export default function WorkoutDetailScreen() {
   const footerComponent = (
     <>
       {listItems.length > 0 && (
-        <View style={styles.startSection}>
+        <View style={[styles.startSection, { paddingBottom: insets.bottom }]}>
           <Button
             title="Iniciar Treino"
             onPress={() => router.push(`/workout/${id}/start`)}

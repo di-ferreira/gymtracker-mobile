@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { getDatabase } from '../../../database';
 import { createWorkoutRepository } from '../../../database/repositories/workout-repository';
@@ -15,6 +16,7 @@ import { borderRadius } from '../../../theme/borderRadius';
 export default function AddExercisesScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { addExercises } = useWorkoutsStore();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
@@ -120,7 +122,7 @@ export default function AddExercisesScreen() {
         }}
       />
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { bottom: spacing[4] + insets.bottom }]}>
         <Button
           title={`Adicionar (${selected.size})`}
           onPress={handleAdd}

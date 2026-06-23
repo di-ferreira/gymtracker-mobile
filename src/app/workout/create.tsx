@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useWorkoutsStore } from '../../features/workouts/store';
 import { Button } from '../../components/ui/Button';
 import { TextInput } from '../../components/ui/TextInput';
@@ -10,6 +11,7 @@ import { typography } from '../../theme/typography';
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { create, isLoading } = useWorkoutsStore();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -39,7 +41,7 @@ export default function CreateWorkoutScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing[4] + insets.bottom }]}
         keyboardShouldPersistTaps="handled"
       >
         {error && <Text style={styles.errorText}>{error}</Text>}

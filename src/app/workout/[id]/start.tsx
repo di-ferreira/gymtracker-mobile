@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useActiveWorkoutStore } from '../../../features/workouts/active-store';
 import { SetRow } from '../../../components/ui/SetRow';
 import { WeightRepInput } from '../../../components/ui/WeightRepInput';
@@ -21,6 +22,7 @@ const INITIAL_FORM: SetFormState = { weight: '', reps: '', rpe: '' };
 export default function ActiveWorkoutScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const store = useActiveWorkoutStore();
   const [form, setForm] = useState<SetFormState>(INITIAL_FORM);
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -122,7 +124,7 @@ export default function ActiveWorkoutScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing[10] + insets.bottom }]}
       >
         <Text style={styles.exerciseTitle}>{currentExercise.exercise_name}</Text>
         <Text style={styles.progressText}>Exercício {progress}</Text>

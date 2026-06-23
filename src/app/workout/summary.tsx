@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
 import { borderRadius } from '../../theme/borderRadius';
 
 export default function WorkoutSummaryScreen() {
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     historyId: string;
     duration: string;
@@ -34,7 +36,7 @@ export default function WorkoutSummaryScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing[6] + insets.bottom }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.badge}>

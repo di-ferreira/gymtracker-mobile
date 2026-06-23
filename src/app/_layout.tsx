@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../providers/auth-provider';
 import { ThemeProvider } from '../theme/ThemeProvider';
@@ -25,11 +26,13 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <StatusBar style="light" />
           <ErrorBoundary>
           <AuthProvider>
+            <SafeAreaView style={{ flex: 1 }} edges={['top']}>
             <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="(onboarding)" options={{ animation: 'fade' }} />
@@ -46,10 +49,12 @@ export default function RootLayout() {
           <Stack.Screen name="history/index" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="history/[id]" options={{ animation: 'slide_from_right' }} />
             </Stack>
+            </SafeAreaView>
           </AuthProvider>
           </ErrorBoundary>
         </ThemeProvider>
       </QueryClientProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
