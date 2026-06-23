@@ -12,8 +12,8 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => {
-    const token = getAccessToken();
+  async (config) => {
+    const token = await getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,9 +30,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      const refreshToken = getRefreshToken();
+      const refreshToken = await getRefreshToken();
       if (!refreshToken) {
-        clearTokens();
+        await clearTokens();
         return Promise.reject(error);
       }
 
@@ -42,12 +42,12 @@ api.interceptors.response.use(
         });
 
         const { access_token } = response.data;
-        setAccessToken(access_token);
+        await setAccessToken(access_token);
 
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return api(originalRequest);
       } catch {
-        clearTokens();
+        await clearTokens();
         return Promise.reject(error);
       }
     }

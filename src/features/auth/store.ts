@@ -22,7 +22,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   error: null,
 
   checkAuth: async () => {
-    if (!hasToken()) {
+    const tokenExists = await hasToken();
+    if (!tokenExists) {
       set({ isLoading: false, isAuthenticated: false });
       return;
     }
@@ -31,7 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = await getMe();
       set({ user, isAuthenticated: true, isLoading: false });
     } catch {
-      clearTokens();
+      await clearTokens();
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
@@ -71,7 +72,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch {
       // ignore error
     }
-    clearAll();
+    await clearAll();
     set({ user: null, isAuthenticated: false, isLoading: false });
   },
 

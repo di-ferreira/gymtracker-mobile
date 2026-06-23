@@ -1,11 +1,9 @@
-import { createMMKV } from 'react-native-mmkv';
-
-const storage = createMMKV({ id: 'favorites-storage' });
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FAVORITES_KEY = 'favorite_ids';
 
-export function getFavoriteIds(): string[] {
-  const raw = storage.getString(FAVORITES_KEY);
+export async function getFavoriteIds(): Promise<string[]> {
+  const raw = await AsyncStorage.getItem(FAVORITES_KEY);
   if (!raw) return [];
   try {
     return JSON.parse(raw);
@@ -14,27 +12,28 @@ export function getFavoriteIds(): string[] {
   }
 }
 
-export function setFavoriteIds(ids: string[]): void {
-  storage.set(FAVORITES_KEY, JSON.stringify(ids));
+export async function setFavoriteIds(ids: string[]): Promise<void> {
+  await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
 }
 
-export function isFavorite(id: string): boolean {
-  return getFavoriteIds().includes(id);
+export async function isFavorite(id: string): Promise<boolean> {
+  const ids = await getFavoriteIds();
+  return ids.includes(id);
 }
 
-export function toggleFavorite(id: string): boolean {
-  const ids = getFavoriteIds();
+export async function toggleFavorite(id: string): Promise<boolean> {
+  const ids = await getFavoriteIds();
   const index = ids.indexOf(id);
   if (index >= 0) {
     ids.splice(index, 1);
-    setFavoriteIds(ids);
+    await setFavoriteIds(ids);
     return false;
   }
   ids.push(id);
-  setFavoriteIds(ids);
+  await setFavoriteIds(ids);
   return true;
 }
 
-export function clearFavorites(): void {
-  storage.remove(FAVORITES_KEY);
+export async function clearFavorites(): Promise<void> {
+  await AsyncStorage.removeItem(FAVORITES_KEY);
 }

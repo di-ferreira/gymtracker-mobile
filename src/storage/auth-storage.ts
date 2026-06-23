@@ -1,31 +1,30 @@
-import { createMMKV } from 'react-native-mmkv';
-
-const storage = createMMKV({ id: 'auth-storage' });
+import * as SecureStore from 'expo-secure-store';
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 
-export function getAccessToken(): string | undefined {
-  return storage.getString(ACCESS_TOKEN_KEY);
+export async function getAccessToken(): Promise<string | null> {
+  return SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
 }
 
-export function setAccessToken(token: string): void {
-  storage.set(ACCESS_TOKEN_KEY, token);
+export async function setAccessToken(token: string): Promise<void> {
+  await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
 }
 
-export function getRefreshToken(): string | undefined {
-  return storage.getString(REFRESH_TOKEN_KEY);
+export async function getRefreshToken(): Promise<string | null> {
+  return SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
 }
 
-export function setRefreshToken(token: string): void {
-  storage.set(REFRESH_TOKEN_KEY, token);
+export async function setRefreshToken(token: string): Promise<void> {
+  await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, token);
 }
 
-export function clearTokens(): void {
-  storage.remove(ACCESS_TOKEN_KEY);
-  storage.remove(REFRESH_TOKEN_KEY);
+export async function clearTokens(): Promise<void> {
+  await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+  await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
 }
 
-export function hasToken(): boolean {
-  return storage.contains(ACCESS_TOKEN_KEY);
+export async function hasToken(): Promise<boolean> {
+  const token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+  return token !== null;
 }

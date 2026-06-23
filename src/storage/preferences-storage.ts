@@ -1,6 +1,4 @@
-import { createMMKV } from 'react-native-mmkv';
-
-const storage = createMMKV({ id: 'preferences-storage' });
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ONBOARDING_DONE_KEY = 'onboarding_done';
 const WEIGHT_UNIT_KEY = 'weight_unit';
@@ -10,38 +8,47 @@ const THEME_KEY = 'theme';
 export type WeightUnit = 'kg' | 'lbs';
 export type ThemeMode = 'dark' | 'light';
 
-export function isOnboardingDone(): boolean {
-  return storage.getBoolean(ONBOARDING_DONE_KEY) ?? false;
+export async function isOnboardingDone(): Promise<boolean> {
+  const value = await AsyncStorage.getItem(ONBOARDING_DONE_KEY);
+  return value === 'true';
 }
 
-export function setOnboardingDone(): void {
-  storage.set(ONBOARDING_DONE_KEY, true);
+export async function setOnboardingDone(): Promise<void> {
+  await AsyncStorage.setItem(ONBOARDING_DONE_KEY, 'true');
 }
 
-export function getWeightUnit(): WeightUnit {
-  return (storage.getString(WEIGHT_UNIT_KEY) as WeightUnit) ?? 'kg';
+export async function getWeightUnit(): Promise<WeightUnit> {
+  const value = await AsyncStorage.getItem(WEIGHT_UNIT_KEY);
+  return (value as WeightUnit) ?? 'kg';
 }
 
-export function setWeightUnit(unit: WeightUnit): void {
-  storage.set(WEIGHT_UNIT_KEY, unit);
+export async function setWeightUnit(unit: WeightUnit): Promise<void> {
+  await AsyncStorage.setItem(WEIGHT_UNIT_KEY, unit);
 }
 
-export function getDefaultRestTimer(): number {
-  return storage.getNumber(REST_TIMER_DEFAULT_KEY) ?? 60;
+export async function getDefaultRestTimer(): Promise<number> {
+  const value = await AsyncStorage.getItem(REST_TIMER_DEFAULT_KEY);
+  return value ? Number(value) : 60;
 }
 
-export function setDefaultRestTimer(seconds: number): void {
-  storage.set(REST_TIMER_DEFAULT_KEY, seconds);
+export async function setDefaultRestTimer(seconds: number): Promise<void> {
+  await AsyncStorage.setItem(REST_TIMER_DEFAULT_KEY, String(seconds));
 }
 
-export function getTheme(): ThemeMode {
-  return (storage.getString(THEME_KEY) as ThemeMode) ?? 'dark';
+export async function getTheme(): Promise<ThemeMode> {
+  const value = await AsyncStorage.getItem(THEME_KEY);
+  return (value as ThemeMode) ?? 'dark';
 }
 
-export function setTheme(theme: ThemeMode): void {
-  storage.set(THEME_KEY, theme);
+export async function setTheme(theme: ThemeMode): Promise<void> {
+  await AsyncStorage.setItem(THEME_KEY, theme);
 }
 
-export function clearAll(): void {
-  storage.clearAll();
+export async function clearAll(): Promise<void> {
+  await AsyncStorage.multiRemove([
+    ONBOARDING_DONE_KEY,
+    WEIGHT_UNIT_KEY,
+    REST_TIMER_DEFAULT_KEY,
+    THEME_KEY,
+  ]);
 }
