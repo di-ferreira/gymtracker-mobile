@@ -1,17 +1,22 @@
-import { describe, it, expect } from 'vitest';
-import { MOCK_USER, MOCK_TOKEN } from '../mock';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('../../services/api', () => ({
+  refreshBaseUrl: vi.fn(),
+}));
+
+vi.mock('../../services/auth-service', () => ({
+  getMe: vi.fn(),
+  login: vi.fn(),
+  register: vi.fn(),
+}));
+
+vi.mock('../../storage', () => ({
+  hasToken: vi.fn(() => Promise.resolve(false)),
+  clearTokens: vi.fn(),
+  clearAll: vi.fn(),
+}));
 
 describe('AuthStore', () => {
-  it('should have mock user available', () => {
-    expect(MOCK_USER).toBeDefined();
-    expect(MOCK_USER.email).toBe('teste@gymtracker.com');
-    expect(MOCK_USER.name).toBe('Usuário Teste');
-  });
-
-  it('should have mock token available', () => {
-    expect(MOCK_TOKEN).toBe('mock-jwt-token-dev-only');
-  });
-
   it('should have initial auth store state', async () => {
     const { useAuthStore } = await import('../store');
     const state = useAuthStore.getState();
@@ -20,5 +25,13 @@ describe('AuthStore', () => {
     expect(typeof state.login).toBe('function');
     expect(typeof state.register).toBe('function');
     expect(typeof state.logout).toBe('function');
+  });
+
+  it('should start not authenticated when no token', async () => {
+    const { useAuthStore } = await import('../store');
+    await useAuthStore.getState().checkAuth();
+    const state = useAuthStore.getState();
+    expect(state.isAuthenticated).toBe(false);
+    expect(state.user).toBeNull();
   });
 });

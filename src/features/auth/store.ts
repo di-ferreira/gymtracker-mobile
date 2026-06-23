@@ -1,10 +1,8 @@
 import { create } from 'zustand';
 import type { User, LoginRequest, RegisterRequest } from '../../types';
 import { login as apiLogin, register as apiRegister, getMe } from '../../services/auth-service';
-import { hasToken, clearTokens, clearAll, setAccessToken } from '../../storage';
-import { mockLogin, mockRegister, MOCK_USER, MOCK_TOKEN } from './mock';
-
-const USE_MOCK_AUTH = true;
+import { hasToken, clearTokens, clearAll } from '../../storage';
+import { refreshBaseUrl } from '../../services/api';
 
 interface AuthState {
   user: User | null;
@@ -18,14 +16,6 @@ interface AuthState {
   clearError: () => void;
 }
 
-async function mockCheckAuth(): Promise<User | null> {
-  const hasTokenValue = await hasToken();
-  if (hasTokenValue) {
-    return MOCK_USER;
-  }
-  return null;
-}
-
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: true,
@@ -33,16 +23,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   error: null,
 
   checkAuth: async () => {
-    if (USE_MOCK_AUTH) {
-      const user = await mockCheckAuth();
-      set({
-        user,
-        isAuthenticated: user !== null,
-        isLoading: false,
-      });
-      return;
-    }
-
+    await refreshBaseUrl();
     const tokenExists = await hasToken();
     if (!tokenExists) {
       set({ isLoading: false, isAuthenticated: false });
@@ -60,13 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (data: LoginRequest) => {
     set({ isLoading: true, error: null });
-
-    if (USE_MOCK_AUTH) {
-      await new Promise((r) => setTimeout(r, 500));
-      await setAccessToken(MOCK_TOKEN);
-      set({ user: MOCK_USER, isLoading: false, isAuthenticated: true });
-      return;
-    }
+    await refreshBaseUrl();
 
     try {
       await apiLogin(data);
@@ -81,13 +56,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   register: async (data: RegisterRequest) => {
     set({ isLoading: true, error: null });
-
-    if (USE_MOCK_AUTH) {
-      await new Promise((r) => setTimeout(r, 500));
-      await setAccessToken(MOCK_TOKEN);
-      set({ user: MOCK_USER, isLoading: false, isAuthenticated: true });
-      return;
-    }
+    await refreshBaseUrl();
 
     try {
       await apiRegister(data);
@@ -106,7 +75,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { logout: apiLogout } = await import('../../services/auth-service');
       await apiLogout();
     } catch {
-      // ignore error
+      await clearTokens();
     }
     await clearAll();
     set({ user: null, isAuthenticated: false, isLoading: false });

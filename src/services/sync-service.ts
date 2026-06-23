@@ -1,4 +1,3 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
 import { fetchExercises, fetchMuscleGroups, fetchMovementGroups, fetchEquipment } from './catalog-service';
 import { createExerciseRepository } from '../database/repositories/exercise-repository';
 import { createCatalogRepository } from '../database/repositories/catalog-repository';
@@ -8,41 +7,6 @@ export async function syncCatalog(): Promise<void> {
   const db = await getDatabase();
   const catalogRepo = createCatalogRepository(db);
 
-  const localVersion = await catalogRepo.getVersion();
-  const remoteVersion = await fetchCatalogVersion();
-
-  if (shouldSync(localVersion, remoteVersion)) {
-    await downloadAndStoreCatalog(db, remoteVersion);
-    await catalogRepo.setVersion(remoteVersion);
-  }
-}
-
-async function fetchCatalogVersion(): Promise<{
-  version_major: number;
-  version_minor: number;
-  checksum: string;
-  status: string;
-  checksum_algorithm: string;
-}> {
-  const { api } = await import('./api');
-  const response = await api.get('/catalog/version');
-  return response.data;
-}
-
-function shouldSync(
-  local: { version_major: number; version_minor: number } | null,
-  remote: { version_major: number; version_minor: number },
-): boolean {
-  if (!local) return true;
-  if (remote.version_major > local.version_major) return true;
-  if (remote.version_major === local.version_major && remote.version_minor > local.version_minor) return true;
-  return false;
-}
-
-async function downloadAndStoreCatalog(
-  db: SQLiteDatabase,
-  _version: { version_major: number; version_minor: number },
-): Promise<void> {
   const [exercises, muscleGroups, movementGroups, equipment] = await Promise.all([
     fetchExercises(),
     fetchMuscleGroups(),
@@ -101,12 +65,20 @@ async function downloadAndStoreCatalog(
         video_url: ex.video_url,
         movement_group_id: ex.movement_group_id,
         muscle_group_id: ex.muscle_group_id,
-        deleted_at: ex.deleted_at,
+        deleted_at: null,
         created_at: ex.created_at,
         updated_at: ex.updated_at,
       })),
     );
   }
+
+  await catalogRepo.setVersion({
+    version_major: 1,
+    version_minor: 0,
+    checksum: '',
+    status: 'synced',
+    checksum_algorithm: 'none',
+  });
 }
 
 export async function getSyncStatus(): Promise<{
@@ -118,6 +90,6 @@ export async function getSyncStatus(): Promise<{
   const version = await catalogRepo.getVersion();
   return {
     localVersion: version,
-    lastSync: null,
+    lastSync: version ? new Date().toISOString() : null,
   };
 }

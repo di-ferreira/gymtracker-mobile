@@ -1,10 +1,20 @@
 import axios from 'axios';
-import { getAccessToken, setAccessToken, getRefreshToken, clearTokens } from '../storage';
+import { getAccessToken, setAccessToken, getRefreshToken, clearTokens, getApiUrl } from '../storage';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
+let _baseUrl = 'http://localhost:8000';
+
+export async function getBaseUrl(): Promise<string> {
+  _baseUrl = await getApiUrl();
+  return _baseUrl;
+}
+
+export async function refreshBaseUrl(): Promise<void> {
+  _baseUrl = await getApiUrl();
+  api.defaults.baseURL = `${_baseUrl}/api/v1`;
+}
 
 export const api = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: `${_baseUrl}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -36,8 +46,10 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      const baseUrl = await getBaseUrl();
+
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/v1/auth/refresh`, {
+        const response = await axios.post(`${baseUrl}/api/v1/auth/refresh`, {
           refresh_token: refreshToken,
         });
 

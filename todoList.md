@@ -395,6 +395,20 @@ src/
 - [ ] `BottomSheet` — criado mas sem uso em tela ainda
 - [ ] `Icon` — criado (`Icon.tsx`) mas não substituiu ícones literais
 
+#### API Integration (fase atual) ✅
+- [x] Analisar OpenAPI docs (`localhost:8000/docs`) — endpoints Auth, Catalog, Admin, Media
+- [x] Remover mock auth (`USE_MOCK_AUTH = false`) — auth store usa API real
+- [x] API URL configurável nas settings — salva em AsyncStorage, api.ts dinâmico via `refreshBaseUrl()`
+- [x] Force sync integrado — `syncCatalog()` busca dados do `/catalog/*` e armazena no SQLite
+- [x] Media cache — `getCachedMediaUrl()` resolve URLs relativas com base na API URL configurada
+- [x] Settings screen atualizada — campo URL da API, botão sincronizar, cache mídia
+- [x] Testes de integração — 8 testes para AuthService + CatalogService (HTTP mock)
+- [x] `mock.ts` removido — store usa `login`, `register`, `getMe` reais da API
+
+#### API-dependente (pendente de deploy)
+- [ ] Configurar refresh token — API atual não tem `/auth/refresh`
+- [ ] Upload de mídia — enviar fotos/vídeos para `/admin/media/upload`
+
 ---
 
 ## Business Rules (para validar durante implementação)
@@ -407,7 +421,7 @@ src/
 | BR004 | Carga utilizada deve ser armazenada localmente | ✅ |
 | BR005 | Histórico deve permanecer disponível offline | ✅ |
 | BR006 | Exercícios favoritos ou exercícios do treino do usuário devem ser acessados online e offline | ✅ |
-| BR007 | Catálogo local deve ser atualizado apenas quando existir nova versão do treino do usuário | ☐ (API-dependente) |
+| BR007 | Catálogo local deve ser atualizado apenas quando existir nova versão do treino do usuário | ✅ |
 | BR008 | Substituições de exercícios offline somente de exercícios existentes no treino do usuário | ✅ |
 | BR009 | Login obrigatório somente no primeiro acesso. Usuário cadastrado na plataforma, dados ficam disponíveis offline | ✅ |
 | BR010 | Treinos não dependem de internet | ✅ |
@@ -424,8 +438,8 @@ src/
 | RF004 | Consultar exercício | Catálogo | ✅ |
 | RF005 | Consultar substituições | Catálogo | ✅ |
 | RF006 | Consultar treinos e exercícios dos treinos offline | Offline | ✅ |
-| RF007 | Atualizar exercícios quando houver internet | Offline | ☐ (API) |
-| RF008 | Sincronização incremental | Offline | ☐ (API) |
+| RF007 | Atualizar exercícios quando houver internet | Offline | ✅ |
+| RF008 | Sincronização incremental | Offline | ☐ (futuro) |
 | RF009 | Salvar exercício favorito | Favoritos | ✅ |
 | RF010 | Remover favorito | Favoritos | ✅ |
 | RF011 | Criar treino | Treinos | ✅ |
@@ -441,5 +455,5 @@ src/
 | RF021 | Consultar treinos realizados | Histórico | ✅ |
 | RF022 | Consultar evolução de carga | Histórico | ✅ |
 | RF023 | Consultar evolução por exercício | Histórico | ✅ |
-| RF024 | Forçar sincronização | Configurações | ☐ (API) |
+| RF024 | Forçar sincronização | Configurações | ✅ |
 | RF025 | Limpar cache local | Configurações | ✅ |

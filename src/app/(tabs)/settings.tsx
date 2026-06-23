@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, TextInput } from 'react-native';
 import { Stack } from 'expo-router';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../theme/colors';
@@ -11,8 +11,13 @@ import {
   getDefaultRestTimer,
   setDefaultRestTimer,
   getTheme,
+  getApiUrl,
+  setApiUrl,
   clearAll,
 } from '../../storage';
+import { refreshBaseUrl } from '../../services/api';
+import { syncCatalog } from '../../services/sync-service';
+import { clearMediaCache, getMediaCacheSize } from '../../services/media-cache';
 
 const REST_TIMER_OPTIONS = [
   { label: '30s', value: 30 },
@@ -25,12 +30,43 @@ export default function SettingsScreen() {
   const [weightUnit, setWeightUnitState] = useState<'kg' | 'lbs'>('kg');
   const [restTimer, setRestTimerState] = useState(60);
   const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
+  const [apiUrl, setApiUrlState] = useState('');
+  const [editingUrl, setEditingUrl] = useState(false);
+  const [urlDraft, setUrlDraft] = useState('');
+  const [syncing, setSyncing] = useState(false);
+  const [cacheSize, setCacheSize] = useState('');
 
   useEffect(() => {
     getWeightUnit().then(setWeightUnitState);
     getDefaultRestTimer().then(setRestTimerState);
     getTheme().then(setThemeState);
+    getApiUrl().then((url) => {
+      setApiUrlState(url);
+      setUrlDraft(url);
+    });
+    getMediaCacheSize().then(setCacheSize);
   }, []);
+
+  const handleSaveApiUrl = async () => {
+    const trimmed = urlDraft.trim().replace(/\/+$/, '');
+    await setApiUrl(trimmed);
+    await refreshBaseUrl();
+    setApiUrlState(trimmed);
+    setEditingUrl(false);
+  };
+
+  const handleForceSync = async () => {
+    setSyncing(true);
+    try {
+      await syncCatalog();
+      Alert.alert('Sincronização', 'Catálogo sincronizado com sucesso.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erro ao sincronizar';
+      Alert.alert('Erro', message);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const handleToggleWeightUnit = async () => {
     const next = weightUnit === 'kg' ? 'lbs' : 'kg';
@@ -90,6 +126,33 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        <Text style={styles.sectionLabel}>API</Text>
+        <View style={styles.section}>
+          {editingUrl ? (
+            <View>
+              <TextInput
+                style={styles.urlInput}
+                value={urlDraft}
+                onChangeText={setUrlDraft}
+                placeholder="http://localhost:8000"
+                placeholderTextColor={colors.fgTertiary}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="url"
+              />
+              <View style={styles.urlActions}>
+                <Button title="Salvar" onPress={handleSaveApiUrl} style={styles.urlSaveButton} />
+                <Button title="Cancelar" variant="ghost" onPress={() => { setEditingUrl(false); setUrlDraft(apiUrl); }} />
+              </View>
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.row} onPress={() => setEditingUrl(true)}>
+              <Text style={styles.rowLabel}>URL da API</Text>
+              <Text style={styles.rowValue}>{apiUrl}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         <Text style={styles.sectionLabel}>Preferências</Text>
         <View style={styles.section}>
           <TouchableOpacity style={styles.row}>
@@ -101,9 +164,25 @@ export default function SettingsScreen() {
         <Text style={styles.sectionLabel}>Dados</Text>
         <View style={styles.section}>
           <Button
-            title="Forçar sincronização"
+            title={syncing ? 'Sincronizando...' : 'Forçar sincronização'}
             variant="outline"
-            onPress={() => Alert.alert('Sincronização', 'Funcionalidade disponível quando a API estiver conectada.')}
+            onPress={handleForceSync}
+            disabled={syncing}
+          />
+          <View style={styles.spacer} />
+          <View style={styles.row}>
+            <Text style={styles.rowLabel}>Cache de mídia</Text>
+            <Text style={styles.rowValue}>{cacheSize}</Text>
+          </View>
+          <Button
+            title="Limpar cache de mídia"
+            variant="ghost"
+            onPress={async () => {
+              await clearMediaCache();
+              setCacheSize('0 B');
+              Alert.alert('Feito', 'Cache de mídia limpo.');
+            }}
+            textStyle={{ color: colors.error }}
           />
           <View style={styles.spacer} />
           <Button
@@ -180,5 +259,21 @@ const styles = StyleSheet.create({
   },
   spacer: {
     height: spacing[2],
+  },
+  urlInput: {
+    backgroundColor: colors.surface2,
+    borderRadius: borderRadius.md,
+    padding: spacing[3],
+    color: colors.fg,
+    fontSize: 14,
+    fontFamily: 'JetBrains Mono, monospace',
+    marginBottom: spacing[2],
+  },
+  urlActions: {
+    flexDirection: 'row',
+    gap: spacing[2],
+  },
+  urlSaveButton: {
+    flex: 1,
   },
 });

@@ -4,6 +4,7 @@ const ONBOARDING_DONE_KEY = 'onboarding_done';
 const WEIGHT_UNIT_KEY = 'weight_unit';
 const REST_TIMER_DEFAULT_KEY = 'rest_timer_default';
 const THEME_KEY = 'theme';
+const API_URL_KEY = 'api_url';
 
 export type WeightUnit = 'kg' | 'lbs';
 export type ThemeMode = 'dark' | 'light';
@@ -44,11 +45,21 @@ export async function setTheme(theme: ThemeMode): Promise<void> {
   await AsyncStorage.setItem(THEME_KEY, theme);
 }
 
+export async function getApiUrl(): Promise<string> {
+  const value = await AsyncStorage.getItem(API_URL_KEY);
+  return value ?? 'http://localhost:8000';
+}
+
+export async function setApiUrl(url: string): Promise<void> {
+  await AsyncStorage.setItem(API_URL_KEY, url);
+}
+
 export async function clearAll(): Promise<void> {
   await AsyncStorage.multiRemove([
     ONBOARDING_DONE_KEY,
     WEIGHT_UNIT_KEY,
     REST_TIMER_DEFAULT_KEY,
     THEME_KEY,
+    API_URL_KEY,
   ]);
 }

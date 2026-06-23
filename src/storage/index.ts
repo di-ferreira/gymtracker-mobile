@@ -24,5 +24,7 @@ export {
   setDefaultRestTimer,
   getTheme,
   setTheme,
+  getApiUrl,
+  setApiUrl,
   clearAll,
 } from './preferences-storage';
