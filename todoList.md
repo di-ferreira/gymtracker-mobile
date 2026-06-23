@@ -327,33 +327,28 @@ src/
 
 ---
 
-### Fase 9 — Execução de Treino
+### Fase 9 — Execução de Treino ✅
 
-- [ ] Criar store Zustand `useActiveWorkoutStore`:
-  - `currentWorkout`, `currentExerciseIndex`, `sets[]`
-  - `startWorkout()`, `completeSet()`, `nextExercise()`, `finishWorkout()`
-- [ ] **ActiveWorkoutScreen**:
-  - Timer de duração do treino
-  - Exercício atual em destaque
-  - Lista de séries com checkbox
-  - Botão "Próximo Exercício"
-  - Botão "Finalizar Treino"
-  - RestTimer automático entre séries
-- [ ] **SetLoggingModal**:
-  - Input de peso (kg/lbs)
-  - Input de reps
-  - RPE opcional
-  - Checkbox "Concluído"
-- [ ] **RestTimer**:
-  - Countdown configurável (30s, 60s, 90s, 120s)
-  - Notificação ao término
-  - Skip button
-- [ ] **WorkoutSummaryScreen**:
-  - Duração total
-  - Exercícios realizados com séries
-  - Volume total
-  - Botões "Compartilhar", "Salvar", "Novo Treino"
-- [ ] Salvar em `workout_history` e `exercise_progress` ao finalizar
+- [x] **ActiveWorkoutStore** (`src/features/workouts/active-store.ts`) — Zustand:
+  - `startWorkout()` — carrega exercícios do treino, cria `workout_history`, inicia timer
+  - `completeSet()` — registra peso/reps/RPE, marca concluído, inicia rest timer
+  - `toggleSet()` / `addSet()` — gerenciamento de séries
+  - `nextExercise()` / `prevExercise()` — navegação entre exercícios
+  - `finishWorkout()` — salva em `workout_history` e `exercise_progress`, calcula volume
+- [x] **ActiveWorkoutScreen** (`src/app/workout/[id]/start.tsx`):
+  - Timer de duração do treino (elapsed)
+  - Barra de progresso (exercício atual / total)
+  - Nome do exercício atual + lista de séries com SetRow
+  - SetLogging: WeightRepInput + RPE toggle + "Concluir Série"
+  - RestTimer automático pós-série (60s) com skip
+  - "Próximo Exercício" / "Finalizar Treino" ao completar todas séries
+  - "+ Adicionar série" extra
+- [x] **WorkoutSummaryScreen** (`src/app/workout/summary.tsx`):
+  - Badge de conclusão, duração formatada, volume total
+  - Botões: "Novo Treino", "Voltar ao Início"
+- [x] **WorkoutDetailScreen** — adicionado botão "Iniciar Treino"
+- [x] **Rotas**: `workout/[id]/start` (slide), `workout/summary` (fade)
+- [x] **RestTimer** — já existente da Fase 4, reutilizado
 
 ---
 

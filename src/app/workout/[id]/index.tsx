@@ -143,6 +143,16 @@ export default function WorkoutDetailScreen() {
           </View>
         )}
 
+        {exercises && exercises.length > 0 && (
+          <View style={styles.startSection}>
+            <Button
+              title="Iniciar Treino"
+              onPress={() => router.push(`/workout/${id}/start`)}
+              style={styles.startButton}
+            />
+          </View>
+        )}
+
         <Button
           title="Excluir treino"
           variant="ghost"
@@ -230,8 +240,15 @@ const styles = StyleSheet.create({
   exerciseCard: {
     marginBottom: spacing[2],
   },
+  startSection: {
+    paddingHorizontal: spacing[4],
+    marginTop: spacing[6],
+  },
+  startButton: {
+    width: '100%',
+  },
   deleteButton: {
-    marginTop: spacing[8],
+    marginTop: spacing[6],
     alignSelf: 'center',
   },
 });
