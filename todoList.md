@@ -184,28 +184,26 @@ src/
 
 ---
 
-### Fase 3 — 🔒 Autenticação (NOVA — impacto BR009)
+### Fase 3 — 🔒 Autenticação ✅
 
-> **BR009**: Login obrigatório somente no primeiro acesso. Usuário cadastrado na plataforma, dados ficam disponíveis offline.
-
-- [ ] **LoginScreen** (`src/app/login.tsx`):
-  - Formulário: email + senha
-  - Validação com Zod (react-hook-form)
-  - Chamada `authService.login()`
-  - Armazenar JWT + refresh token em MMKV
-  - Redirect para Home após sucesso
-- [ ] **RegisterScreen** (`src/app/register.tsx`):
+- [x] **AuthStore** (`src/features/auth/store.ts`) — Zustand store com estado, login, register, logout, checkAuth
+- [x] **AuthProvider** (`src/providers/auth-provider.tsx`) — contexto que chama checkAuth ao montar
+- [x] **LoginScreen** (`src/app/(auth)/login.tsx`):
+  - Formulário: email + senha com validação
+  - Chamada `authService.login()` + armazenamento JWT em MMKV
+  - Redirect para `/(tabs)` após sucesso
+  - Link para RegisterScreen
+- [x] **RegisterScreen** (`src/app/(auth)/register.tsx`):
   - Formulário: nome, email, senha, confirmar senha
-  - Validação com Zod
-  - Chamada `authService.register()`
-  - Armazenar JWT + redirect após sucesso
-- [ ] **AuthProvider** — contexto que verifica token existente ao abrir app
-  - Se token válido → vai para tabs
-  - Se sem token → vai para login
-  - Se token expirado → tenta refresh, senão vai para login
-- [ ] **Guard** no layout raiz — proteger rotas authenticated-only
-- [ ] **Token refresh interceptor** — renovar JWT automaticamente via Axios interceptor
-- [ ] **Logout** — limpar token + dados locais
+  - Chamada `authService.register()` + login automático
+  - Redirect para `/(tabs)` após sucesso
+  - Link para LoginScreen
+- [x] **Root layout** — AuthProvider + Splash redirect (index.tsx)
+  - `app/index.tsx`: splash que checa auth → redirect para (auth) ou (tabs)
+  - `app/(auth)/_layout.tsx`: stack navigator para login/register
+  - `app/_layout.tsx`: GestureHandler + AuthProvider + Stack screens
+- [x] **Token refresh interceptor** — já implementado em `src/services/api.ts` (Fase 2)
+- [x] **Logout** — `authStore.logout()` limpa tokens MMKV + dados locais
 
 ---
 
