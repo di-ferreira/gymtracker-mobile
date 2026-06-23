@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../providers/auth-provider';
 import { ThemeProvider } from '../theme/ThemeProvider';
+import { ErrorBoundary } from '../theme/ErrorBoundary';
 import { useEffect } from 'react';
 import { getDatabase } from '../database';
 
@@ -27,6 +28,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <StatusBar style="light" />
+          <ErrorBoundary>
           <AuthProvider>
             <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
@@ -38,12 +40,14 @@ export default function RootLayout() {
           <Stack.Screen name="workout/create" options={{ animation: 'slide_from_bottom' }} />
           <Stack.Screen name="workout/[id]/index" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="workout/[id]/edit" options={{ animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="workout/[id]/add-exercises" options={{ animation: 'slide_from_bottom' }} />
           <Stack.Screen name="workout/[id]/start" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="workout/summary" options={{ animation: 'fade' }} />
           <Stack.Screen name="history/index" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="history/[id]" options={{ animation: 'slide_from_right' }} />
             </Stack>
           </AuthProvider>
+          </ErrorBoundary>
         </ThemeProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

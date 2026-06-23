@@ -6,9 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
+import * as Haptics from 'expo-haptics';
 import { getDatabase } from '../../../database';
 import { createWorkoutRepository } from '../../../database/repositories/workout-repository';
 import { useWorkoutsStore } from '../../../features/workouts/store';
@@ -22,10 +24,10 @@ import { spacing } from '../../../theme/spacing';
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { workouts, remove } = useWorkoutsStore();
+  const { workouts, remove, removeExercise } = useWorkoutsStore();
   const workout = workouts.find((w) => w.id === id);
 
-  const { data: exercises, isLoading, isError, refetch } = useQuery({
+  const { data: exercises, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ['workout-exercises', id],
     queryFn: async () => {
       const db = await getDatabase();
@@ -61,6 +63,7 @@ export default function WorkoutDetailScreen() {
   );
 
   const handleDelete = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     Alert.alert('Excluir treino', 'Tem certeza? Esta ação não pode ser desfeita.', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -70,6 +73,18 @@ export default function WorkoutDetailScreen() {
           await remove(id);
           router.back();
         },
+      },
+    ]);
+  };
+
+  const handleRemoveExercise = (exerciseId: string, exerciseName: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Alert.alert('Remover exercício', `Remover "${exerciseName}" deste treino?`, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Remover',
+        style: 'destructive',
+        onPress: () => removeExercise(id, exerciseId),
       },
     ]);
   };
@@ -99,6 +114,13 @@ export default function WorkoutDetailScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={colors.primary}
+          />
+        }
       >
         <View style={styles.titleSection}>
           <Text style={styles.workoutName}>{workout.name}</Text>
@@ -119,25 +141,37 @@ export default function WorkoutDetailScreen() {
             <Text style={styles.emptyDescription}>
               Adicione exercícios a este treino para começar.
             </Text>
-            <Button
-              title="Adicionar exercícios"
-              variant="outline"
-              onPress={() => {}}
-            />
           </View>
         )}
 
         {exercises && exercises.length > 0 && (
           <View style={styles.exerciseSection}>
+            <View style={styles.exerciseHeader}>
+              <Text style={styles.sectionLabel}>Exercícios</Text>
+              <TouchableOpacity
+                onPress={() => router.push(`/workout/${id}/add-exercises`)}
+              >
+                <Text style={styles.addText}>+ Adicionar</Text>
+              </TouchableOpacity>
+            </View>
             {exercises.map((we) =>
               we.exercise ? (
-                <TouchableOpacity
-                  key={we.id}
-                  onPress={() => router.push(`/exercise/${we.exercise_id}`)}
-                  style={styles.exerciseCard}
-                >
-                  <ExerciseCard name={we.exercise.name} />
-                </TouchableOpacity>
+                <View key={we.id} style={styles.exerciseRow}>
+                  <TouchableOpacity
+                    onPress={() => router.push(`/exercise/${we.exercise_id}`)}
+                    style={styles.exerciseCardTouchable}
+                  >
+                    <ExerciseCard name={we.exercise.name} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.removeButton}
+                    onPress={() =>
+                      handleRemoveExercise(we.exercise_id, we.exercise!.name)
+                    }
+                  >
+                    <Text style={styles.removeIcon}>✕</Text>
+                  </TouchableOpacity>
+                </View>
               ) : null
             )}
           </View>
@@ -235,10 +269,46 @@ const styles = StyleSheet.create({
   },
   exerciseSection: {
     paddingHorizontal: spacing[4],
-    gap: spacing[3],
   },
-  exerciseCard: {
+  exerciseHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing[3],
+  },
+  sectionLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.fg,
+  },
+  addText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  exerciseRow: {
     marginBottom: spacing[2],
+    position: 'relative',
+  },
+  exerciseCardTouchable: {
+    width: '100%',
+  },
+  removeButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  removeIcon: {
+    fontSize: 12,
+    color: colors.error,
+    fontWeight: '700',
   },
   startSection: {
     paddingHorizontal: spacing[4],

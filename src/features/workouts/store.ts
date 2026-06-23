@@ -14,6 +14,9 @@ interface WorkoutsState {
   create: (name: string, description?: string) => Promise<string>;
   update: (id: string, data: { name?: string; description?: string }) => Promise<void>;
   remove: (id: string) => Promise<void>;
+  addExercises: (workoutId: string, exerciseIds: string[]) => Promise<void>;
+  removeExercise: (workoutId: string, exerciseId: string) => Promise<void>;
+  reorderExercises: (workoutId: string, orderedExerciseIds: string[]) => Promise<void>;
 }
 
 export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
@@ -55,6 +58,46 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
     const db = await getDatabase();
     const repo = createWorkoutRepository(db);
     await repo.remove(id);
+    await get().load();
+  },
+
+  addExercises: async (workoutId, exerciseIds) => {
+    const db = await getDatabase();
+    const repo = createWorkoutRepository(db);
+    const existing = await repo.getExercises(workoutId);
+    const nextOrder = existing.length;
+
+    for (let i = 0; i < exerciseIds.length; i++) {
+      await repo.addExercise({
+        id: `we-${workoutId}-${exerciseIds[i]}`,
+        workout_id: workoutId,
+        exercise_id: exerciseIds[i],
+        exercise_order: nextOrder + i,
+      });
+    }
+
+    await get().load();
+  },
+
+  removeExercise: async (workoutId, exerciseId) => {
+    const db = await getDatabase();
+    const repo = createWorkoutRepository(db);
+    const existing = await repo.getExercises(workoutId);
+    const target = existing.find((e) => e.exercise_id === exerciseId);
+    if (target) {
+      await repo.removeExercise(target.id);
+      const remaining = existing
+        .filter((e) => e.exercise_id !== exerciseId)
+        .map((e) => e.id);
+      await repo.reorderExercises(workoutId, remaining);
+    }
+    await get().load();
+  },
+
+  reorderExercises: async (workoutId, orderedExerciseIds) => {
+    const db = await getDatabase();
+    const repo = createWorkoutRepository(db);
+    await repo.reorderExercises(workoutId, orderedExerciseIds);
     await get().load();
   },
 }));

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, RefreshControl } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { useExercises } from '../../hooks/useExercises';
 import { ExerciseCard } from '../../components/ui/ExerciseCard';
@@ -15,7 +15,7 @@ const ALL_FILTER = 'todos';
 
 export default function ExercisesScreen() {
   const router = useRouter();
-  const { data: exercises, isLoading, isError, refetch } = useExercises();
+  const { data: exercises, isLoading, isError, refetch, isRefetching } = useExercises();
   const [search, setSearch] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState(ALL_FILTER);
 
@@ -124,6 +124,13 @@ export default function ExercisesScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={styles.columnWrapper}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={colors.primary}
+          />
+        }
         ListEmptyComponent={
           <EmptyState
             title="Nenhum resultado"
