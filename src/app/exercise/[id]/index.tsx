@@ -10,6 +10,7 @@ import { Loading } from '../../../components/ui/Loading';
 import { useFavoritesStore } from '../../../features/favorites/store';
 import { useExercise } from '../../../hooks/useExercises';
 import { useOfflineExercises, useToggleOffline } from '../../../hooks/useOfflineExercises';
+import { getCachedMediaUrl } from '../../../services/media-cache';
 import { borderRadius } from '../../../theme/borderRadius';
 import { colors } from '../../../theme/colors';
 import { spacing } from '../../../theme/spacing';
@@ -22,12 +23,22 @@ export default function ExerciseDetailScreen() {
   const { data: offlineIds } = useOfflineExercises();
   const toggleOffline = useToggleOffline();
   const [faved, setFaved] = useState(false);
+  const [heroImage, setHeroImage] = useState<string | null>(null);
 
   const isOffline = offlineIds?.has(id) ?? false;
 
   useEffect(() => {
     setFaved(isFavorite(id));
   }, [id, isFavorite]);
+
+  useEffect(() => {
+    const url = exercise?.image_url ?? exercise?.gif_url ?? exercise?.thumbnail_url;
+    if (url) {
+      getCachedMediaUrl(url).then(setHeroImage);
+    } else {
+      setHeroImage(null);
+    }
+  }, [exercise?.image_url, exercise?.gif_url, exercise?.thumbnail_url]);
 
   const handleToggleFavorite = async () => {
     const newState = await toggle(id);
@@ -91,8 +102,8 @@ export default function ExerciseDetailScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.hero}>
-          {exercise.gif_url ? (
-            <Image source={{ uri: exercise.gif_url }} style={styles.image} />
+          {heroImage ? (
+            <Image source={{ uri: heroImage }} style={styles.heroImage} />
           ) : (
             <View style={styles.heroPlaceholder}>
               <Text style={styles.heroEmoji}>💪</Text>
@@ -240,6 +251,11 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius['2xl'],
     overflow: 'hidden',
     marginBottom: spacing[4],
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   heroPlaceholder: {
     flex: 1,

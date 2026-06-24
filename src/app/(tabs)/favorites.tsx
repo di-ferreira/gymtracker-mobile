@@ -28,9 +28,10 @@ export default function FavoritesScreen() {
         id: string;
         name: string;
         target_muscle_primary: string | null;
+        gif_url: string | null;
         thumbnail_url: string | null;
       }>(
-        `SELECT id, name, target_muscle_primary, thumbnail_url FROM exercises WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
+        `SELECT id, name, target_muscle_primary, gif_url, thumbnail_url FROM exercises WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
         ...ids
       );
     },
@@ -41,6 +42,7 @@ export default function FavoritesScreen() {
     id: string;
     name: string;
     target_muscle_primary: string | null;
+    gif_url: string | null;
     thumbnail_url: string | null;
   }> = useCallback(
     ({ item }) => (
@@ -48,6 +50,7 @@ export default function FavoritesScreen() {
         <ExerciseCard
           name={item.name}
           muscleGroup={item.target_muscle_primary ?? undefined}
+          thumbnailUrl={item.gif_url ?? item.thumbnail_url ?? undefined}
           onPress={() => router.push(`/exercise/${item.id}`)}
         />
       </View>

@@ -1,4 +1,6 @@
-import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getCachedMediaUrl } from '../../services/media-cache';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
 
@@ -11,12 +13,27 @@ interface ExerciseCardProps {
   onPress?: () => void;
 }
 
-export function ExerciseCard({ name, muscleGroup, thumbnailUrl, isOffline, onToggleOffline, onPress }: ExerciseCardProps) {
+export function ExerciseCard({
+  name,
+  muscleGroup,
+  thumbnailUrl,
+  isOffline,
+  onToggleOffline,
+  onPress,
+}: ExerciseCardProps) {
+  const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (thumbnailUrl) {
+      getCachedMediaUrl(thumbnailUrl).then(setResolvedUrl);
+    }
+  }, [thumbnailUrl]);
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.imageContainer}>
-        {thumbnailUrl ? (
-          <Image source={{ uri: thumbnailUrl }} style={styles.image} />
+        {resolvedUrl ? (
+          <Image source={{ uri: resolvedUrl }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
             <Text style={styles.placeholderIcon}>💪</Text>
@@ -31,10 +48,10 @@ export function ExerciseCard({ name, muscleGroup, thumbnailUrl, isOffline, onTog
         </TouchableOpacity>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name} numberOfLines={1}>{name}</Text>
-        {muscleGroup && (
-          <Text style={styles.muscleGroup}>{muscleGroup}</Text>
-        )}
+        <Text style={styles.name} numberOfLines={1}>
+          {name}
+        </Text>
+        {muscleGroup && <Text style={styles.muscleGroup}>{muscleGroup}</Text>}
       </View>
     </TouchableOpacity>
   );

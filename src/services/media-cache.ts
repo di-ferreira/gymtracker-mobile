@@ -11,10 +11,25 @@ function resolveUrl(url: string, baseUrl: string): string {
   return `${baseUrl}/${url}`;
 }
 
+function replaceLocalhost(url: string, baseUrl: string): string {
+  try {
+    const urlObj = new URL(url);
+    const baseObj = new URL(baseUrl);
+    if (urlObj.hostname === 'localhost' || urlObj.hostname === '127.0.0.1') {
+      urlObj.protocol = baseObj.protocol;
+      urlObj.hostname = baseObj.hostname;
+      urlObj.port = baseObj.port;
+      return urlObj.toString();
+    }
+  } catch {}
+  return url;
+}
+
 export async function getCachedMediaUrl(url: string | null): Promise<string | null> {
   if (!url) return null;
   const baseUrl = await getBaseUrl();
-  return resolveUrl(url, baseUrl);
+  const resolved = resolveUrl(url, baseUrl);
+  return replaceLocalhost(resolved, baseUrl);
 }
 
 function exerciseDirUri(exerciseId: string): string {
