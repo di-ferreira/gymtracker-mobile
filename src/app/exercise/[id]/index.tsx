@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { Button } from '../../../components/ui/Button';
+import { Chip } from '../../../components/ui/Chip';
+import { ErrorState } from '../../../components/ui/ErrorState';
+import { FavoriteButton } from '../../../components/ui/FavoriteButton';
+import { Loading } from '../../../components/ui/Loading';
+import { useFavoritesStore } from '../../../features/favorites/store';
 import { useExercise } from '../../../hooks/useExercises';
 import { useOfflineExercises, useToggleOffline } from '../../../hooks/useOfflineExercises';
-import { useFavoritesStore } from '../../../features/favorites/store';
-import { Chip } from '../../../components/ui/Chip';
-import { FavoriteButton } from '../../../components/ui/FavoriteButton';
-import { Button } from '../../../components/ui/Button';
-import { Loading } from '../../../components/ui/Loading';
-import { ErrorState } from '../../../components/ui/ErrorState';
+import { borderRadius } from '../../../theme/borderRadius';
 import { colors } from '../../../theme/colors';
 import { spacing } from '../../../theme/spacing';
-import { borderRadius } from '../../../theme/borderRadius';
 
 export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -75,10 +76,7 @@ export default function ExerciseDetailScreen() {
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
         <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.offlineButton}
-            onPress={handleToggleOffline}
-          >
+          <TouchableOpacity style={styles.offlineButton} onPress={handleToggleOffline}>
             <Text style={styles.offlineButtonIcon}>{isOffline ? '☁️' : '💾'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -91,25 +89,22 @@ export default function ExerciseDetailScreen() {
         </View>
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.hero}>
-          <View style={styles.heroPlaceholder}>
-            <Text style={styles.heroEmoji}>💪</Text>
-          </View>
+          {exercise.gif_url ? (
+            <Image source={{ uri: exercise.gif_url }} style={styles.image} />
+          ) : (
+            <View style={styles.heroPlaceholder}>
+              <Text style={styles.heroEmoji}>💪</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.section}>
           <Text style={styles.name}>{exercise.name}</Text>
           <View style={styles.tags}>
-            {exercise.muscle_group && (
-              <Chip label={exercise.muscle_group.name} selected />
-            )}
-            {exercise.movement_group && (
-              <Chip label={exercise.movement_group.name} />
-            )}
+            {exercise.muscle_group && <Chip label={exercise.muscle_group.name} selected />}
+            {exercise.movement_group && <Chip label={exercise.movement_group.name} />}
           </View>
           <Text style={styles.description}>{exercise.description}</Text>
         </View>
@@ -158,9 +153,7 @@ export default function ExerciseDetailScreen() {
                 onPress={() => router.push(`/exercise/${alt.alternative_exercise_id}`)}
               >
                 <Text style={styles.alternativeName}>{alt.alternative_name}</Text>
-                {alt.reason && (
-                  <Text style={styles.alternativeReason}>{alt.reason}</Text>
-                )}
+                {alt.reason && <Text style={styles.alternativeReason}>{alt.reason}</Text>}
                 <Text style={styles.chevron}>›</Text>
               </TouchableOpacity>
             ))}
@@ -185,6 +178,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   header: {
     flexDirection: 'row',

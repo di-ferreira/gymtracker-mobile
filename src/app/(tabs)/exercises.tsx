@@ -1,7 +1,7 @@
 import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 import { Stack, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Chip } from '../../components/ui/Chip';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -65,13 +65,19 @@ export default function ExercisesScreen() {
   const handleToggleOffline = useCallback(
     (exerciseId: string, isCurrentlyOffline: boolean) => {
       const action = isCurrentlyOffline ? 'Remover do offline' : 'Disponibilizar offline';
-      Alert.alert(action, isCurrentlyOffline ? 'Remover este exercício dos salvos offline?' : 'Baixar este exercício para uso offline?', [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: action,
-          onPress: () => toggleOffline.mutate({ exerciseId, isCurrentlyOffline }),
-        },
-      ]);
+      Alert.alert(
+        action,
+        isCurrentlyOffline
+          ? 'Remover este exercício dos salvos offline?'
+          : 'Baixar este exercício para uso offline?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: action,
+            onPress: () => toggleOffline.mutate({ exerciseId, isCurrentlyOffline }),
+          },
+        ],
+      );
     },
     [toggleOffline],
   );
@@ -82,7 +88,7 @@ export default function ExercisesScreen() {
         <ExerciseCard
           name={item.name}
           muscleGroup={item.target_muscle_primary ?? undefined}
-          thumbnailUrl={item.thumbnail_url}
+          thumbnailUrl={item.gif_url ?? undefined}
           isOffline={offlineIds?.has(item.id)}
           onToggleOffline={() => handleToggleOffline(item.id, offlineIds?.has(item.id) ?? false)}
           onPress={() => router.push(`/exercise/${item.id}`)}
@@ -140,31 +146,37 @@ export default function ExercisesScreen() {
         />
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipsContainer}
-      >
+      <View style={styles.searchContainer}>
         <Chip
           label="Todos"
           selected={selectedMuscle === ALL_FILTER}
           onPress={() => setSelectedMuscle(ALL_FILTER)}
         />
+      </View>
+      <View style={styles.searchContainer}>
         <Chip
           label={offlineIds && offlineIds.size > 0 ? `Offline (${offlineIds.size})` : 'Offline'}
           selected={selectedMuscle === OFFLINE_FILTER}
           onPress={() => setSelectedMuscle(OFFLINE_FILTER)}
         />
-        {muscleGroups.map((mg) => (
-          <Chip
-            key={mg.id}
-            label={mg.name}
-            selected={selectedMuscle === mg.id}
-            onPress={() => setSelectedMuscle(mg.id)}
-          />
-        ))}
-      </ScrollView>
+      </View>
 
+      {muscleGroups.length > 0 && (
+        <ScrollView
+          horizontal={false}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsContainer}
+        >
+          {muscleGroups.map((mg) => (
+            <Chip
+              key={mg.id}
+              label={mg.name}
+              selected={selectedMuscle === mg.id}
+              onPress={() => setSelectedMuscle(mg.id)}
+            />
+          ))}
+        </ScrollView>
+      )}
       <FlashList<ExerciseRow>
         data={filtered}
         keyExtractor={(item) => item.id}
