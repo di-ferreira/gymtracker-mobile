@@ -137,6 +137,15 @@ export const CREATE_TABLES = `
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS offline_exercises (
+    exercise_id TEXT PRIMARY KEY,
+    synced_at TEXT NOT NULL,
+    thumbnail_path TEXT,
+    image_path TEXT,
+    gif_path TEXT,
+    video_path TEXT
+  );
 `;
 
 export const CREATE_INDEXES = `

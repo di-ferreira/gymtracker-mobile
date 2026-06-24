@@ -395,15 +395,27 @@ src/
 - [ ] `BottomSheet` — criado mas sem uso em tela ainda
 - [ ] `Icon` — criado (`Icon.tsx`) mas não substituiu ícones literais
 
-#### API Integration (fase atual) ✅
-- [x] Analisar OpenAPI docs (`localhost:8000/docs`) — endpoints Auth, Catalog, Admin, Media
-- [x] Remover mock auth (`USE_MOCK_AUTH = false`) — auth store usa API real
-- [x] API URL configurável nas settings — salva em AsyncStorage, api.ts dinâmico via `refreshBaseUrl()`
-- [x] Force sync integrado — `syncCatalog()` busca dados do `/catalog/*` e armazena no SQLite
-- [x] Media cache — `getCachedMediaUrl()` resolve URLs relativas com base na API URL configurada
-- [x] Settings screen atualizada — campo URL da API, botão sincronizar, cache mídia
-- [x] Testes de integração — 8 testes para AuthService + CatalogService (HTTP mock)
-- [x] `mock.ts` removido — store usa `login`, `register`, `getMe` reais da API
+#### Seed removido — sync automático ao logar
+- [x] Deletar `src/database/seed.ts` — sem dados mock
+- [x] Remover `runSeed()` de `getDatabase()` — só migrations rodam na inicialização
+- [x] `syncCatalog()` automático no `AuthProvider` após `isAuthenticated = true`
+- [x] Invalidação da query `['exercises']` após sync — TanStack Query recarrega do SQLite
+- [x] Fix sync: limpar tabelas de catálogo antes de reinserir (DELETE + INSERT, não mais INSERT OR REPLACE)
+
+#### Offline exercises — toggle por exercício com download de mídia
+- [x] Migration v2: tabela `offline_exercises` (exercise_id PK, synced_at, paths das mídias)
+- [x] `offline-repository.ts` — add, remove, getAllIds, exists, clearAll
+- [x] `media-cache.ts` reescrito — `downloadExerciseMedia()` baixa thumbnail/image/gif/video com `expo-file-system`
+- [x] `media-cache.ts` — `removeExerciseMedia()`, `clearMediaCache()` com deleção real de diretórios
+- [x] `media-cache.ts` — `getMediaCacheSize()` calcula tamanho real dos arquivos em cache
+- [x] `useOfflineExercises` hook — `useOfflineExercises()` (lista IDs offline) + `useToggleOffline()` (mutation)
+- [x] `ExerciseCard` — badge ☁️/💾 + `onToggleOffline` prop
+- [x] `exercises.tsx` — chip "Offline (N)" nos filtros + inline toggle com confirm Alert
+- [x] `exercise/[id]` — botão offline no header (ao lado do favorito) com confirm Alert
+
+#### Data management
+- [x] Settings → "⚠️ Limpar todos os dados" — deleta catálogo, cache de mídia, preferências, desloga
+- [x] `clearAllData()` — DELETE catalog tables + clearMediaCache + clearAll + clearTokens + redirect login
 
 #### API-dependente (pendente de deploy)
 - [ ] Configurar refresh token — API atual não tem `/auth/refresh`
@@ -457,3 +469,7 @@ src/
 | RF023 | Consultar evolução por exercício | Histórico | ✅ |
 | RF024 | Forçar sincronização | Configurações | ✅ |
 | RF025 | Limpar cache local | Configurações | ✅ |
+| RF026 | Disponibilizar exercício offline | Offline | ✅ |
+| RF027 | Remover exercício do offline | Offline | ✅ |
+| RF028 | Filtrar exercícios offline | Catálogo | ✅ |
+| RF029 | Limpar todos os dados (factory reset) | Configurações | ✅ |

@@ -7,6 +7,18 @@ const MIGRATIONS: Array<{ version: number; name: string; sql: string }> = [
     name: 'initial_schema',
     sql: CREATE_TABLES + CREATE_INDEXES,
   },
+  {
+    version: 2,
+    name: 'offline_exercises',
+    sql: `CREATE TABLE IF NOT EXISTS offline_exercises (
+      exercise_id TEXT PRIMARY KEY,
+      synced_at TEXT NOT NULL,
+      thumbnail_path TEXT,
+      image_path TEXT,
+      gif_path TEXT,
+      video_path TEXT
+    );`,
+  },
 ];
 
 export async function runMigrations(db: SQLiteDatabase): Promise<void> {

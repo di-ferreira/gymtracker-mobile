@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, TextInput } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../theme/colors';
@@ -16,9 +16,11 @@ import {
   setApiUrl,
   clearAll,
 } from '../../storage';
+import { clearTokens } from '../../storage/auth-storage';
 import { refreshBaseUrl } from '../../services/api';
 import { syncCatalog } from '../../services/sync-service';
 import { clearMediaCache, getMediaCacheSize } from '../../services/media-cache';
+import { getDatabase } from '../../database';
 
 const REST_TIMER_OPTIONS = [
   { label: '30s', value: 30 },
@@ -29,6 +31,7 @@ const REST_TIMER_OPTIONS = [
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [weightUnit, setWeightUnitState] = useState<'kg' | 'lbs'>('kg');
   const [restTimer, setRestTimerState] = useState(60);
   const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
@@ -118,6 +121,37 @@ export default function SettingsScreen() {
           onPress: async () => {
             await clearAll();
             Alert.alert('Feito', 'Cache limpo com sucesso.');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleClearAllData = () => {
+    Alert.alert(
+      'Limpar todos os dados',
+      'Isso irá:\n\n• Remover todos os exercícios baixados\n• Limpar cache de mídia\n• Remover preferências\n• Deslogar da sua conta\n\nEsta ação não pode ser desfeita.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Limpar e sair',
+          style: 'destructive',
+          onPress: async () => {
+            const db = await getDatabase();
+            await db.execAsync('PRAGMA foreign_keys=OFF');
+            await db.execAsync('DELETE FROM exercise_alternatives');
+            await db.execAsync('DELETE FROM exercise_instructions');
+            await db.execAsync('DELETE FROM exercise_equipments');
+            await db.execAsync('DELETE FROM exercises');
+            await db.execAsync('DELETE FROM equipments');
+            await db.execAsync('DELETE FROM movement_groups');
+            await db.execAsync('DELETE FROM muscle_groups');
+            await db.execAsync('DELETE FROM offline_exercises');
+            await db.execAsync('PRAGMA foreign_keys=ON');
+            await clearMediaCache();
+            await clearAll();
+            await clearTokens();
+            router.replace('/(auth)/login');
           },
         },
       ]
@@ -222,6 +256,15 @@ export default function SettingsScreen() {
             onPress={handleClearCache}
             textStyle={{ color: colors.error }}
           />
+          <View style={styles.spacer} />
+          <View style={styles.separator} />
+          <View style={styles.spacer} />
+          <Button
+            title="⚠️ Limpar todos os dados"
+            variant="ghost"
+            onPress={handleClearAllData}
+            textStyle={{ color: colors.error, fontWeight: '700' }}
+          />
         </View>
 
         <Text style={styles.sectionLabel}>Sobre</Text>
@@ -306,5 +349,9 @@ const styles = StyleSheet.create({
   },
   urlSaveButton: {
     flex: 1,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.border,
   },
 });

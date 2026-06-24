@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useExercise } from '../../../hooks/useExercises';
+import { useOfflineExercises, useToggleOffline } from '../../../hooks/useOfflineExercises';
 import { useFavoritesStore } from '../../../features/favorites/store';
 import { Chip } from '../../../components/ui/Chip';
 import { FavoriteButton } from '../../../components/ui/FavoriteButton';
@@ -17,7 +18,11 @@ export default function ExerciseDetailScreen() {
   const router = useRouter();
   const { data: exercise, isLoading, isError, refetch } = useExercise(id);
   const { isFavorite, toggle } = useFavoritesStore();
+  const { data: offlineIds } = useOfflineExercises();
+  const toggleOffline = useToggleOffline();
   const [faved, setFaved] = useState(false);
+
+  const isOffline = offlineIds?.has(id) ?? false;
 
   useEffect(() => {
     setFaved(isFavorite(id));
@@ -26,6 +31,23 @@ export default function ExerciseDetailScreen() {
   const handleToggleFavorite = async () => {
     const newState = await toggle(id);
     setFaved(newState);
+  };
+
+  const handleToggleOffline = () => {
+    const action = isOffline ? 'Remover do offline' : 'Disponibilizar offline';
+    Alert.alert(
+      action,
+      isOffline
+        ? 'Remover este exercício dos salvos offline? As mídias baixadas serão removidas.'
+        : 'Baixar este exercício para uso offline, incluindo mídias?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: action,
+          onPress: () => toggleOffline.mutate({ exerciseId: id, isCurrentlyOffline: isOffline }),
+        },
+      ],
+    );
   };
 
   if (isLoading) {
@@ -53,6 +75,12 @@ export default function ExerciseDetailScreen() {
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
         <View style={styles.headerRight}>
+          <TouchableOpacity
+            style={styles.offlineButton}
+            onPress={handleToggleOffline}
+          >
+            <Text style={styles.offlineButtonIcon}>{isOffline ? '☁️' : '💾'}</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.progressButton}
             onPress={() => router.push(`/exercise/${id}/progress`)}
@@ -182,6 +210,17 @@ const styles = StyleSheet.create({
   backIcon: {
     fontSize: 20,
     color: colors.fg,
+  },
+  offlineButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.surface2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  offlineButtonIcon: {
+    fontSize: 18,
   },
   progressButton: {
     width: 40,

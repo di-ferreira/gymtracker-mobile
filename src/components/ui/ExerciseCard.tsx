@@ -6,10 +6,12 @@ interface ExerciseCardProps {
   name: string;
   muscleGroup?: string;
   thumbnailUrl?: string | null;
+  isOffline?: boolean;
+  onToggleOffline?: () => void;
   onPress?: () => void;
 }
 
-export function ExerciseCard({ name, muscleGroup, thumbnailUrl, onPress }: ExerciseCardProps) {
+export function ExerciseCard({ name, muscleGroup, thumbnailUrl, isOffline, onToggleOffline, onPress }: ExerciseCardProps) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.imageContainer}>
@@ -20,6 +22,13 @@ export function ExerciseCard({ name, muscleGroup, thumbnailUrl, onPress }: Exerc
             <Text style={styles.placeholderIcon}>💪</Text>
           </View>
         )}
+        <TouchableOpacity
+          style={styles.offlineBadge}
+          onPress={onToggleOffline}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={styles.offlineBadgeIcon}>{isOffline ? '☁️' : '💾'}</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={1}>{name}</Text>
@@ -41,6 +50,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: 160,
+    position: 'relative',
   },
   image: {
     width: '100%',
@@ -55,6 +65,20 @@ const styles = StyleSheet.create({
   },
   placeholderIcon: {
     fontSize: 40,
+  },
+  offlineBadge: {
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  offlineBadgeIcon: {
+    fontSize: 14,
   },
   info: {
     padding: spacing[4],

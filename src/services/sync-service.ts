@@ -3,6 +3,18 @@ import { createExerciseRepository } from '../database/repositories/exercise-repo
 import { createCatalogRepository } from '../database/repositories/catalog-repository';
 import { getDatabase } from '../database';
 
+async function clearCatalog(db: Awaited<ReturnType<typeof getDatabase>>): Promise<void> {
+  await db.execAsync('PRAGMA foreign_keys=OFF');
+  await db.execAsync('DELETE FROM exercise_alternatives');
+  await db.execAsync('DELETE FROM exercise_instructions');
+  await db.execAsync('DELETE FROM exercise_equipments');
+  await db.execAsync('DELETE FROM exercises');
+  await db.execAsync('DELETE FROM equipments');
+  await db.execAsync('DELETE FROM movement_groups');
+  await db.execAsync('DELETE FROM muscle_groups');
+  await db.execAsync('PRAGMA foreign_keys=ON');
+}
+
 export async function syncCatalog(): Promise<void> {
   const db = await getDatabase();
   const catalogRepo = createCatalogRepository(db);
@@ -13,6 +25,8 @@ export async function syncCatalog(): Promise<void> {
     fetchMovementGroups(),
     fetchEquipment(),
   ]);
+
+  await clearCatalog(db);
 
   const exerciseRepo = createExerciseRepository(db);
 
@@ -30,7 +44,7 @@ export async function syncCatalog(): Promise<void> {
       });
 
       await db.runAsync(
-        `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}, created_at, updated_at)
+        `INSERT INTO ${table} (${columns.join(', ')}, created_at, updated_at)
          VALUES (${placeholders}, datetime('now'), datetime('now'))`,
         ...values,
       );

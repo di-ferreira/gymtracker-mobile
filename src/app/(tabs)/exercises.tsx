@@ -1,7 +1,7 @@
 import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 import { Stack, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import { Chip } from '../../components/ui/Chip';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -9,15 +9,19 @@ import { ExerciseCard } from '../../components/ui/ExerciseCard';
 import { Loading } from '../../components/ui/Loading';
 import { ExerciseRow } from '../../database/repositories/exercise-repository';
 import { useExercises } from '../../hooks/useExercises';
+import { useOfflineExercises, useToggleOffline } from '../../hooks/useOfflineExercises';
 import { borderRadius } from '../../theme/borderRadius';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
 
 const ALL_FILTER = 'todos';
+const OFFLINE_FILTER = 'offline';
 
 export default function ExercisesScreen() {
   const router = useRouter();
   const { data: exercises, isLoading, isError, refetch, isRefetching } = useExercises();
+  const { data: offlineIds } = useOfflineExercises();
+  const toggleOffline = useToggleOffline();
   const [search, setSearch] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState(ALL_FILTER);
 
@@ -45,16 +49,32 @@ export default function ExercisesScreen() {
       );
     }
 
-    if (selectedMuscle !== ALL_FILTER) {
+    if (selectedMuscle === OFFLINE_FILTER) {
+      result = result.filter((ex) => offlineIds?.has(ex.id));
+    } else if (selectedMuscle !== ALL_FILTER) {
       result = result.filter((ex) => ex.muscle_group_id === selectedMuscle);
     }
 
     return result;
-  }, [exercises, search, selectedMuscle]);
+  }, [exercises, search, selectedMuscle, offlineIds]);
 
   const handleSearch = useCallback((text: string) => {
     setSearch(text);
   }, []);
+
+  const handleToggleOffline = useCallback(
+    (exerciseId: string, isCurrentlyOffline: boolean) => {
+      const action = isCurrentlyOffline ? 'Remover do offline' : 'Disponibilizar offline';
+      Alert.alert(action, isCurrentlyOffline ? 'Remover este exercício dos salvos offline?' : 'Baixar este exercício para uso offline?', [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: action,
+          onPress: () => toggleOffline.mutate({ exerciseId, isCurrentlyOffline }),
+        },
+      ]);
+    },
+    [toggleOffline],
+  );
 
   const renderExerciseItem: ListRenderItem<ExerciseRow> = useCallback(
     ({ item }) => (
@@ -63,11 +83,13 @@ export default function ExercisesScreen() {
           name={item.name}
           muscleGroup={item.target_muscle_primary ?? undefined}
           thumbnailUrl={item.thumbnail_url}
+          isOffline={offlineIds?.has(item.id)}
+          onToggleOffline={() => handleToggleOffline(item.id, offlineIds?.has(item.id) ?? false)}
           onPress={() => router.push(`/exercise/${item.id}`)}
         />
       </View>
     ),
-    [router],
+    [router, offlineIds, handleToggleOffline],
   );
 
   if (isLoading) {
@@ -118,30 +140,31 @@ export default function ExercisesScreen() {
         />
       </View>
 
-      <View style={styles.searchContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chipsContainer}
+      >
         <Chip
           label="Todos"
           selected={selectedMuscle === ALL_FILTER}
           onPress={() => setSelectedMuscle(ALL_FILTER)}
         />
-      </View>
+        <Chip
+          label={offlineIds && offlineIds.size > 0 ? `Offline (${offlineIds.size})` : 'Offline'}
+          selected={selectedMuscle === OFFLINE_FILTER}
+          onPress={() => setSelectedMuscle(OFFLINE_FILTER)}
+        />
+        {muscleGroups.map((mg) => (
+          <Chip
+            key={mg.id}
+            label={mg.name}
+            selected={selectedMuscle === mg.id}
+            onPress={() => setSelectedMuscle(mg.id)}
+          />
+        ))}
+      </ScrollView>
 
-      {muscleGroups.length > 0 && (
-        <ScrollView
-          horizontal={false}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsContainer}
-        >
-          {muscleGroups.map((mg) => (
-            <Chip
-              key={mg.id}
-              label={mg.name}
-              selected={selectedMuscle === mg.id}
-              onPress={() => setSelectedMuscle(mg.id)}
-            />
-          ))}
-        </ScrollView>
-      )}
       <FlashList<ExerciseRow>
         data={filtered}
         keyExtractor={(item) => item.id}
@@ -200,11 +223,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   chipsContainer: {
-    paddingHorizontal: spacing[2],
+    paddingHorizontal: spacing[4],
     gap: spacing[2],
     marginBottom: spacing[2],
-    paddingVertical: spacing[2],
-    marginHorizontal: spacing[2],
+    paddingVertical: spacing[0],
   },
   listContent: {
     paddingHorizontal: spacing[2],
