@@ -1,13 +1,15 @@
 import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 import { Stack, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Chip } from '../../components/ui/Chip';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { ExerciseCard } from '../../components/ui/ExerciseCard';
 import { Loading } from '../../components/ui/Loading';
+import { Select, type SelectOption } from '../../components/ui/Select';
 import { ExerciseRow } from '../../database/repositories/exercise-repository';
+import { useEquipment, useExerciseEquipmentMap } from '../../hooks/useEquipment';
 import { useExercises } from '../../hooks/useExercises';
 import { useOfflineExercises, useToggleOffline } from '../../hooks/useOfflineExercises';
 import { borderRadius } from '../../theme/borderRadius';
@@ -21,11 +23,14 @@ export default function ExercisesScreen() {
   const router = useRouter();
   const { data: exercises, isLoading, isError, refetch, isRefetching } = useExercises();
   const { data: offlineIds } = useOfflineExercises();
+  const { data: equipmentList } = useEquipment();
+  const { data: equipMap } = useExerciseEquipmentMap();
   const toggleOffline = useToggleOffline();
   const [search, setSearch] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState(ALL_FILTER);
+  const [selectedEquipment, setSelectedEquipment] = useState(ALL_FILTER);
 
-  const muscleGroups = useMemo(() => {
+  const muscleOptions: SelectOption[] = useMemo(() => {
     if (!exercises) return [];
     const map = new Map<string, string>();
     for (const ex of exercises) {
@@ -33,8 +38,17 @@ export default function ExercisesScreen() {
         map.set(ex.muscle_group_id, ex.target_muscle_primary);
       }
     }
-    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    const groups = Array.from(map.entries()).map(([id, name]) => ({ label: name, value: id }));
+    groups.sort((a, b) => a.label.localeCompare(b.label));
+    return [{ label: 'Todos', value: ALL_FILTER }, ...groups];
   }, [exercises]);
+
+  const equipmentOptions: SelectOption[] = useMemo(() => {
+    if (!equipmentList) return [];
+    const items = equipmentList.map((eq) => ({ label: eq.name, value: eq.id }));
+    items.sort((a, b) => a.label.localeCompare(b.label));
+    return [{ label: 'Todos', value: ALL_FILTER }, ...items];
+  }, [equipmentList]);
 
   const filtered = useMemo(() => {
     if (!exercises) return [];
@@ -55,8 +69,12 @@ export default function ExercisesScreen() {
       result = result.filter((ex) => ex.muscle_group_id === selectedMuscle);
     }
 
+    if (selectedEquipment !== ALL_FILTER) {
+      result = result.filter((ex) => equipMap?.get(ex.id)?.includes(selectedEquipment));
+    }
+
     return result;
-  }, [exercises, search, selectedMuscle, offlineIds]);
+  }, [exercises, search, selectedMuscle, selectedEquipment, offlineIds, equipMap]);
 
   const handleSearch = useCallback((text: string) => {
     setSearch(text);
@@ -146,14 +164,15 @@ export default function ExercisesScreen() {
         />
       </View>
 
-      <View style={styles.searchContainer}>
+      <View style={styles.chipsRow}>
         <Chip
           label="Todos"
-          selected={selectedMuscle === ALL_FILTER}
-          onPress={() => setSelectedMuscle(ALL_FILTER)}
+          selected={selectedMuscle === ALL_FILTER && selectedEquipment === ALL_FILTER}
+          onPress={() => {
+            setSelectedMuscle(ALL_FILTER);
+            setSelectedEquipment(ALL_FILTER);
+          }}
         />
-      </View>
-      <View style={styles.searchContainer}>
         <Chip
           label={offlineIds && offlineIds.size > 0 ? `Offline (${offlineIds.size})` : 'Offline'}
           selected={selectedMuscle === OFFLINE_FILTER}
@@ -161,22 +180,24 @@ export default function ExercisesScreen() {
         />
       </View>
 
-      {muscleGroups.length > 0 && (
-        <ScrollView
-          horizontal={false}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsContainer}
-        >
-          {muscleGroups.map((mg) => (
-            <Chip
-              key={mg.id}
-              label={mg.name}
-              selected={selectedMuscle === mg.id}
-              onPress={() => setSelectedMuscle(mg.id)}
-            />
-          ))}
-        </ScrollView>
-      )}
+      <View style={styles.selectsContainer}>
+        <Select
+          placeholder="Grupo muscular"
+          options={muscleOptions}
+          value={selectedMuscle === OFFLINE_FILTER ? ALL_FILTER : selectedMuscle}
+          onValueChange={(v) => {
+            if (selectedMuscle === OFFLINE_FILTER) setSelectedMuscle(ALL_FILTER);
+            setSelectedMuscle(v);
+          }}
+        />
+        <Select
+          placeholder="Equipamento"
+          options={equipmentOptions}
+          value={selectedEquipment}
+          onValueChange={setSelectedEquipment}
+        />
+      </View>
+
       <FlashList<ExerciseRow>
         data={filtered}
         keyExtractor={(item) => item.id}
@@ -234,11 +255,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  chipsContainer: {
+  chipsRow: {
+    flexDirection: 'row',
+    gap: spacing[2],
+    paddingHorizontal: spacing[4],
+    marginBottom: spacing[3],
+  },
+  selectsContainer: {
     paddingHorizontal: spacing[4],
     gap: spacing[2],
-    marginBottom: spacing[2],
-    paddingVertical: spacing[0],
+    marginBottom: spacing[3],
   },
   listContent: {
     paddingHorizontal: spacing[2],
