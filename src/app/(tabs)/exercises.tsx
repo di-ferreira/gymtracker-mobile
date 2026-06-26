@@ -11,6 +11,7 @@ import { Select, type SelectOption } from '../../components/ui/Select';
 import { ExerciseRow } from '../../database/repositories/exercise-repository';
 import { useEquipment, useExerciseEquipmentMap } from '../../hooks/useEquipment';
 import { useExercises } from '../../hooks/useExercises';
+import { useMuscleGroups } from '../../hooks/useMuscleGroups';
 import { useOfflineExercises, useToggleOffline } from '../../hooks/useOfflineExercises';
 import { borderRadius } from '../../theme/borderRadius';
 import { colors } from '../../theme/colors';
@@ -25,23 +26,23 @@ export default function ExercisesScreen() {
   const { data: offlineIds } = useOfflineExercises();
   const { data: equipmentList } = useEquipment();
   const { data: equipMap } = useExerciseEquipmentMap();
+  const { data: muscleGroups } = useMuscleGroups();
   const toggleOffline = useToggleOffline();
   const [search, setSearch] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState(ALL_FILTER);
   const [selectedEquipment, setSelectedEquipment] = useState(ALL_FILTER);
 
+  const muscleNameMap = useMemo(() => {
+    if (!muscleGroups) return new Map<string, string>();
+    return new Map(muscleGroups.map((mg) => [mg.id, mg.name]));
+  }, [muscleGroups]);
+
   const muscleOptions: SelectOption[] = useMemo(() => {
-    if (!exercises) return [];
-    const map = new Map<string, string>();
-    for (const ex of exercises) {
-      if (ex.target_muscle_primary) {
-        map.set(ex.muscle_group_id, ex.target_muscle_primary);
-      }
-    }
-    const groups = Array.from(map.entries()).map(([id, name]) => ({ label: name, value: id }));
+    if (!muscleGroups) return [];
+    const groups = muscleGroups.map((mg) => ({ label: mg.name, value: mg.id }));
     groups.sort((a, b) => a.label.localeCompare(b.label));
     return [{ label: 'Todos', value: ALL_FILTER }, ...groups];
-  }, [exercises]);
+  }, [muscleGroups]);
 
   const equipmentOptions: SelectOption[] = useMemo(() => {
     if (!equipmentList) return [];
@@ -105,7 +106,7 @@ export default function ExercisesScreen() {
       <View style={styles.cardWrapper}>
         <ExerciseCard
           name={item.name}
-          muscleGroup={item.target_muscle_primary ?? undefined}
+          muscleGroup={item.target_muscle_primary ?? muscleNameMap.get(item.muscle_group_id) ?? undefined}
           thumbnailUrl={item.gif_url ?? undefined}
           isOffline={offlineIds?.has(item.id)}
           onToggleOffline={() => handleToggleOffline(item.id, offlineIds?.has(item.id) ?? false)}
@@ -113,7 +114,7 @@ export default function ExercisesScreen() {
         />
       </View>
     ),
-    [router, offlineIds, handleToggleOffline],
+    [router, offlineIds, handleToggleOffline, muscleNameMap],
   );
 
   if (isLoading) {
