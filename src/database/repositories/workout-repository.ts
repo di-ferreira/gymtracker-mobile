@@ -38,6 +38,7 @@ export function createWorkoutRepository(db: SQLiteDatabase) {
   }
 
   async function create(data: Omit<WorkoutRow, 'created_at' | 'updated_at'>): Promise<void> {
+    await db.execAsync('PRAGMA foreign_keys=OFF');
     await db.runAsync(
       'INSERT INTO workouts (id, name, description, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, datetime("now"), datetime("now"))',
       data.id,
@@ -45,6 +46,7 @@ export function createWorkoutRepository(db: SQLiteDatabase) {
       data.description,
       data.user_id
     );
+    await db.execAsync('PRAGMA foreign_keys=ON');
   }
 
   async function update(id: string, data: Partial<Pick<WorkoutRow, 'name' | 'description'>>): Promise<void> {

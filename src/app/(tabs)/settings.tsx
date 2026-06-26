@@ -137,20 +137,31 @@ export default function SettingsScreen() {
           text: 'Limpar e sair',
           style: 'destructive',
           onPress: async () => {
-            const db = await getDatabase();
-            await db.execAsync('PRAGMA foreign_keys=OFF');
-            await db.execAsync('DELETE FROM exercise_alternatives');
-            await db.execAsync('DELETE FROM exercise_instructions');
-            await db.execAsync('DELETE FROM exercise_equipments');
-            await db.execAsync('DELETE FROM exercises');
-            await db.execAsync('DELETE FROM equipments');
-            await db.execAsync('DELETE FROM movement_groups');
-            await db.execAsync('DELETE FROM muscle_groups');
-            await db.execAsync('DELETE FROM offline_exercises');
-            await db.execAsync('PRAGMA foreign_keys=ON');
-            await clearMediaCache();
-            await clearAll();
-            await clearTokens();
+            try {
+              const db = await getDatabase();
+              await db.execAsync('PRAGMA foreign_keys=OFF');
+              await db.execAsync('DELETE FROM exercise_progress');
+              await db.execAsync('DELETE FROM workout_exercises');
+              await db.execAsync('DELETE FROM workout_history');
+              await db.execAsync('DELETE FROM workouts');
+              await db.execAsync('DELETE FROM exercise_alternatives');
+              await db.execAsync('DELETE FROM exercise_instructions');
+              await db.execAsync('DELETE FROM exercise_equipments');
+              await db.execAsync('DELETE FROM exercises');
+              await db.execAsync('DELETE FROM equipments');
+              await db.execAsync('DELETE FROM movement_groups');
+              await db.execAsync('DELETE FROM muscle_groups');
+              await db.execAsync('DELETE FROM offline_exercises');
+              await db.execAsync('DELETE FROM users');
+              await db.execAsync('DELETE FROM catalog_versions');
+              await db.execAsync('PRAGMA foreign_keys=ON');
+              await clearMediaCache();
+              await clearAll();
+              await clearTokens();
+            } catch (err: unknown) {
+              const message = err instanceof Error ? err.message : 'Erro desconhecido';
+              Alert.alert('Erro', `Falha ao limpar dados: ${message}`);
+            }
             router.replace('/(auth)/login');
           },
         },

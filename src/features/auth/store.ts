@@ -52,7 +52,6 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     try {
       const user = await getMe();
-      await saveUserLocally(user);
       set({ user, isAuthenticated: true, isLoading: false });
     } catch {
       await clearTokens();
