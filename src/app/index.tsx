@@ -55,7 +55,7 @@ export default function IndexScreen() {
         ]}
       >
         <Text style={styles.emoji}>💪</Text>
-        <Text style={styles.title}>GymTracker</Text>
+        <Text style={styles.title}>King Gym</Text>
         <Text style={styles.subtitle}>Seu treino, seus resultados</Text>
       </Animated.View>
     </View>

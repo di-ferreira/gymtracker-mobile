@@ -110,7 +110,7 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.emoji}>💪</Text>
-          <Text style={styles.title}>GymTracker</Text>
+          <Text style={styles.title}>King Gym</Text>
           <Text style={styles.subtitle}>Crie sua conta</Text>
 
           {(error || localError) && (
@@ -179,7 +179,7 @@ export default function RegisterScreen() {
       >
         <Text style={styles.sheetTitle}>Configurar API</Text>
         <Text style={styles.sheetDescription}>
-          Informe a URL do servidor GymTracker. Em dispositivo físico, use o IP do computador (ex: http://192.168.0.10:8000).
+          Informe a URL do servidor King Gym. Em dispositivo físico, use o IP do computador (ex: http://192.168.0.10:8000).
         </Text>
         <RNTextInput
           style={styles.urlInput}

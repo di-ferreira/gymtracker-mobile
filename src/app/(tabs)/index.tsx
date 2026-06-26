@@ -73,7 +73,7 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <Text style={styles.greeting}>Olá!</Text>
-        <Text style={styles.title}>GymTracker</Text>
+        <Text style={styles.title}>King Gym</Text>
 
         <View style={styles.statsGrid}>
           <Card style={styles.statCard}>

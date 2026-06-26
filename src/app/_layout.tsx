@@ -6,8 +6,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../providers/auth-provider';
 import { ThemeProvider } from '../theme/ThemeProvider';
 import { ErrorBoundary } from '../theme/ErrorBoundary';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getDatabase } from '../database';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,9 +23,23 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
   useEffect(() => {
-    getDatabase();
+    async function prepare() {
+      try {
+        await getDatabase();
+      } finally {
+        setAppIsReady(true);
+        await SplashScreen.hideAsync();
+      }
+    }
+    prepare();
   }, []);
+
+  if (!appIsReady) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

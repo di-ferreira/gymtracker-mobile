@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "GymTracker",
+    "name": "King Gym",
     "slug": "gymtracker-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,7 +13,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gymtracker.mobile"
+      "bundleIdentifier": "com.gymtracker.mobile",
+      "infoPlist": {
+        "UIBackgroundModes": []
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +25,11 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.gymtracker.mobile"
+      "package": "com.gymtracker.mobile",
+      "notification": {
+        "icon": "./assets/android-notification-icon.png",
+        "color": "#0A0A0A"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,7 +37,19 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0A0A0A",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#000000"
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {},
