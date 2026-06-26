@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getDatabase } from '../../../database';
 import { createWorkoutRepository } from '../../../database/repositories/workout-repository';
 import { useWorkoutsStore } from '../../../features/workouts/store';
+import { useMuscleGroups } from '../../../hooks/useMuscleGroups';
 import { Button } from '../../../components/ui/Button';
 import { Loading } from '../../../components/ui/Loading';
 import { ErrorState } from '../../../components/ui/ErrorState';
@@ -29,6 +30,11 @@ export default function WorkoutDetailScreen() {
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { workouts, remove, removeExercise, reorderExercises } = useWorkoutsStore();
+  const { data: muscleGroups } = useMuscleGroups();
+  const muscleNameMap = useMemo(() => {
+    if (!muscleGroups) return new Map<string, string>();
+    return new Map(muscleGroups.map((mg) => [mg.id, mg.name]));
+  }, [muscleGroups]);
   const workout = workouts.find((w) => w.id === id);
 
   const { data: exercises, isLoading, isError, refetch, isRefetching } = useQuery({
@@ -45,10 +51,11 @@ export default function WorkoutDetailScreen() {
       const rows = await db.getAllAsync<{
         id: string;
         name: string;
+        muscle_group_id: string;
         target_muscle_primary: string | null;
         thumbnail_url: string | null;
       }>(
-        `SELECT id, name, target_muscle_primary, thumbnail_url FROM exercises WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
+        `SELECT id, name, muscle_group_id, target_muscle_primary, thumbnail_url FROM exercises WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
         ...ids
       );
 
@@ -115,7 +122,10 @@ export default function WorkoutDetailScreen() {
               onLongPress={drag}
               delayLongPress={200}
             >
-              <ExerciseCard name={item.exercise.name} />
+              <ExerciseCard
+                name={item.exercise.name}
+                muscleGroup={item.exercise.target_muscle_primary ?? muscleNameMap.get(item.exercise.muscle_group_id) ?? undefined}
+              />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.removeButton}
@@ -127,7 +137,7 @@ export default function WorkoutDetailScreen() {
         </ScaleDecorator>
       );
     },
-    [router, handleRemoveExercise]
+    [router, handleRemoveExercise, muscleNameMap]
   );
 
   const keyExtractor = useCallback((item: NonNullable<typeof exercises>[0]) => item.id, []);
@@ -157,14 +167,12 @@ export default function WorkoutDetailScreen() {
       {isLoading && <Loading message="Carregando exercícios..." />}
       {isError && <ErrorState message="Erro ao carregar exercícios" onRetry={() => refetch()} />}
 
-      {listItems.length > 0 && (
-        <View style={styles.exerciseHeader}>
-          <Text style={styles.sectionLabel}>Exercícios</Text>
-          <TouchableOpacity onPress={() => router.push(`/workout/${id}/add-exercises`)}>
-            <Text style={styles.addText}>+ Adicionar</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <View style={styles.exerciseHeader}>
+        <Text style={styles.sectionLabel}>Exercícios</Text>
+        <TouchableOpacity onPress={() => router.push(`/workout/${id}/add-exercises`)}>
+          <Text style={styles.addText}>+ Adicionar</Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 
@@ -211,6 +219,11 @@ export default function WorkoutDetailScreen() {
             <Text style={styles.emptyDescription}>
               Adicione exercícios a este treino para começar.
             </Text>
+            <Button
+              title="Adicionar exercícios"
+              onPress={() => router.push(`/workout/${id}/add-exercises`)}
+              style={styles.addButton}
+            />
           </View>
           {footerComponent}
         </>
@@ -357,6 +370,10 @@ const styles = StyleSheet.create({
     marginTop: spacing[6],
   },
   startButton: {
+    width: '100%',
+  },
+  addButton: {
+    marginTop: spacing[4],
     width: '100%',
   },
   deleteButton: {

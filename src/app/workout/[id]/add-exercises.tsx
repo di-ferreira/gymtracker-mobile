@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getDatabase } from '../../../database';
 import { createWorkoutRepository } from '../../../database/repositories/workout-repository';
 import { useWorkoutsStore } from '../../../features/workouts/store';
+import { useMuscleGroups } from '../../../hooks/useMuscleGroups';
 import { Button } from '../../../components/ui/Button';
 import { Loading } from '../../../components/ui/Loading';
 import { ErrorState } from '../../../components/ui/ErrorState';
@@ -18,6 +19,11 @@ export default function AddExercisesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { addExercises } = useWorkoutsStore();
+  const { data: muscleGroups } = useMuscleGroups();
+  const muscleNameMap = useMemo(() => {
+    if (!muscleGroups) return new Map<string, string>();
+    return new Map(muscleGroups.map((mg) => [mg.id, mg.name]));
+  }, [muscleGroups]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
 
@@ -32,9 +38,10 @@ export default function AddExercisesScreen() {
       const all = await db.getAllAsync<{
         id: string;
         name: string;
+        muscle_group_id: string;
         target_muscle_primary: string | null;
       }>(
-        'SELECT id, name, target_muscle_primary FROM exercises WHERE deleted_at IS NULL ORDER BY name'
+        'SELECT id, name, muscle_group_id, target_muscle_primary FROM exercises WHERE deleted_at IS NULL ORDER BY name'
       );
 
       return all.filter((e) => !existingIds.has(e.id));
@@ -113,8 +120,8 @@ export default function AddExercisesScreen() {
               </View>
               <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item.name}</Text>
-                {item.target_muscle_primary && (
-                  <Text style={styles.itemMuscle}>{item.target_muscle_primary}</Text>
+                {(item.target_muscle_primary || muscleNameMap.get(item.muscle_group_id)) && (
+                  <Text style={styles.itemMuscle}>{item.target_muscle_primary ?? muscleNameMap.get(item.muscle_group_id)}</Text>
                 )}
               </View>
             </TouchableOpacity>
