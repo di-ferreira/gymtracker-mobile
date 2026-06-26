@@ -1,9 +1,10 @@
 import { api } from './api';
 import type { Exercise, MuscleGroup, MovementGroup, Equipment } from '../types';
+import type { PaginatedResponse } from '../types/pagination';
 
 export async function fetchExercises(): Promise<Exercise[]> {
-  const response = await api.get<Exercise[]>('/catalog/exercises/');
-  return response.data;
+  const response = await api.get<PaginatedResponse<Exercise>>('/catalog/exercises/');
+  return response.data.data;
 }
 
 export async function fetchExercise(id: string): Promise<Exercise> {
