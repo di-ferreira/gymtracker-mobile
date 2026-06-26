@@ -3,6 +3,26 @@ import type { User, LoginRequest, RegisterRequest } from '../../types';
 import { login as apiLogin, register as apiRegister, getMe } from '../../services/auth-service';
 import { hasToken, clearTokens, clearAll } from '../../storage';
 import { refreshBaseUrl, getBaseUrl } from '../../services/api';
+import { getDatabase } from '../../database';
+import { createUserRepository } from '../../database/repositories/user-repository';
+
+async function saveUserLocally(user: User): Promise<void> {
+  try {
+    const db = await getDatabase();
+    const repo = createUserRepository(db);
+    await repo.save({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      is_active: user.is_active ? 1 : 0,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    });
+  } catch {
+    // Silent — user save is best-effort
+  }
+}
 
 interface AuthState {
   user: User | null;
@@ -32,6 +52,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     try {
       const user = await getMe();
+      await saveUserLocally(user);
       set({ user, isAuthenticated: true, isLoading: false });
     } catch {
       await clearTokens();
@@ -46,6 +67,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await apiLogin(data);
       const user = await getMe();
+      await saveUserLocally(user);
       set({ user, isLoading: false, isAuthenticated: true });
     } catch (err: unknown) {
       let message = 'Erro ao fazer login';
@@ -77,6 +99,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await apiRegister(data);
       await apiLogin({ email: data.email, password: data.password });
       const user = await getMe();
+      await saveUserLocally(user);
       set({ user, isLoading: false, isAuthenticated: true });
     } catch (err: unknown) {
       let message = 'Erro ao registrar';
