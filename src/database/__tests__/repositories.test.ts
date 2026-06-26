@@ -73,7 +73,7 @@ describe('WorkoutRepository', () => {
   it('should create a workout', async () => {
     const { createWorkoutRepository } = await import('../repositories/workout-repository');
     const repo = createWorkoutRepository(mockDb as any);
-    await repo.create({ id: 'wo-1', name: 'Test Workout', description: null });
+    await repo.create({ id: 'wo-1', name: 'Test Workout', description: null, user_id: '' });
     expect(mockDb.runAsync).toHaveBeenCalled();
     const sql = (mockDb.runAsync.mock.calls[0] as string[])[0] as string;
     expect(sql).toContain('INSERT INTO workouts');

@@ -19,6 +19,11 @@ const MIGRATIONS: Array<{ version: number; name: string; sql: string }> = [
       video_path TEXT
     );`,
   },
+  {
+    version: 3,
+    name: 'workout_user_id',
+    sql: `ALTER TABLE workouts ADD COLUMN user_id TEXT NOT NULL DEFAULT '' REFERENCES users(id);`,
+  },
 ];
 
 export async function runMigrations(db: SQLiteDatabase): Promise<void> {

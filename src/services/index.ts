@@ -3,3 +3,7 @@ export { register, login, getMe, updateProfile, logout } from './auth-service';
 export { fetchExercises, fetchExercise, fetchMuscleGroups, fetchMovementGroups, fetchEquipment } from './catalog-service';
 export { syncCatalog, getSyncStatus } from './sync-service';
 export { getCachedMediaUrl, clearMediaCache, getMediaCacheSize } from './media-cache';
+export {
+  fetchWorkouts, fetchWorkout, createWorkoutOnApi, updateWorkoutOnApi, deleteWorkoutOnApi,
+  addExerciseToWorkoutApi, removeExerciseFromWorkoutApi, reorderWorkoutExercisesApi,
+} from './workout-service';

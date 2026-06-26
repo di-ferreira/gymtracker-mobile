@@ -4,6 +4,7 @@ export interface WorkoutRow {
   id: string;
   name: string;
   description: string | null;
+  user_id: string;
   created_at: string;
   updated_at: string;
 }
@@ -17,7 +18,13 @@ export interface WorkoutExerciseRow {
 }
 
 export function createWorkoutRepository(db: SQLiteDatabase) {
-  async function findAll(): Promise<WorkoutRow[]> {
+  async function findAll(userId?: string): Promise<WorkoutRow[]> {
+    if (userId) {
+      return await db.getAllAsync<WorkoutRow>(
+        'SELECT * FROM workouts WHERE user_id = ? ORDER BY created_at DESC',
+        userId
+      );
+    }
     return await db.getAllAsync<WorkoutRow>(
       'SELECT * FROM workouts ORDER BY created_at DESC'
     );
@@ -32,10 +39,11 @@ export function createWorkoutRepository(db: SQLiteDatabase) {
 
   async function create(data: Omit<WorkoutRow, 'created_at' | 'updated_at'>): Promise<void> {
     await db.runAsync(
-      'INSERT INTO workouts (id, name, description, created_at, updated_at) VALUES (?, ?, ?, datetime("now"), datetime("now"))',
+      'INSERT INTO workouts (id, name, description, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, datetime("now"), datetime("now"))',
       data.id,
       data.name,
-      data.description
+      data.description,
+      data.user_id
     );
   }
 

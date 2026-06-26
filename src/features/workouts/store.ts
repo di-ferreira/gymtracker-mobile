@@ -2,6 +2,15 @@ import { create } from 'zustand';
 import { getDatabase } from '../../database';
 import { createWorkoutRepository } from '../../database/repositories/workout-repository';
 import type { WorkoutRow } from '../../database/repositories/workout-repository';
+import { useAuthStore } from '../auth/store';
+import {
+  createWorkoutOnApi,
+  updateWorkoutOnApi,
+  deleteWorkoutOnApi,
+  addExerciseToWorkoutApi,
+  removeExerciseFromWorkoutApi,
+  reorderWorkoutExercisesApi,
+} from '../../services/workout-service';
 
 export interface WorkoutWithExerciseCount extends WorkoutRow {
   exercise_count: number;
@@ -26,7 +35,8 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
   load: async () => {
     const db = await getDatabase();
     const repo = createWorkoutRepository(db);
-    const rows = await repo.findAll();
+    const user = useAuthStore.getState().user;
+    const rows = await repo.findAll(user?.id);
 
     const workoutsWithCount: WorkoutWithExerciseCount[] = [];
     for (const w of rows) {
@@ -40,10 +50,18 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
   create: async (name, description) => {
     const db = await getDatabase();
     const repo = createWorkoutRepository(db);
+    const user = useAuthStore.getState().user;
     const id = `wo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-    await repo.create({ id, name, description: description ?? null });
+    await repo.create({ id, name, description: description ?? null, user_id: user?.id ?? '' });
     await get().load();
+
+    try {
+      await createWorkoutOnApi({ name, description });
+    } catch {
+      // Silently fail — local data exists and can be synced later
+    }
+
     return id;
   },
 
@@ -52,6 +70,12 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
     const repo = createWorkoutRepository(db);
     await repo.update(id, data);
     await get().load();
+
+    try {
+      await updateWorkoutOnApi(id, data);
+    } catch {
+      // Silently fail
+    }
   },
 
   remove: async (id) => {
@@ -59,6 +83,12 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
     const repo = createWorkoutRepository(db);
     await repo.remove(id);
     await get().load();
+
+    try {
+      await deleteWorkoutOnApi(id);
+    } catch {
+      // Silently fail
+    }
   },
 
   addExercises: async (workoutId, exerciseIds) => {
@@ -77,6 +107,17 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
     }
 
     await get().load();
+
+    try {
+      for (let i = 0; i < exerciseIds.length; i++) {
+        await addExerciseToWorkoutApi(workoutId, {
+          exercise_id: exerciseIds[i],
+          sort_order: nextOrder + i,
+        });
+      }
+    } catch {
+      // Silently fail
+    }
   },
 
   removeExercise: async (workoutId, exerciseId) => {
@@ -90,8 +131,14 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
         .filter((e) => e.exercise_id !== exerciseId)
         .map((e) => e.id);
       await repo.reorderExercises(workoutId, remaining);
+      await get().load();
+
+      try {
+        await removeExerciseFromWorkoutApi(workoutId, exerciseId);
+      } catch {
+        // Silently fail
+      }
     }
-    await get().load();
   },
 
   reorderExercises: async (workoutId, orderedExerciseIds) => {
@@ -99,5 +146,11 @@ export const useWorkoutsStore = create<WorkoutsState>((set, get) => ({
     const repo = createWorkoutRepository(db);
     await repo.reorderExercises(workoutId, orderedExerciseIds);
     await get().load();
+
+    try {
+      await reorderWorkoutExercisesApi(workoutId, orderedExerciseIds);
+    } catch {
+      // Silently fail
+    }
   },
 }));

@@ -24,7 +24,7 @@ export default function CreateWorkoutScreen() {
     }
     setError(null);
     const id = await create(name.trim(), description.trim() || undefined);
-    router.replace(`/workout/${id}`);
+    router.replace(`/workout/${id}/add-exercises`);
   };
 
   return (
