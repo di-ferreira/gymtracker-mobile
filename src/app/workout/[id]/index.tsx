@@ -54,8 +54,9 @@ export default function WorkoutDetailScreen() {
         muscle_group_id: string;
         target_muscle_primary: string | null;
         thumbnail_url: string | null;
+        gif_url: string | null;
       }>(
-        `SELECT id, name, muscle_group_id, target_muscle_primary, thumbnail_url FROM exercises WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
+        `SELECT id, name, muscle_group_id, target_muscle_primary, thumbnail_url, gif_url FROM exercises WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
         ...ids
       );
 
@@ -117,15 +118,18 @@ export default function WorkoutDetailScreen() {
         <ScaleDecorator>
           <View style={[styles.exerciseRow, isActive && styles.exerciseRowActive]}>
             <TouchableOpacity
-              onPress={() => router.push(`/exercise/${item.exercise_id}`)}
-              style={styles.exerciseCardTouchable}
               onLongPress={drag}
               delayLongPress={200}
+              activeOpacity={1}
             >
-              <ExerciseCard
-                name={item.exercise.name}
-                muscleGroup={item.exercise.target_muscle_primary ?? muscleNameMap.get(item.exercise.muscle_group_id) ?? undefined}
-              />
+              <View style={styles.exerciseCardTouchable}>
+                <ExerciseCard
+                  name={item.exercise.name}
+                  muscleGroup={item.exercise.target_muscle_primary ?? muscleNameMap.get(item.exercise.muscle_group_id) ?? undefined}
+                  thumbnailUrl={item.exercise.gif_url ?? item.exercise.thumbnail_url ?? undefined}
+                  onPress={() => router.push(`/exercise/${item.exercise_id}`)}
+                />
+              </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.removeButton}
@@ -137,7 +141,7 @@ export default function WorkoutDetailScreen() {
         </ScaleDecorator>
       );
     },
-    [router, handleRemoveExercise, muscleNameMap]
+    [router, handleRemoveExercise, muscleNameMap],
   );
 
   const keyExtractor = useCallback((item: NonNullable<typeof exercises>[0]) => item.id, []);
@@ -177,9 +181,9 @@ export default function WorkoutDetailScreen() {
   );
 
   const footerComponent = (
-    <>
+    <View style={{ paddingBottom: insets.bottom + spacing[4] }}>
       {listItems.length > 0 && (
-        <View style={[styles.startSection, { paddingBottom: insets.bottom }]}>
+        <View style={styles.startSection}>
           <Button
             title="Iniciar Treino"
             onPress={() => router.push(`/workout/${id}/start`)}
@@ -194,7 +198,7 @@ export default function WorkoutDetailScreen() {
         textStyle={{ color: colors.error }}
         style={styles.deleteButton}
       />
-    </>
+    </View>
   );
 
   return (
@@ -338,7 +342,8 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   exerciseRow: {
-    marginBottom: spacing[2],
+    marginBottom: spacing[4],
+    marginHorizontal: spacing[4],
     position: 'relative',
   },
   exerciseRowActive: {

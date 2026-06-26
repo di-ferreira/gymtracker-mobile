@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -26,6 +26,7 @@ export default function AddExercisesScreen() {
   }, [muscleGroups]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState('');
 
   const { data: available, isLoading, isError, refetch } = useQuery({
     queryKey: ['add-exercises', id],
@@ -48,6 +49,17 @@ export default function AddExercisesScreen() {
     },
     enabled: !!id,
   });
+
+  const filtered = useMemo(() => {
+    if (!available) return [];
+    if (!search.trim()) return available;
+    const q = search.toLowerCase();
+    return available.filter(
+      (e) =>
+        e.name.toLowerCase().includes(q) ||
+        (e.target_muscle_primary && e.target_muscle_primary.toLowerCase().includes(q)),
+    );
+  }, [available, search]);
 
   const toggleSelect = (exerciseId: string) => {
     setSelected((prev) => {
@@ -92,11 +104,21 @@ export default function AddExercisesScreen() {
       </View>
 
       <Text style={styles.count}>
-        {available.length} disponíveis · {selected.size} selecionados
+        {search.trim() ? `${filtered.length} de ${available.length}` : `${available.length} disponíveis`} · {selected.size} selecionados
       </Text>
 
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar exercícios..."
+        placeholderTextColor={colors.fgTertiary}
+        value={search}
+        onChangeText={setSearch}
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+
       <FlatList
-        data={available}
+        data={filtered}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
@@ -163,6 +185,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.fgTertiary,
     paddingHorizontal: spacing[4],
+    marginBottom: spacing[2],
+  },
+  searchInput: {
+    backgroundColor: colors.surface2,
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
+    fontSize: 15,
+    color: colors.fg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginHorizontal: spacing[4],
     marginBottom: spacing[3],
   },
   listContent: {
