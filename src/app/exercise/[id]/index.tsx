@@ -6,6 +6,7 @@ import { Button } from '../../../components/ui/Button';
 import { Chip } from '../../../components/ui/Chip';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import { FavoriteButton } from '../../../components/ui/FavoriteButton';
+import { ImageViewer } from '../../../components/ui/ImageViewer';
 import { Loading } from '../../../components/ui/Loading';
 import { useFavoritesStore } from '../../../features/favorites/store';
 import { useExercise } from '../../../hooks/useExercises';
@@ -24,6 +25,7 @@ export default function ExerciseDetailScreen() {
   const toggleOffline = useToggleOffline();
   const [faved, setFaved] = useState(false);
   const [heroImage, setHeroImage] = useState<string | null>(null);
+  const [imageViewerVisible, setImageViewerVisible] = useState(false);
 
   const isOffline = offlineIds?.has(id) ?? false;
 
@@ -103,13 +105,17 @@ export default function ExerciseDetailScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.hero}>
           {heroImage ? (
-            <Image source={{ uri: heroImage }} style={styles.heroImage} />
+            <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={0.8} onPress={() => setImageViewerVisible(true)}>
+              <Image source={{ uri: heroImage }} style={styles.heroImage} />
+            </TouchableOpacity>
           ) : (
             <View style={styles.heroPlaceholder}>
               <Text style={styles.heroEmoji}>💪</Text>
             </View>
           )}
         </View>
+
+        <ImageViewer visible={imageViewerVisible} uri={heroImage} onClose={() => setImageViewerVisible(false)} />
 
         <View style={styles.section}>
           <Text style={styles.name}>{exercise.name}</Text>
